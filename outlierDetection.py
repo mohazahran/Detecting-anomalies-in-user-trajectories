@@ -221,6 +221,8 @@ def createTestingSeqFile(store):
     from_ = store['from_'][0][0]
     to = store['to'][0][0]
     trace_fpath = store['trace_fpath']
+    Dts = store['Dts']
+    winSize = Dts.shape[1]
     tpath = '/home/zahran/Desktop/tribeFlow/zahranData/pinterest/test_traceFile_win5'
     w = open(tpath,'w')
     r = open(trace_fpath[0][0],'r')
@@ -229,8 +231,8 @@ def createTestingSeqFile(store):
     for line in r:
         if(cnt > to):
             p = line.strip().split('\t')
-            usr = p[4]
-            sq = p[5:]
+            usr = p[winSize]
+            sq = p[winSize+1:]
             w.write(str(usr)+'\t')
             for s in sq:
                 w.write(s+'\t')
