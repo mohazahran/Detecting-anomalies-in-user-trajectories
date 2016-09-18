@@ -128,7 +128,6 @@ def outlierDetection(SEQ_FILE_PATH, store, true_mem_size, hyper2id, obj2id, Thet
             mylog.write('User not found in trainingSet !\n')
             #print(tsLine, ' User not found!')
             continue
-        true_mem_size = 10
         if(withFbInfo):
             seq = tmp[1:true_mem_size+1]
             frienship = tmp[true_mem_size+1:]            
