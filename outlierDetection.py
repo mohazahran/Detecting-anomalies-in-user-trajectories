@@ -129,8 +129,8 @@ def outlierDetection(SEQ_FILE_PATH, store, true_mem_size, hyper2id, obj2id, Thet
             #print(tsLine, ' User not found!')
             continue
         if(withFbInfo):
-            seq = tmp[1:true_mem_size+1]
-            frienship = tmp[true_mem_size+1:]            
+            seq = tmp[1:true_mem_size+2] #true_mem_size: is the number of actions in the history, so we have to add one to account for the to-be-predicted action
+            frienship = tmp[true_mem_size+2:]            
         else:
             seq = tmp[1:]
          
