@@ -117,20 +117,28 @@ def getPvalueWithoutRanking(currentActionRank, keySortedProbs, probabilities):
                              
 
 def outlierDetection(SEQ_FILE_PATH, store, true_mem_size, hyper2id, obj2id, Theta_zh, Psi_sz, count_z, withFbInfo):
+    myCnt = 0
     mylog = open(SEQ_FILE_PATH+'_ANAOMLY_ANALYSIS','w')
     seqFile = open(SEQ_FILE_PATH, 'r')
-    for tsLine in seqFile: #for all test samples      
+    for tsLine in seqFile: #for all test samples
+        myCnt += 1      
         #tsLine = '1707158\t21\t50\t5\t20\t19'        
         tmp = tsLine.strip().split('\t') 
         user = tmp[0]
         #mylog.write('\n'+tsLine)
         if(user not in hyper2id):            
-            mylog.write('User not found in trainingSet !\n')
+            mylog.write('User: '+str(user)+' is not found in trainingSet !\n')
             #print(tsLine, ' User not found!')
             continue
+        #true_mem_size = 10
         if(withFbInfo):
-            seq = tmp[1:true_mem_size+2] #true_mem_size: is the number of actions in the history, so we have to add one to account for the to-be-predicted action
-            frienship = tmp[true_mem_size+2:]            
+            seq = tmp[1:true_mem_size+2]
+            frienship = tmp[true_mem_size+2:]
+            #print(tmp)
+            #print(seq)
+            #print(frienship)
+            #print(true_mem_size)
+            #return            
         else:
             seq = tmp[1:]
          
@@ -172,10 +180,11 @@ def outlierDetection(SEQ_FILE_PATH, store, true_mem_size, hyper2id, obj2id, Thet
         outlierVector_holmsWithRanks = holm_hypothesis_testing(keySortedPvaluesWithRanks, pValuesWithRanks)
         outlierVector_holmsWithoutRanks = holm_hypothesis_testing(keySortedPvaluesWithoutRanks, pValuesWithoutRanks)
         
-        print(tmp)
+        #print(len(seq))
+        #print(len(frienship)
         mylog.write('userId: '+str(tmp[0])+'\n')
         mylog.write('Action pvalue_with_ranks bonferroni_withRanks holms_withRanks pValues_withoutRanks holms_withRanks bonferroni_withoutRanks holms_withoutRanks\n')
-        for x in range(0,true_mem_size):
+        for x in range(0,len(seq)):
             if(withFbInfo):
                 mylog.write('||'+str(seq[x])+'|| fb: '+str(frienship[x])+'|| ')
             else:
@@ -188,6 +197,7 @@ def outlierDetection(SEQ_FILE_PATH, store, true_mem_size, hyper2id, obj2id, Thet
             mylog.write(str(outlierVector_holmsWithoutRanks[x])+' ')
             mylog.write('\n')
         mylog.write('\n')
+        print(str(myCnt)+' instances finished ...')
         
         
             
@@ -201,10 +211,10 @@ def outlierDetection(SEQ_FILE_PATH, store, true_mem_size, hyper2id, obj2id, Thet
     seqFile.close()
                                             
 def main():    
-    store = pd.HDFStore('/home/zahran/Desktop/tribeFlow/zahranData/pinterest/PARSED_pinterest_model.h5')  
+    store = pd.HDFStore('/home/mohame11/pins_repins/PARSED_pins_repins_win10_pinterest_model_zeroLeaveOut.h5')  
     #trace_fpath = store['trace_fpath'][0][0]
     #SEQ_FILE_PATH = createTestingSeqFile(store)
-    SEQ_FILE_PATH = '/home/zahran/Desktop/tribeFlow/zahranData/pinterest/likes_fb.txt'
+    SEQ_FILE_PATH = '/home/mohame11/pins_repins/PARSED_sqlData_likes_full_info_fixed_withFriendship'
     withFbInfo = True
     #SEQ_FILE_PATH = '/home/zahran/Desktop/tribeFlow/zahranData/pinterest/test_traceFile_win5'
     #SEQ_FILE_PATH = '/home/zahran/Desktop/tribeFlow/zahranData/lastfm-dataset-1K/SEQ_try'
