@@ -17,8 +17,14 @@ import numpy as np
 import math
 from collections import OrderedDict
 
-ALPHA = 0.05
+import os.path
 
+ALPHA = 0.05
+MODEL_PATH = '/home/zahran/Desktop/tribeFlow/zahranData/pinterest/PARSED_pinterest_model.h5'
+SEQ_FILE_PATH = '/home/zahran/Desktop/tribeFlow/zahranData/pinterest/test_traceFile_win5' 
+WITH_FB_INFO = False
+UNBIAS_CATS_WITH_FREQ = True
+STAT_FILE = '/home/zahran/Desktop/tribeFlow/zahranData/pinterest/PARSED_pinterest_Stats'
 
 #def evaluate(HOs, Theta_zh, Psi_sz, count_z, env, candidate):  
 def evaluate(userId, history, targetObjId, Theta_zh, Psi_sz, env):        
@@ -30,8 +36,6 @@ def evaluate(userId, history, targetObjId, Theta_zh, Psi_sz, env):
     mem_factor *= 1.0 / (1 - Psi_sz[history[len(history)-1], env])# 1-Psi_sz[mem[B-1],z] == 1-psi_sz[objIdB,z]       
     candidateProb += mem_factor * Psi_sz[targetObjId, env] * Theta_zh[env, userId]                                              
     return candidateProb
-    
-
 
 def calculateSequenceProb(h, theSequence, true_mem_size, hyper2id, obj2id, Theta_zh, Psi_sz, count_z):                     
     seqProb = 0.0
@@ -95,8 +99,7 @@ def holm_hypothesis_testing (keySortedPvalues, pValues):
             outlierVector[keySortedPvalues[i]] = 'NORMAL'
     return outlierVector
             
-            
-            
+                   
 def getPvalueWithoutRanking(currentActionRank, keySortedProbs, probabilities):
     #normConst = 0.0
     #for i in range(len(probabilities)):
@@ -116,7 +119,7 @@ def getPvalueWithoutRanking(currentActionRank, keySortedProbs, probabilities):
         
                              
 
-def outlierDetection(SEQ_FILE_PATH, store, true_mem_size, hyper2id, obj2id, Theta_zh, Psi_sz, count_z, withFbInfo):
+def outlierDetection(SEQ_FILE_PATH, store, true_mem_size, hyper2id, obj2id, Theta_zh, Psi_sz, count_z, smoothedProbs):
     myCnt = 0
     mylog = open(SEQ_FILE_PATH+'_ANAOMLY_ANALYSIS','w')
     seqFile = open(SEQ_FILE_PATH, 'r')
@@ -131,7 +134,7 @@ def outlierDetection(SEQ_FILE_PATH, store, true_mem_size, hyper2id, obj2id, Thet
             #print(tsLine, ' User not found!')
             continue
         #true_mem_size = 10
-        if(withFbInfo):
+        if(WITH_FB_INFO):
             seq = tmp[1:true_mem_size+2]
             frienship = tmp[true_mem_size+2:]
             #print(tmp)
@@ -158,6 +161,13 @@ def outlierDetection(SEQ_FILE_PATH, store, true_mem_size, hyper2id, obj2id, Thet
                 del newSeq[i]                
                 newSeq.insert(i, actions[j])                
                 seqScore = calculateSequenceProb(user, newSeq, true_mem_size, hyper2id, obj2id, Theta_zh, Psi_sz, count_z)
+                if(UNBIAS_CATS_WITH_FREQ):
+                    if(actions[j] in smoothedProbs):
+                        unbiasingProb = smoothedProbs[actions[j]]                    
+                        seqScore = seqScore/unbiasingProb
+                    else:
+                        print ('cannot unbias: '+actions[j])
+                    
                 scores[j] = seqScore
                 normalizingConst += seqScore
             #cal probabilities
@@ -185,7 +195,7 @@ def outlierDetection(SEQ_FILE_PATH, store, true_mem_size, hyper2id, obj2id, Thet
         mylog.write('userId: '+str(tmp[0])+'\n')
         mylog.write('Action pvalue_with_ranks bonferroni_withRanks holms_withRanks pValues_withoutRanks holms_withRanks bonferroni_withoutRanks holms_withoutRanks\n')
         for x in range(0,len(seq)):
-            if(withFbInfo):
+            if(WITH_FB_INFO):
                 mylog.write('||'+str(seq[x])+'|| fb: '+str(frienship[x])+'|| ')
             else:
                 mylog.write('||'+str(tmp[x+1])+'|| ')
@@ -211,11 +221,11 @@ def outlierDetection(SEQ_FILE_PATH, store, true_mem_size, hyper2id, obj2id, Thet
     seqFile.close()
                                             
 def main():    
-    store = pd.HDFStore('/home/mohame11/pins_repins/PARSED_pins_repins_win10_pinterest_model_zeroLeaveOut.h5')  
+    store = pd.HDFStore(MODEL_PATH)  
     #trace_fpath = store['trace_fpath'][0][0]
     #SEQ_FILE_PATH = createTestingSeqFile(store)
-    SEQ_FILE_PATH = '/home/mohame11/pins_repins/PARSED_sqlData_likes_full_info_fixed_withFriendship'
-    withFbInfo = True
+    
+    
     #SEQ_FILE_PATH = '/home/zahran/Desktop/tribeFlow/zahranData/pinterest/test_traceFile_win5'
     #SEQ_FILE_PATH = '/home/zahran/Desktop/tribeFlow/zahranData/lastfm-dataset-1K/SEQ_try'
     #sequenceLength = 10
@@ -230,12 +240,56 @@ def main():
     hyper2id = dict(store['hyper2id'].values)
     obj2id = dict(store['source2id'].values)
     trace_size = sum(count_z) #sum of the number of appearances of all envs  
+    trace_fpath = store['trace_fpath'][0][0]
+   
+    if(UNBIAS_CATS_WITH_FREQ):
+        smoothedProbs = calculatingItemsFreq(trace_fpath, true_mem_size)
+        
+        
+    outlierDetection(SEQ_FILE_PATH, store, true_mem_size, hyper2id, obj2id, Theta_zh, Psi_sz, count_z, smoothedProbs)
+        
     
-    outlierDetection(SEQ_FILE_PATH, store, true_mem_size, hyper2id, obj2id, Theta_zh, Psi_sz, count_z, withFbInfo)
+    
             
     #calculateSequenceProb(SEQ_FILE_PATH, store, true_mem_size, hyper2id, obj2id, Theta_zh, Psi_sz, count_z)
     
-    store.close()    
+    store.close()
+    
+def calculatingItemsFreq(trace_fpath, true_mem_size):
+    smoothedProbs = {}    
+    if os.path.isfile(STAT_FILE):
+        r = open(STAT_FILE, 'r')
+        for line in r:
+            parts = line.strip().split('\t')                
+            smoothedProbs[parts[0]] = float(parts[1])                    
+        return smoothedProbs
+    
+    freqs = {}        
+    a = 1.0    
+    r = open(trace_fpath)
+    counts = 0
+    for line in r:
+        cats = line.strip().split('\t')[true_mem_size+1:]
+        for c in cats:
+            if(c in freqs):
+                freqs[c] += 1
+            else:
+                freqs[c] = 1                
+            counts += 1
+    for k in freqs:
+        prob = float(freqs[k]+ a) / float(counts + (len(freqs) * a))
+        smoothedProbs[k] = prob
+    
+    w = open(STAT_FILE, 'w')
+    for key in smoothedProbs:
+        w.write(key+'\t'+str(smoothedProbs[key])+'\n')
+    w.close()
+    return smoothedProbs
+    
+                
+    
+    
+        
    
 def createTestingSeqFile(store):
     from_ = store['from_'][0][0]
