@@ -241,7 +241,7 @@ def main():
     obj2id = dict(store['source2id'].values)
     trace_size = sum(count_z) #sum of the number of appearances of all envs  
     trace_fpath = store['trace_fpath'][0][0]
-   
+    smoothedProbs = {}
     if(UNBIAS_CATS_WITH_FREQ):
         smoothedProbs = calculatingItemsFreq(trace_fpath, true_mem_size)
         
