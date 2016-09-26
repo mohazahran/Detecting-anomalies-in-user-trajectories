@@ -10,6 +10,8 @@ from __future__ import division, print_function
 from tribeflow import _eval_zahran
 from tribeflow.mycollections.stamp_lists import StampLists
 
+from scipy.stats import chisquare
+
 import tribeflow
 import pandas as pd
 import plac
@@ -20,11 +22,12 @@ from collections import OrderedDict
 import os.path
 
 ALPHA = 0.05
-MODEL_PATH = '/home/zahran/Desktop/tribeFlow/zahranData/pinterest/PARSED_pinterest_model.h5'
-SEQ_FILE_PATH = '/home/zahran/Desktop/tribeFlow/zahranData/pinterest/test_traceFile_win5' 
-WITH_FB_INFO = False
-UNBIAS_CATS_WITH_FREQ = True
-STAT_FILE = '/home/zahran/Desktop/tribeFlow/zahranData/pinterest/PARSED_pinterest_Stats'
+MODEL_PATH = '/home/zahran/Desktop/shareFolder/PARSED_pins_repins_win10_noop_NoLeaveOut_pinterest.h5'
+SEQ_FILE_PATH = '/home/zahran/Desktop/shareFolder/PARSED_sqlData_likes_full_info_fixed_withFriendship' 
+WITH_FB_INFO = True
+UNBIAS_CATS_WITH_FREQ = False
+smoothingParam = 1.0   #smootihng parameter for unbiasing item counts.
+STAT_FILE = '/home/zahran/Desktop/shareFolder/Stats'
 
 #def evaluate(HOs, Theta_zh, Psi_sz, count_z, env, candidate):  
 def evaluate(userId, history, targetObjId, Theta_zh, Psi_sz, env):        
@@ -33,7 +36,7 @@ def evaluate(userId, history, targetObjId, Theta_zh, Psi_sz, env):
     for j in xrange(len(history)):#for all B
         #i.e. multiply all psi[objid1,z]*psi[objid2,z]*..psi[objidB,z]
         mem_factor *= Psi_sz[history[j], env] # Psi[objId, env z]            
-    mem_factor *= 1.0 / (1 - Psi_sz[history[len(history)-1], env])# 1-Psi_sz[mem[B-1],z] == 1-psi_sz[objIdB,z]       
+    #mem_factor *= 1.0 / (1 - Psi_sz[history[len(history)-1], env])# 1-Psi_sz[mem[B-1],z] == 1-psi_sz[objIdB,z]       
     candidateProb += mem_factor * Psi_sz[targetObjId, env] * Theta_zh[env, userId]                                              
     return candidateProb
 
@@ -98,8 +101,7 @@ def holm_hypothesis_testing (keySortedPvalues, pValues):
         else:
             outlierVector[keySortedPvalues[i]] = 'NORMAL'
     return outlierVector
-            
-                   
+                              
 def getPvalueWithoutRanking(currentActionRank, keySortedProbs, probabilities):
     #normConst = 0.0
     #for i in range(len(probabilities)):
@@ -113,35 +115,58 @@ def getPvalueWithoutRanking(currentActionRank, keySortedProbs, probabilities):
     return cdf
         
         
-        
+def updateChiSq(chiSqs, decisions, friendship, dKey):
+    expectedFreq = [0]*4
+    for i in range(len(decisions)):        
+        if(decisions[i] == 'OUTLIER' and friendship[i] == 'true'):
+            chiSqs[dKey][0] += 1        
+        elif(decisions[i] == 'OUTLIER' and friendship[i] == 'false'):
+            chiSqs[dKey][1] += 1
+        elif(decisions[i] == 'NORMAL' and friendship[i] == 'true'):
+            chiSqs[dKey][2] += 1
+        elif(decisions[i] == 'NORMAL' and friendship[i] == 'false'):
+            chiSqs[dKey][3] += 1
+            
+    row0 = chiSqs[dKey][0] + chiSqs[dKey][1]
+    row1 = chiSqs[dKey][2] + chiSqs[dKey][3]
+    col0 = chiSqs[dKey][0] + chiSqs[dKey][2]
+    col1 = chiSqs[dKey][1] + chiSqs[dKey][3]
+    grandTotal = row0+row1
+    
+    
+    expectedFreq[0] = row0*col0/grandTotal
+    expectedFreq[1] = row0*col1/grandTotal
+    expectedFreq[2] = row1*col0/grandTotal
+    expectedFreq[3] = row1*col1/grandTotal
+    
+    chis = chisquare(chiSqs[dKey], f_exp=expectedFreq, ddof=2)
+    return chis
+    
+    
+    
+    
+            
         
     
-        
-                             
-
 def outlierDetection(SEQ_FILE_PATH, store, true_mem_size, hyper2id, obj2id, Theta_zh, Psi_sz, count_z, smoothedProbs):
     myCnt = 0
     mylog = open(SEQ_FILE_PATH+'_ANAOMLY_ANALYSIS','w')
     seqFile = open(SEQ_FILE_PATH, 'r')
+    #myMat = [[0 for x in range(2)] for y in range(2)]
+    chiSqs = {'bon_rank':[0]*4, 'bon_noRank':[0]*4, 'holms_rank': [0]*4, 'holms_noRank':[0]*4}
+     
     for tsLine in seqFile: #for all test samples
-        myCnt += 1      
-        #tsLine = '1707158\t21\t50\t5\t20\t19'        
+        myCnt += 1               
         tmp = tsLine.strip().split('\t') 
         user = tmp[0]
-        #mylog.write('\n'+tsLine)
+      
         if(user not in hyper2id):            
-            mylog.write('User: '+str(user)+' is not found in trainingSet !\n')
-            #print(tsLine, ' User not found!')
+            mylog.write('User: '+str(user)+' is not found in trainingSet !\n')          
             continue
-        #true_mem_size = 10
+       
         if(WITH_FB_INFO):
             seq = tmp[1:true_mem_size+2]
-            frienship = tmp[true_mem_size+2:]
-            #print(tmp)
-            #print(seq)
-            #print(frienship)
-            #print(true_mem_size)
-            #return            
+            frienship = tmp[true_mem_size+2:]            
         else:
             seq = tmp[1:]
          
@@ -196,39 +221,47 @@ def outlierDetection(SEQ_FILE_PATH, store, true_mem_size, hyper2id, obj2id, Thet
         mylog.write('Action pvalue_with_ranks bonferroni_withRanks holms_withRanks pValues_withoutRanks holms_withRanks bonferroni_withoutRanks holms_withoutRanks\n')
         for x in range(0,len(seq)):
             if(WITH_FB_INFO):
-                mylog.write('||'+str(seq[x])+'|| fb: '+str(frienship[x])+'|| ')
+                mylog.write('||'+str(seq[x])+'|| fb: '+str(frienship[x])+'|| ')                                
             else:
                 mylog.write('||'+str(tmp[x+1])+'|| ')
+                
             mylog.write(str(pValuesWithRanks[x])+' ')
             mylog.write(str(outlierVector_bonferroniWithRanks[x])+' ')
             mylog.write(str(outlierVector_holmsWithRanks[x])+' ')
             mylog.write(str(pValuesWithoutRanks[x])+' ')
             mylog.write(str(outlierVector_bonferroniWithoutRanks[x])+' ')
             mylog.write(str(outlierVector_holmsWithoutRanks[x])+' ')
-            mylog.write('\n')
-        mylog.write('\n')
-        print(str(myCnt)+' instances finished ...')
-        
-        
             
-            
-        
-        #mylog.write('pValues_withRanks: '+str(pValuesWithRanks)+'\n bonferroni_withRanks: '+str(outlierVector_bonferroniWithRanks)+'\n holms_withRanks: '+str(outlierVector_holmsWithRanks)+'\n')
-        #mylog.write('pValues_withoutRanks: '+str(pValuesWithoutRanks)+'\n bonferroni_withoutRanks: '+str(outlierVector_bonferroniWithoutRanks)+'\n holms_withoutRanks: '+str(outlierVector_holmsWithoutRanks)+'\n')
-        #print(tsLine, outlierVector, pValues)
+            #chiSqs = {'bon_rank':[0]*4, 'bon_noRank':[0]*4, 'holms_rank': [0]*4, 'holms_noRank':[0]*4}
+            mylog.write('\n')                                                    
+        if(WITH_FB_INFO):
+            chi_bon_rank = updateChiSq(chiSqs, outlierVector_bonferroniWithRanks, frienship, 'bon_rank')
+            chi_bon_norank = updateChiSq(chiSqs, outlierVector_bonferroniWithoutRanks, frienship, 'bon_noRank')
+            chi_holms_rank = updateChiSq(chiSqs, outlierVector_holmsWithRanks, frienship, 'holms_rank')
+            chi_holms_norank = updateChiSq(chiSqs, outlierVector_holmsWithoutRanks, frienship, 'holms_noRank')
+                  
+            mylog.write(str(chiSqs))
+            mylog.write(str('\n'+'chi_bon_rank: '+str(chi_bon_rank)))
+            mylog.write(str('\n'+'chi_bon_norank: '+str(chi_bon_norank)))
+            mylog.write(str('\n'+'chi_holms_rank: '+str(chi_holms_rank)))
+            mylog.write(str('\n'+'chi_holms_norank: '+str(chi_holms_norank)))            
+        mylog.write('\n\n')                        
         mylog.flush()
+        print(str(myCnt)+' instances finished ...')     
     mylog.close()
     seqFile.close()
                                             
 def main():    
     store = pd.HDFStore(MODEL_PATH)  
     #trace_fpath = store['trace_fpath'][0][0]
+    
     #SEQ_FILE_PATH = createTestingSeqFile(store)
     
     
     #SEQ_FILE_PATH = '/home/zahran/Desktop/tribeFlow/zahranData/pinterest/test_traceFile_win5'
     #SEQ_FILE_PATH = '/home/zahran/Desktop/tribeFlow/zahranData/lastfm-dataset-1K/SEQ_try'
     #sequenceLength = 10
+    #print(chisquare([16, 18, 16, 14, 12, 12]))
     
     from_ = store['from_'][0][0]
     to = store['to'][0][0]
@@ -241,6 +274,7 @@ def main():
     obj2id = dict(store['source2id'].values)
     trace_size = sum(count_z) #sum of the number of appearances of all envs  
     trace_fpath = store['trace_fpath'][0][0]
+   
     smoothedProbs = {}
     if(UNBIAS_CATS_WITH_FREQ):
         smoothedProbs = calculatingItemsFreq(trace_fpath, true_mem_size)
@@ -264,8 +298,7 @@ def calculatingItemsFreq(trace_fpath, true_mem_size):
             smoothedProbs[parts[0]] = float(parts[1])                    
         return smoothedProbs
     
-    freqs = {}        
-    a = 1.0    
+    freqs = {}            
     r = open(trace_fpath)
     counts = 0
     for line in r:
@@ -277,7 +310,7 @@ def calculatingItemsFreq(trace_fpath, true_mem_size):
                 freqs[c] = 1                
             counts += 1
     for k in freqs:
-        prob = float(freqs[k]+ a) / float(counts + (len(freqs) * a))
+        prob = float(freqs[k]+ smoothingParam) / float(counts + (len(freqs) * smoothingParam))
         smoothedProbs[k] = prob
     
     w = open(STAT_FILE, 'w')
