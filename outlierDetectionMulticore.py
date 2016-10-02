@@ -250,7 +250,7 @@ def outlierDetection(testLines, coreId, startLine, endLine, store, true_mem_size
             mylog.write(str('\n'+'chi_holms_rank: '+str(chi_holms_rank)))
             mylog.write(str('\n'+'chi_holms_norank: '+str(chi_holms_norank)))                    
         mylog.write('\n\n')                        
-        if(i%100 == 0):
+        if(t%100 == 0):
             mylog.flush()
         print('>>> proc: '+ str(coreId)+' finished '+ str(myCnt)+'/'+str(quota)+' instances ...')     
     mylog.close()
