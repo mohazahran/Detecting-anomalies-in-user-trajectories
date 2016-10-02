@@ -157,7 +157,7 @@ def outlierDetection(testLines, coreId, startLine, endLine, store, true_mem_size
     #seqFile = open(SEQ_FILE_PATH, 'r')
     #myMat = [[0 for x in range(2)] for y in range(2)]
     chiSqs = {'bon_rank':[0]*4, 'bon_noRank':[0]*4, 'holms_rank': [0]*4, 'holms_noRank':[0]*4}
-    
+    quota = endLine-startLine
     for t in range(startLine, endLine):
         tsLine = testLines[t]    
         myCnt += 1               
@@ -250,9 +250,9 @@ def outlierDetection(testLines, coreId, startLine, endLine, store, true_mem_size
             mylog.write(str('\n'+'chi_holms_rank: '+str(chi_holms_rank)))
             mylog.write(str('\n'+'chi_holms_norank: '+str(chi_holms_norank)))                    
         mylog.write('\n\n')                        
-        if(i%1000 == 0):
+        if(i%100 == 0):
             mylog.flush()
-        print('>>> proc: '+ str(coreId)+' finished '+ str(myCnt)+' instances ...')     
+        print('>>> proc: '+ str(coreId)+' finished '+ str(myCnt)+'/'+str(quota)+' instances ...')     
     mylog.close()
     #seqFile.close()
                                             
