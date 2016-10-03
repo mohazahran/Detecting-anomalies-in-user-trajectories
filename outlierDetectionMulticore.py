@@ -14,7 +14,7 @@ Created on Aug 9, 2016
 #from __future__ import division, print_function
 from scipy.stats import chisquare
 from collections import OrderedDict
-from multiprocessing import Process
+from multiprocessing import Process, Queue
 
 import tribeflow
 import pandas as pd
@@ -23,7 +23,7 @@ import numpy as np
 import math
 import os.path
 
-CORES = 4
+CORES = 2
 ALPHA = 0.05
 MODEL_PATH = '/home/zahran/Desktop/shareFolder/PARSED_pins_repins_win10_noop_NoLeaveOut_pinterest.h5'
 SEQ_FILE_PATH = '/home/zahran/Desktop/shareFolder/sqlData_likes_full_info_fixed_ONLY_TRUE_friendship' 
@@ -118,8 +118,8 @@ def getPvalueWithoutRanking(currentActionRank, keySortedProbs, probabilities):
     return cdf
         
         
-def updateChiSq(chiSqs, decisions, friendship, dKey):
-    expectedFreq = [0]*4
+def updateChiSq(chiSqs, chiSqs_expected, decisions, friendship, dKey):
+    
     for i in range(len(decisions)):        
         if(decisions[i] == 'OUTLIER' and friendship[i] == 'true'):
             chiSqs[dKey][0] += 1        
@@ -137,12 +137,12 @@ def updateChiSq(chiSqs, decisions, friendship, dKey):
     grandTotal = row0+row1
     
     
-    expectedFreq[0] = row0*col0/grandTotal
-    expectedFreq[1] = row0*col1/grandTotal
-    expectedFreq[2] = row1*col0/grandTotal
-    expectedFreq[3] = row1*col1/grandTotal
+    chiSqs_expected[dKey][0] = row0*col0/grandTotal
+    chiSqs_expected[dKey][1] = row0*col1/grandTotal
+    chiSqs_expected[dKey][2] = row1*col0/grandTotal
+    chiSqs_expected[dKey][3] = row1*col1/grandTotal
     
-    chis = chisquare(chiSqs[dKey], f_exp=expectedFreq, ddof=2)
+    chis = chisquare(chiSqs[dKey], f_exp=chiSqs_expected[dKey], ddof=2)
     return chis
     
     
@@ -151,12 +151,13 @@ def updateChiSq(chiSqs, decisions, friendship, dKey):
             
         
     
-def outlierDetection(testLines, coreId, startLine, endLine, store, true_mem_size, hyper2id, obj2id, Theta_zh, Psi_sz, count_z, smoothedProbs):
+def outlierDetection(testLines, coreId, startLine, endLine, q, store, true_mem_size, hyper2id, obj2id, Theta_zh, Psi_sz, count_z, smoothedProbs):
     myCnt = 0
     mylog = open(SEQ_FILE_PATH+'_ANAOMLY_ANALYSIS_'+str(coreId),'w')
     #seqFile = open(SEQ_FILE_PATH, 'r')
     #myMat = [[0 for x in range(2)] for y in range(2)]
     chiSqs = {'bon_rank':[0]*4, 'bon_noRank':[0]*4, 'holms_rank': [0]*4, 'holms_noRank':[0]*4}
+    chiSqs_expected = {'bon_rank':[0]*4, 'bon_noRank':[0]*4, 'holms_rank': [0]*4, 'holms_noRank':[0]*4}
     quota = endLine-startLine
     for t in range(startLine, endLine):
         tsLine = testLines[t]    
@@ -239,12 +240,13 @@ def outlierDetection(testLines, coreId, startLine, endLine, store, true_mem_size
             #chiSqs = {'bon_rank':[0]*4, 'bon_noRank':[0]*4, 'holms_rank': [0]*4, 'holms_noRank':[0]*4}
             mylog.write('\n')                                                    
         if(WITH_FB_INFO):
-            chi_bon_rank = updateChiSq(chiSqs, outlierVector_bonferroniWithRanks, frienship, 'bon_rank')
-            chi_bon_norank = updateChiSq(chiSqs, outlierVector_bonferroniWithoutRanks, frienship, 'bon_noRank')
-            chi_holms_rank = updateChiSq(chiSqs, outlierVector_holmsWithRanks, frienship, 'holms_rank')
-            chi_holms_norank = updateChiSq(chiSqs, outlierVector_holmsWithoutRanks, frienship, 'holms_noRank')
+            chi_bon_rank = updateChiSq(chiSqs, chiSqs_expected, outlierVector_bonferroniWithRanks, frienship, 'bon_rank')
+            chi_bon_norank = updateChiSq(chiSqs, chiSqs_expected, outlierVector_bonferroniWithoutRanks, frienship, 'bon_noRank')
+            chi_holms_rank = updateChiSq(chiSqs, chiSqs_expected, outlierVector_holmsWithRanks, frienship, 'holms_rank')
+            chi_holms_norank = updateChiSq(chiSqs, chiSqs_expected, outlierVector_holmsWithoutRanks, frienship, 'holms_noRank')
                   
-            mylog.write(str(chiSqs))
+            mylog.write('\npredictionCounts: '+str(chiSqs))
+            mylog.write('\nExpectedCounts:   '+str(chiSqs_expected))
             mylog.write(str('\n'+'chi_bon_rank: '+str(chi_bon_rank)))
             mylog.write(str('\n'+'chi_bon_norank: '+str(chi_bon_norank)))
             mylog.write(str('\n'+'chi_holms_rank: '+str(chi_holms_rank)))
@@ -252,9 +254,11 @@ def outlierDetection(testLines, coreId, startLine, endLine, store, true_mem_size
         mylog.write('\n\n')                        
         if(t%100 == 0):
             mylog.flush()
-        print('>>> proc: '+ str(coreId)+' finished '+ str(myCnt)+'/'+str(quota)+' instances ...')     
+        print('>>> proc: '+ str(coreId)+' finished '+ str(myCnt)+'/'+str(quota)+' instances ...')            
     mylog.close()
     #seqFile.close()
+    ret = [chiSqs, chiSqs_expected]
+    q.put(ret)
                                             
 def main():    
     store = pd.HDFStore(MODEL_PATH)     
@@ -282,10 +286,12 @@ def main():
     
     myProcs = []
     coreQuota = len(testLines) // CORES
+    
+    q = Queue()
     for i in range(CORES):        
         startLine = i*coreQuota
         endLine = min((i+1)*coreQuota, len(testLines))
-        p = Process(target=outlierDetection, args=(testLines, i, startLine, endLine, store, true_mem_size, hyper2id, obj2id, Theta_zh, Psi_sz, count_z, smoothedProbs))
+        p = Process(target=outlierDetection, args=(testLines, i, startLine, endLine, q , store, true_mem_size, hyper2id, obj2id, Theta_zh, Psi_sz, count_z, smoothedProbs))
         myProcs.append(p)
         print('>>> Starting process: '+str(i)+' start: '+str(startLine)+' end: '+str(endLine))
         p.start()
@@ -294,6 +300,34 @@ def main():
     for i in range(CORES):
         myProcs[i].join()
         print('>>> process: '+str(i)+' finished')
+    
+    
+    results = []
+    for i in range(CORES):
+        results.append(q.get(True))
+        
+    chiSqs = {'bon_rank':[0]*4, 'bon_noRank':[0]*4, 'holms_rank': [0]*4, 'holms_noRank':[0]*4}
+    chiSqs_expected = {'bon_rank':[0]*4, 'bon_noRank':[0]*4, 'holms_rank': [0]*4, 'holms_noRank':[0]*4}
+    techniques = chiSqs.keys()
+    
+    for res in results:
+        curr_chisq = res[0]
+        curr_chisq_exp = res[1]
+        for key in techniques:            
+            chiSqs[key] = np.add(chiSqs[key], curr_chisq[key])
+            chiSqs_expected[key] = np.add(chiSqs_expected[key], curr_chisq_exp[key])
+            
+    
+    w = open(SEQ_FILE_PATH+'_FINAL_ANALYSIS', 'w')
+    for key in techniques:       
+        chis = chisquare(chiSqs[key], f_exp=chiSqs_expected[key], ddof=2)
+        w.write('\nMethod: '+str(key))
+        w.write('\npredictionCounts: '+str(chiSqs[key]))
+        w.write('\nExpectedCounts:   '+str(chiSqs_expected[key]))
+        w.write(str('\n'+'Chi-Square: '+str(chis)))
+        w.write('\n')
+    w.close()
+        
         
         
     
