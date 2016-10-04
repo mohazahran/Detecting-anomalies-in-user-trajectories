@@ -26,8 +26,10 @@ import os.path
 CORES = 2
 ALPHA = 0.05
 MODEL_PATH = '/home/zahran/Desktop/shareFolder/PARSED_pins_repins_win10_noop_NoLeaveOut_pinterest.h5'
-SEQ_FILE_PATH = '/home/zahran/Desktop/shareFolder/sqlData_likes_full_info_fixed_ONLY_TRUE_friendship' 
-WITH_FB_INFO = True
+#SEQ_FILE_PATH = '/home/zahran/Desktop/shareFolder/sqlData_likes_full_info_fixed_ONLY_TRUE_friendship' 
+SEQ_FILE_PATH = '/home/zahran/Desktop/shareFolder/PARSED_pins_repins_win10_pinterest_INJECTED'
+WITH_FB_INFO = False
+WITH_INJECTIONS = True
 UNBIAS_CATS_WITH_FREQ = False
 smoothingParam = 1.0   #smootihng parameter for unbiasing item counts.
 STAT_FILE = '/home/zahran/Desktop/shareFolder/Stats'
@@ -74,6 +76,7 @@ def calculateSequenceProb(h, theSequence, true_mem_size, hyper2id, obj2id, Theta
         #print(seqProb, math.log(seqProb))
     return seqProb   
 
+
 def bonferroni_hypothesis_testing(keySortedPvalues, pValues):
     outlierVector = ['N/A']*len(keySortedPvalues)
     bonferroni_ALPHA = ALPHA/len(keySortedPvalues)
@@ -90,6 +93,7 @@ def bonferroni_hypothesis_testing(keySortedPvalues, pValues):
 #         return 'OUTLIER'
 #     return 'NORMAL'
 
+
 def holm_hypothesis_testing (keySortedPvalues, pValues):
     k = -1
     outlierVector = ['N/A']*len(keySortedPvalues)  
@@ -104,6 +108,7 @@ def holm_hypothesis_testing (keySortedPvalues, pValues):
         else:
             outlierVector[keySortedPvalues[i]] = 'NORMAL'
     return outlierVector
+ 
                               
 def getPvalueWithoutRanking(currentActionRank, keySortedProbs, probabilities):
     #normConst = 0.0
@@ -144,14 +149,129 @@ def updateChiSq(chiSqs, chiSqs_expected, decisions, friendship, dKey):
     
     chis = chisquare(chiSqs[dKey], f_exp=chiSqs_expected[dKey], ddof=2)
     return chis
+
+def updateResultStats(resStats, decisions, injectionMarkers, dKey):
+    #tp,fp,fn,tn
+    for i in range(len(decisions)):   
+        if(decisions[i] == 'OUTLIER' and injectionMarkers[i] == 'true'):
+            resStats[dKey][0] += 1        
+        elif(decisions[i] == 'OUTLIER' and injectionMarkers[i] == 'false'):
+            resStats[dKey][1] += 1
+        elif(decisions[i] == 'NORMAL' and injectionMarkers[i] == 'true'):
+            resStats[dKey][2] += 1
+        elif(decisions[i] == 'NORMAL' and injectionMarkers[i] == 'false'):
+            resStats[dKey][3] += 1
     
+    try:         
+        rec  = resStats[dKey][0]/(resStats[dKey][0] + resStats[dKey][2])
+        prec = resStats[dKey][0]/(resStats[dKey][0] + resStats[dKey][1])
+        fscore= (2*prec*rec) / (prec+rec)
+        return [rec, prec, fscore]
+    except:
+        return [0,0,0]
     
-    
-    
-            
+
+def outlierDetection_InjectionAnalysis(testLines, coreId, startLine, endLine, q, store, true_mem_size, hyper2id, obj2id, Theta_zh, Psi_sz, count_z, smoothedProbs):
+    myCnt = 0
+    mylog = open(SEQ_FILE_PATH+'_ANAOMLY_ANALYSIS_'+str(coreId),'w')    
+    quota = endLine-startLine
+    #tp,fp,fn,tn
+    resStats = {'bon_rank':[0]*4, 'bon_noRank':[0]*4, 'holms_rank': [0]*4, 'holms_noRank':[0]*4}
+    for t in range(startLine, endLine):
+        tsLine = testLines[t]    
+        myCnt += 1               
+        tmp = tsLine.strip().split('\t') 
+        user = tmp[0]
+      
+        if(user not in hyper2id):            
+            mylog.write('User: '+str(user)+' is not found in trainingSet !\n')          
+            continue
+              
+        seq = tmp[1:true_mem_size+2]
+        injectionMarkers = tmp[true_mem_size+2:]            
+                 
+        actions = obj2id.keys()                  
+        pValuesWithRanks = {}
+        pValuesWithoutRanks = {}
+        for i in range(len(seq)): #for all actions in the sequence.
+            #Take the action with index i and replace it with all possible actions             
+            probabilities = {}
+            scores = {}        
+            newSeq = list(seq)                        
+            currentActionId = obj2id[newSeq[i]] #current action id
+            currentActionIndex = actions.index(newSeq[i])# the current action index in the action list.
+            #cal scores (an un-normalized sequence prob in tribeflow)
+            normalizingConst = 0
+            for j in range(len(actions)): #for all possible actions that can replace the current action
+                del newSeq[i]                
+                newSeq.insert(i, actions[j])                
+                seqScore = calculateSequenceProb(user, newSeq, true_mem_size, hyper2id, obj2id, Theta_zh, Psi_sz, count_z)
+                if(UNBIAS_CATS_WITH_FREQ):
+                    if(actions[j] in smoothedProbs):
+                        unbiasingProb = smoothedProbs[actions[j]]                    
+                        seqScore = seqScore/unbiasingProb
+                    else:
+                        print ('cannot unbias: '+actions[j])
+                    
+                scores[j] = seqScore
+                normalizingConst += seqScore
+            #cal probabilities
+            for j in range(len(actions)): #for all possible actions that can replace the current action
+                probabilities[j] = scores[j]/normalizingConst
+            #sorting ascendingly
+            keySortedProbs = sorted(probabilities, key=lambda k: (-probabilities[k], k), reverse=True)
+            currentActionRank = keySortedProbs.index(currentActionIndex)
+            currentActionPvalueWithoutRanks = getPvalueWithoutRanking(currentActionRank, keySortedProbs, probabilities)
+            currentActionPvalueWithRanks = float(currentActionRank+1)/float(len(actions))
+            pValuesWithRanks[i] = currentActionPvalueWithRanks
+            pValuesWithoutRanks[i] = currentActionPvalueWithoutRanks
+                    
+        keySortedPvaluesWithRanks = sorted(pValuesWithRanks, key=lambda k: (-pValuesWithRanks[k], k), reverse=True)
+        keySortedPvaluesWithoutRanks = sorted(pValuesWithoutRanks, key=lambda k: (-pValuesWithoutRanks[k], k), reverse=True)
+
+        outlierVector_bonferroniWithRanks = bonferroni_hypothesis_testing(keySortedPvaluesWithRanks, pValuesWithRanks)
+        outlierVector_bonferroniWithoutRanks = bonferroni_hypothesis_testing(keySortedPvaluesWithoutRanks, pValuesWithoutRanks)
+        #outlierFlag = holm_hypothesis_testing(pValues[k], len(seq), idx)
+        outlierVector_holmsWithRanks = holm_hypothesis_testing(keySortedPvaluesWithRanks, pValuesWithRanks)
+        outlierVector_holmsWithoutRanks = holm_hypothesis_testing(keySortedPvaluesWithoutRanks, pValuesWithoutRanks)
         
+        res_bon_rank = updateResultStats(resStats, outlierVector_bonferroniWithRanks, injectionMarkers, 'bon_rank')
+        res_bon_noRank = updateResultStats(resStats, outlierVector_bonferroniWithoutRanks, injectionMarkers, 'bon_noRank')
+        res_holms_rank = updateResultStats(resStats, outlierVector_holmsWithRanks, injectionMarkers, 'holms_rank')
+        res_holms_noRank = updateResultStats(resStats, outlierVector_holmsWithoutRanks, injectionMarkers, 'holms_noRank')
+        
+        #print(len(seq))
+        #print(len(frienship)
+        mylog.write('userId: '+str(tmp[0])+'\n')
+        mylog.write('Action pvalue_with_ranks bonferroni_withRanks holms_withRanks pValues_withoutRanks holms_withRanks bonferroni_withoutRanks holms_withoutRanks\n')
+        for x in range(0,len(seq)):           
+            mylog.write('||'+str(seq[x])+'|| INJECTION: '+str(injectionMarkers[x])+'|| ')                                                                
+            mylog.write(str(pValuesWithRanks[x])+' ')
+            mylog.write(str(outlierVector_bonferroniWithRanks[x])+' ')
+            mylog.write(str(outlierVector_holmsWithRanks[x])+' ')
+            mylog.write(str(pValuesWithoutRanks[x])+' ')
+            mylog.write(str(outlierVector_bonferroniWithoutRanks[x])+' ')
+            mylog.write(str(outlierVector_holmsWithoutRanks[x])+' ')
+            
+            #chiSqs = {'bon_rank':[0]*4, 'bon_noRank':[0]*4, 'holms_rank': [0]*4, 'holms_noRank':[0]*4}
+            mylog.write('\n')                                                    
+        
+        mylog.write(str('\n'+'res_bon_rank: '+str(res_bon_rank)))
+        mylog.write(str('\n'+'res_bon_norank: '+str(res_bon_noRank)))
+        mylog.write(str('\n'+'res_holms_rank: '+str(res_holms_rank)))
+        mylog.write(str('\n'+'res_holms_norank: '+str(res_holms_noRank)))
+                
+        mylog.write('\n\n')                        
+        if(t%100 == 0):
+            mylog.flush()
+        print('>>> proc: '+ str(coreId)+' finished '+ str(myCnt)+'/'+str(quota)+' instances ...')            
+    mylog.close()
+    #seqFile.close()
+    ret = resStats
+    q.put(ret)
+
     
-def outlierDetection(testLines, coreId, startLine, endLine, q, store, true_mem_size, hyper2id, obj2id, Theta_zh, Psi_sz, count_z, smoothedProbs):
+def outlierDetection_FBanalysis(testLines, coreId, startLine, endLine, q, store, true_mem_size, hyper2id, obj2id, Theta_zh, Psi_sz, count_z, smoothedProbs):
     myCnt = 0
     mylog = open(SEQ_FILE_PATH+'_ANAOMLY_ANALYSIS_'+str(coreId),'w')
     #seqFile = open(SEQ_FILE_PATH, 'r')
@@ -260,7 +380,65 @@ def outlierDetection(testLines, coreId, startLine, endLine, q, store, true_mem_s
     ret = [chiSqs, chiSqs_expected]
     q.put(ret)
                                             
-def main():    
+                                            
+def calculatingItemsFreq(trace_fpath, true_mem_size):
+    smoothedProbs = {}    
+    if os.path.isfile(STAT_FILE):
+        r = open(STAT_FILE, 'r')
+        for line in r:
+            parts = line.strip().split('\t')                
+            smoothedProbs[parts[0]] = float(parts[1])                    
+        return smoothedProbs
+    
+    freqs = {}            
+    r = open(trace_fpath)
+    counts = 0
+    for line in r:
+        cats = line.strip().split('\t')[true_mem_size+1:]
+        for c in cats:
+            if(c in freqs):
+                freqs[c] += 1
+            else:
+                freqs[c] = 1                
+            counts += 1
+    for k in freqs:
+        prob = float(freqs[k]+ smoothingParam) / float(counts + (len(freqs) * smoothingParam))
+        smoothedProbs[k] = prob
+    
+    w = open(STAT_FILE, 'w')
+    for key in smoothedProbs:
+        w.write(key+'\t'+str(smoothedProbs[key])+'\n')
+    w.close()
+    return smoothedProbs
+    
+                
+def createTestingSeqFile(store):
+    from_ = store['from_'][0][0]
+    to = store['to'][0][0]
+    trace_fpath = store['trace_fpath']
+    Dts = store['Dts']
+    winSize = Dts.shape[1]
+    tpath = '/home/zahran/Desktop/tribeFlow/zahranData/pinterest/test_traceFile_win5'
+    w = open(tpath,'w')
+    r = open(trace_fpath[0][0],'r')
+    
+    cnt = 0
+    for line in r:
+        if(cnt > to):
+            p = line.strip().split('\t')
+            usr = p[winSize]
+            sq = p[winSize+1:]
+            w.write(str(usr)+'\t')
+            for s in sq:
+                w.write(s+'\t')
+            w.write('\n')
+        cnt += 1
+    w.close()
+    r.close()
+    return tpath                                            
+                                            
+                                            
+def doFbAnalysis():
     store = pd.HDFStore(MODEL_PATH)     
     
     
@@ -291,7 +469,7 @@ def main():
     for i in range(CORES):        
         startLine = i*coreQuota
         endLine = min((i+1)*coreQuota, len(testLines))
-        p = Process(target=outlierDetection, args=(testLines, i, startLine, endLine, q , store, true_mem_size, hyper2id, obj2id, Theta_zh, Psi_sz, count_z, smoothedProbs))
+        p = Process(target=outlierDetection_FBanalysis, args=(testLines, i, startLine, endLine, q , store, true_mem_size, hyper2id, obj2id, Theta_zh, Psi_sz, count_z, smoothedProbs))
         myProcs.append(p)
         print('>>> Starting process: '+str(i)+' start: '+str(startLine)+' end: '+str(endLine))
         p.start()
@@ -327,96 +505,92 @@ def main():
         w.write(str('\n'+'Chi-Square: '+str(chis)))
         w.write('\n')
     w.close()
-        
-        
-        
-    
-    
-            
-    #calculateSequenceProb(SEQ_FILE_PATH, store, true_mem_size, hyper2id, obj2id, Theta_zh, Psi_sz, count_z)
+                            
     print('\n>>> All DONE!')
     store.close()
-    
 
-# def divideUpTestFile():
-#     testData = []
-#     totalCount = 0
-#     r = open(SEQ_FILE_PATH, 'r')    
-#     for line in r:
-#         totalCount += 1
-#     r.close()
-#     
-#     coreQuota = totalCount // CORES
-#     r = open(SEQ_FILE_PATH, 'r')
-#     cnt = 0    
-#     test = []
-#     for line in r:
-#         if(cnt < coreQuota):
-#             test.append(line)
-#             
-#         totalCount += 1
-#     r.close()
-        
 
-def calculatingItemsFreq(trace_fpath, true_mem_size):
-    smoothedProbs = {}    
-    if os.path.isfile(STAT_FILE):
-        r = open(STAT_FILE, 'r')
-        for line in r:
-            parts = line.strip().split('\t')                
-            smoothedProbs[parts[0]] = float(parts[1])                    
-        return smoothedProbs
-    
-    freqs = {}            
-    r = open(trace_fpath)
-    counts = 0
-    for line in r:
-        cats = line.strip().split('\t')[true_mem_size+1:]
-        for c in cats:
-            if(c in freqs):
-                freqs[c] += 1
-            else:
-                freqs[c] = 1                
-            counts += 1
-    for k in freqs:
-        prob = float(freqs[k]+ smoothingParam) / float(counts + (len(freqs) * smoothingParam))
-        smoothedProbs[k] = prob
-    
-    w = open(STAT_FILE, 'w')
-    for key in smoothedProbs:
-        w.write(key+'\t'+str(smoothedProbs[key])+'\n')
-    w.close()
-    return smoothedProbs
-    
-                
-    
-    
-        
-   
-def createTestingSeqFile(store):
-    from_ = store['from_'][0][0]
-    to = store['to'][0][0]
-    trace_fpath = store['trace_fpath']
-    Dts = store['Dts']
-    winSize = Dts.shape[1]
-    tpath = '/home/zahran/Desktop/tribeFlow/zahranData/pinterest/test_traceFile_win5'
-    w = open(tpath,'w')
-    r = open(trace_fpath[0][0],'r')
-    
-    cnt = 0
-    for line in r:
-        if(cnt > to):
-            p = line.strip().split('\t')
-            usr = p[winSize]
-            sq = p[winSize+1:]
-            w.write(str(usr)+'\t')
-            for s in sq:
-                w.write(s+'\t')
-            w.write('\n')
-        cnt += 1
-    w.close()
+def doInjectionAnalysis():
+    store = pd.HDFStore(MODEL_PATH)     
+
+    r = open(SEQ_FILE_PATH, 'r')    
+    testLines = r.readlines()    
     r.close()
-    return tpath
+                
+       
+    Theta_zh = store['Theta_zh'].values
+    Psi_sz = store['Psi_sz'].values
+    count_z = store['count_z'].values[:, 0]   
+    true_mem_size = store['Dts'].values.shape[1]    
+    hyper2id = dict(store['hyper2id'].values)
+    obj2id = dict(store['source2id'].values)    
+    trace_fpath = store['trace_fpath'][0][0]
+   
+    smoothedProbs = {}
+    if(UNBIAS_CATS_WITH_FREQ):
+        print('>>> calculating statistics for unbiasing categories ...')
+        smoothedProbs = calculatingItemsFreq(trace_fpath, true_mem_size)
+        
+    
+    myProcs = []
+    #coreQuota = len(testLines) // CORES
+    coreQuota = 8 // CORES
+    
+    q = Queue()
+    for i in range(CORES):        
+        startLine = i*coreQuota
+        endLine = min((i+1)*coreQuota, len(testLines))
+        #outlierDetection_InjectionAnalysis(testLines, i, startLine, endLine, q , store, true_mem_size, hyper2id, obj2id, Theta_zh, Psi_sz, count_z, smoothedProbs)
+        p = Process(target=outlierDetection_InjectionAnalysis, args=(testLines, i, startLine, endLine, q , store, true_mem_size, hyper2id, obj2id, Theta_zh, Psi_sz, count_z, smoothedProbs))
+        myProcs.append(p)
+        print('>>> Starting process: '+str(i)+' start: '+str(startLine)+' end: '+str(endLine))
+        p.start()
+        
+        
+    for i in range(CORES):
+        myProcs[i].join()
+        print('>>> process: '+str(i)+' finished')
+    
+    
+    results = []
+    for i in range(CORES):
+        results.append(q.get(True))   
+    
+    resultStat = {'bon_rank':[0]*4, 'bon_noRank':[0]*4, 'holms_rank': [0]*4, 'holms_noRank':[0]*4}    
+    techniques = resultStat.keys()
+    
+    for res in results:            
+        for key in techniques:            
+            resultStat[key] = np.add(resultStat[key], res[key])
+                    
+    
+    w = open(SEQ_FILE_PATH+'_FINAL_ANALYSIS', 'w')
+    for key in techniques:               
+        w.write('\nMethod: '+str(key))
+        w.write('\ntp,fp,fn,tn: '+str(resultStat[key]))
+        try:         
+            rec  = resultStat[key][0]/(resultStat[key][0] + resultStat[key][2])
+            prec = resultStat[key][0]/(resultStat[key][0] + resultStat[key][1])
+            fscore= (2*prec*rec) / (prec+rec)
+            w.write('\nrecall   : '+str(rec))
+            w.write('\nprecision: '+str(prec))
+            w.write('\nfscore   : '+str(fscore))
+        except:
+            w.write('\nrecall   : '+str(0))
+            w.write('\nprecision: '+str(0))
+            w.write('\nfscore   : '+str(0))       
+        w.write('\n')
+    w.close()
+                            
+    print('\n>>> All DONE!')
+    store.close()
+                                       
+def main():   
+    #doFbAnalysis() 
+    doInjectionAnalysis()
+  
+    
+
      
 plac.call(main)
 print('DONE!')
