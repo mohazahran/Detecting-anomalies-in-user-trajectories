@@ -533,8 +533,7 @@ def doInjectionAnalysis():
         
     
     myProcs = []
-    #coreQuota = len(testLines) // CORES
-    coreQuota = 8 // CORES
+    coreQuota = len(testLines) // CORES
     
     q = Queue()
     for i in range(CORES):        
