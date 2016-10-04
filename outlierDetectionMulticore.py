@@ -568,8 +568,8 @@ def doInjectionAnalysis():
         w.write('\nMethod: '+str(key))
         w.write('\ntp,fp,fn,tn: '+str(resultStat[key]))
         try:         
-            rec  = resultStat[key][0]/(resultStat[key][0] + resultStat[key][2])
-            prec = resultStat[key][0]/(resultStat[key][0] + resultStat[key][1])
+            rec  = float(resultStat[key][0]) / float(resultStat[key][0] + resultStat[key][2])
+            prec = float(resultStat[key][0]) / float(resultStat[key][0] + resultStat[key][1])
             fscore= (2*prec*rec) / (prec+rec)
             w.write('\nrecall   : '+str(rec))
             w.write('\nprecision: '+str(prec))
