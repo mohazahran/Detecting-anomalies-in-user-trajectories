@@ -25,7 +25,7 @@ import os.path
 
 CORES = 2
 ALPHA_NORANKING = 0.0000005
-ALPHA_RANKING = 0.9
+ALPHA_RANKING = 5
 MODEL_PATH = '/home/zahran/Desktop/shareFolder/PARSED_pins_repins_win10_noop_NoLeaveOut_pinterest.h5'
 #SEQ_FILE_PATH = '/home/zahran/Desktop/shareFolder/sqlData_likes_full_info_fixed_ONLY_TRUE_friendship' 
 SEQ_FILE_PATH = '/home/zahran/Desktop/shareFolder/PARSED_pins_repins_win10_pinterest_INJECTED'
@@ -84,7 +84,7 @@ def bonferroni_hypothesis_testing(keySortedPvalues, pValues, pvalType):
     else:
         ALPHA = ALPHA_NORANKING
     outlierVector = ['N/A']*len(keySortedPvalues)
-    bonferroni_ALPHA = ALPHA/len(keySortedPvalues)
+    bonferroni_ALPHA = float(ALPHA)/float(len(keySortedPvalues))
     for i in range(len(keySortedPvalues)):
         if(pValues[keySortedPvalues[i]] <= bonferroni_ALPHA):
             outlierVector[keySortedPvalues[i]] = 'OUTLIER' # rejecting H0 (i.e rejecting that the action is normal ==> outlier)
@@ -107,7 +107,7 @@ def holm_hypothesis_testing (keySortedPvalues, pValues, pvalType):
     k = -1
     outlierVector = ['N/A']*len(keySortedPvalues)  
     for i in range(len(keySortedPvalues)):
-        val = ALPHA/(len(keySortedPvalues)-i)
+        val = float(ALPHA)/float((len(keySortedPvalues)-i))
         if(pValues[keySortedPvalues[i]] > val):
             k = i
             break
@@ -151,10 +151,10 @@ def updateChiSq(chiSqs, chiSqs_expected, decisions, friendship, dKey):
     grandTotal = row0+row1
     
     
-    chiSqs_expected[dKey][0] = row0*col0/grandTotal
-    chiSqs_expected[dKey][1] = row0*col1/grandTotal
-    chiSqs_expected[dKey][2] = row1*col0/grandTotal
-    chiSqs_expected[dKey][3] = row1*col1/grandTotal
+    chiSqs_expected[dKey][0] = float(row0*col0)/float(grandTotal)
+    chiSqs_expected[dKey][1] = float(row0*col1)/float(grandTotal)
+    chiSqs_expected[dKey][2] = float(row1*col0)/float(grandTotal)
+    chiSqs_expected[dKey][3] = float(row1*col1)/float(grandTotal)
     
     chis = chisquare(chiSqs[dKey], f_exp=chiSqs_expected[dKey], ddof=2)
     return chis
@@ -172,8 +172,8 @@ def updateResultStats(resStats, decisions, injectionMarkers, dKey):
             resStats[dKey][3] += 1
     
     try:         
-        rec  = resStats[dKey][0]/(resStats[dKey][0] + resStats[dKey][2])
-        prec = resStats[dKey][0]/(resStats[dKey][0] + resStats[dKey][1])
+        rec  = float(resStats[dKey][0])/float(resStats[dKey][0] + resStats[dKey][2])
+        prec = float(resStats[dKey][0])/float(resStats[dKey][0] + resStats[dKey][1])
         fscore= (2*prec*rec) / (prec+rec)
         return [rec, prec, fscore]
     except:
@@ -218,7 +218,7 @@ def outlierDetection_InjectionAnalysis(testLines, coreId, startLine, endLine, q,
                 if(UNBIAS_CATS_WITH_FREQ):
                     if(actions[j] in smoothedProbs):
                         unbiasingProb = smoothedProbs[actions[j]]                    
-                        seqScore = seqScore/unbiasingProb
+                        seqScore = float(seqScore)/float(unbiasingProb)
                     else:
                         print ('cannot unbias: '+actions[j])
                     
@@ -226,7 +226,7 @@ def outlierDetection_InjectionAnalysis(testLines, coreId, startLine, endLine, q,
                 normalizingConst += seqScore
             #cal probabilities
             for j in range(len(actions)): #for all possible actions that can replace the current action
-                probabilities[j] = scores[j]/normalizingConst
+                probabilities[j] = float(scores[j])/float(normalizingConst)
             #sorting ascendingly
             keySortedProbs = sorted(probabilities, key=lambda k: (-probabilities[k], k), reverse=True)
             currentActionRank = keySortedProbs.index(currentActionIndex)
@@ -323,7 +323,7 @@ def outlierDetection_FBanalysis(testLines, coreId, startLine, endLine, q, store,
                 if(UNBIAS_CATS_WITH_FREQ):
                     if(actions[j] in smoothedProbs):
                         unbiasingProb = smoothedProbs[actions[j]]                    
-                        seqScore = seqScore/unbiasingProb
+                        seqScore = float(seqScore)/float(unbiasingProb)
                     else:
                         print ('cannot unbias: '+actions[j])
                     
@@ -331,7 +331,7 @@ def outlierDetection_FBanalysis(testLines, coreId, startLine, endLine, q, store,
                 normalizingConst += seqScore
             #cal probabilities
             for j in range(len(actions)): #for all possible actions that can replace the current action
-                probabilities[j] = scores[j]/normalizingConst
+                probabilities[j] = float(scores[j])/float(normalizingConst)
             #sorting ascendingly
             keySortedProbs = sorted(probabilities, key=lambda k: (-probabilities[k], k), reverse=True)
             currentActionRank = keySortedProbs.index(currentActionIndex)
