@@ -24,7 +24,8 @@ import math
 import os.path
 
 CORES = 2
-ALPHA = 0.05
+ALPHA_NORANKING = 0.0000005
+ALPHA_RANKING = 0.9
 MODEL_PATH = '/home/zahran/Desktop/shareFolder/PARSED_pins_repins_win10_noop_NoLeaveOut_pinterest.h5'
 #SEQ_FILE_PATH = '/home/zahran/Desktop/shareFolder/sqlData_likes_full_info_fixed_ONLY_TRUE_friendship' 
 SEQ_FILE_PATH = '/home/zahran/Desktop/shareFolder/PARSED_pins_repins_win10_pinterest_INJECTED'
@@ -77,7 +78,11 @@ def calculateSequenceProb(h, theSequence, true_mem_size, hyper2id, obj2id, Theta
     return seqProb   
 
 
-def bonferroni_hypothesis_testing(keySortedPvalues, pValues):
+def bonferroni_hypothesis_testing(keySortedPvalues, pValues, pvalType):
+    if(pvalType == 'RANKING'):
+        ALPHA = ALPHA_RANKING
+    else:
+        ALPHA = ALPHA_NORANKING
     outlierVector = ['N/A']*len(keySortedPvalues)
     bonferroni_ALPHA = ALPHA/len(keySortedPvalues)
     for i in range(len(keySortedPvalues)):
@@ -94,7 +99,11 @@ def bonferroni_hypothesis_testing(keySortedPvalues, pValues):
 #     return 'NORMAL'
 
 
-def holm_hypothesis_testing (keySortedPvalues, pValues):
+def holm_hypothesis_testing (keySortedPvalues, pValues, pvalType):
+    if(pvalType == 'RANKING'):
+        ALPHA = ALPHA_RANKING
+    else:
+        ALPHA = ALPHA_NORANKING
     k = -1
     outlierVector = ['N/A']*len(keySortedPvalues)  
     for i in range(len(keySortedPvalues)):
@@ -229,11 +238,11 @@ def outlierDetection_InjectionAnalysis(testLines, coreId, startLine, endLine, q,
         keySortedPvaluesWithRanks = sorted(pValuesWithRanks, key=lambda k: (-pValuesWithRanks[k], k), reverse=True)
         keySortedPvaluesWithoutRanks = sorted(pValuesWithoutRanks, key=lambda k: (-pValuesWithoutRanks[k], k), reverse=True)
 
-        outlierVector_bonferroniWithRanks = bonferroni_hypothesis_testing(keySortedPvaluesWithRanks, pValuesWithRanks)
-        outlierVector_bonferroniWithoutRanks = bonferroni_hypothesis_testing(keySortedPvaluesWithoutRanks, pValuesWithoutRanks)
+        outlierVector_bonferroniWithRanks = bonferroni_hypothesis_testing(keySortedPvaluesWithRanks, pValuesWithRanks, 'RANKING')
+        outlierVector_bonferroniWithoutRanks = bonferroni_hypothesis_testing(keySortedPvaluesWithoutRanks, pValuesWithoutRanks, 'NORANKING')
         #outlierFlag = holm_hypothesis_testing(pValues[k], len(seq), idx)
-        outlierVector_holmsWithRanks = holm_hypothesis_testing(keySortedPvaluesWithRanks, pValuesWithRanks)
-        outlierVector_holmsWithoutRanks = holm_hypothesis_testing(keySortedPvaluesWithoutRanks, pValuesWithoutRanks)
+        outlierVector_holmsWithRanks = holm_hypothesis_testing(keySortedPvaluesWithRanks, pValuesWithRanks, 'RANKING')
+        outlierVector_holmsWithoutRanks = holm_hypothesis_testing(keySortedPvaluesWithoutRanks, pValuesWithoutRanks, 'NORANKING')
         
         res_bon_rank = updateResultStats(resStats, outlierVector_bonferroniWithRanks, injectionMarkers, 'bon_rank')
         res_bon_noRank = updateResultStats(resStats, outlierVector_bonferroniWithoutRanks, injectionMarkers, 'bon_noRank')
@@ -534,6 +543,7 @@ def doInjectionAnalysis():
     
     myProcs = []
     coreQuota = len(testLines) // CORES
+    #coreQuota = 8 // CORES
     
     q = Queue()
     for i in range(CORES):        
@@ -568,8 +578,8 @@ def doInjectionAnalysis():
         w.write('\nMethod: '+str(key))
         w.write('\ntp,fp,fn,tn: '+str(resultStat[key]))
         try:         
-            rec  = float(resultStat[key][0]) / float(resultStat[key][0] + resultStat[key][2])
-            prec = float(resultStat[key][0]) / float(resultStat[key][0] + resultStat[key][1])
+            rec  = float(resultStat[key][0])/float(resultStat[key][0] + resultStat[key][2])
+            prec = float(resultStat[key][0])/float(resultStat[key][0] + resultStat[key][1])
             fscore= (2*prec*rec) / (prec+rec)
             w.write('\nrecall   : '+str(rec))
             w.write('\nprecision: '+str(prec))
