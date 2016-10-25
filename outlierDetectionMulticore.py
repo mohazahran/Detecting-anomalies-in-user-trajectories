@@ -26,9 +26,11 @@ import os.path
 CORES = 2
 ALPHA_NORANKING = 0.0000005
 ALPHA_RANKING = 5
+
 MODEL_PATH = '/home/zahran/Desktop/shareFolder/PARSED_pins_repins_win10_noop_NoLeaveOut_pinterest.h5'
 #SEQ_FILE_PATH = '/home/zahran/Desktop/shareFolder/sqlData_likes_full_info_fixed_ONLY_TRUE_friendship' 
 SEQ_FILE_PATH = '/home/zahran/Desktop/shareFolder/PARSED_pins_repins_win10_pinterest_INJECTED'
+TESTSET_COUNT_ADJUST = False
 WITH_FB_INFO = False
 WITH_INJECTIONS = True
 UNBIAS_CATS_WITH_FREQ = False
@@ -78,13 +80,15 @@ def calculateSequenceProb(h, theSequence, true_mem_size, hyper2id, obj2id, Theta
     return seqProb   
 
 
-def bonferroni_hypothesis_testing(keySortedPvalues, pValues, pvalType):
+def bonferroni_hypothesis_testing(keySortedPvalues, pValues, pvalType, testsetlen):
     if(pvalType == 'RANKING'):
         ALPHA = ALPHA_RANKING
     else:
         ALPHA = ALPHA_NORANKING
     outlierVector = ['N/A']*len(keySortedPvalues)
     bonferroni_ALPHA = float(ALPHA)/float(len(keySortedPvalues))
+    if(TESTSET_COUNT_ADJUST == True):
+        bonferroni_ALPHA = bonferroni_ALPHA / float(testsetlen)
     for i in range(len(keySortedPvalues)):
         if(pValues[keySortedPvalues[i]] <= bonferroni_ALPHA):
             outlierVector[keySortedPvalues[i]] = 'OUTLIER' # rejecting H0 (i.e rejecting that the action is normal ==> outlier)
@@ -99,7 +103,7 @@ def bonferroni_hypothesis_testing(keySortedPvalues, pValues, pvalType):
 #     return 'NORMAL'
 
 
-def holm_hypothesis_testing (keySortedPvalues, pValues, pvalType):
+def holm_hypothesis_testing (keySortedPvalues, pValues, pvalType, testsetlen):
     if(pvalType == 'RANKING'):
         ALPHA = ALPHA_RANKING
     else:
@@ -107,7 +111,10 @@ def holm_hypothesis_testing (keySortedPvalues, pValues, pvalType):
     k = -1
     outlierVector = ['N/A']*len(keySortedPvalues)  
     for i in range(len(keySortedPvalues)):
-        val = float(ALPHA)/float((len(keySortedPvalues)-i))
+        if(TESTSET_COUNT_ADJUST == True):
+            val = float(ALPHA)/float(((len(keySortedPvalues)*testsetlen)-i))
+        else:            
+            val = float(ALPHA)/float((len(keySortedPvalues)-i))
         if(pValues[keySortedPvalues[i]] > val):
             k = i
             break
@@ -238,10 +245,10 @@ def outlierDetection_InjectionAnalysis(testLines, coreId, startLine, endLine, q,
         keySortedPvaluesWithRanks = sorted(pValuesWithRanks, key=lambda k: (-pValuesWithRanks[k], k), reverse=True)
         keySortedPvaluesWithoutRanks = sorted(pValuesWithoutRanks, key=lambda k: (-pValuesWithoutRanks[k], k), reverse=True)
 
-        outlierVector_bonferroniWithRanks = bonferroni_hypothesis_testing(keySortedPvaluesWithRanks, pValuesWithRanks, 'RANKING')
-        outlierVector_bonferroniWithoutRanks = bonferroni_hypothesis_testing(keySortedPvaluesWithoutRanks, pValuesWithoutRanks, 'NORANKING')        
-        outlierVector_holmsWithRanks = holm_hypothesis_testing(keySortedPvaluesWithRanks, pValuesWithRanks, 'RANKING')
-        outlierVector_holmsWithoutRanks = holm_hypothesis_testing(keySortedPvaluesWithoutRanks, pValuesWithoutRanks, 'NORANKING')
+        outlierVector_bonferroniWithRanks = bonferroni_hypothesis_testing(keySortedPvaluesWithRanks, pValuesWithRanks, 'RANKING', len(testLines))
+        outlierVector_bonferroniWithoutRanks = bonferroni_hypothesis_testing(keySortedPvaluesWithoutRanks, pValuesWithoutRanks, 'NORANKING', len(testLines))        
+        outlierVector_holmsWithRanks = holm_hypothesis_testing(keySortedPvaluesWithRanks, pValuesWithRanks, 'RANKING', len(testLines))
+        outlierVector_holmsWithoutRanks = holm_hypothesis_testing(keySortedPvaluesWithoutRanks, pValuesWithoutRanks, 'NORANKING', len(testLines))
         
         res_bon_rank = updateResultStats(resStats, outlierVector_bonferroniWithRanks, injectionMarkers, 'bon_rank')
         res_bon_noRank = updateResultStats(resStats, outlierVector_bonferroniWithoutRanks, injectionMarkers, 'bon_noRank')
@@ -342,10 +349,10 @@ def outlierDetection_FBanalysis(testLines, coreId, startLine, endLine, q, store,
         keySortedPvaluesWithRanks = sorted(pValuesWithRanks, key=lambda k: (-pValuesWithRanks[k], k), reverse=True)
         keySortedPvaluesWithoutRanks = sorted(pValuesWithoutRanks, key=lambda k: (-pValuesWithoutRanks[k], k), reverse=True)
 
-        outlierVector_bonferroniWithRanks = bonferroni_hypothesis_testing(keySortedPvaluesWithRanks, pValuesWithRanks, 'RANKING')
-        outlierVector_bonferroniWithoutRanks = bonferroni_hypothesis_testing(keySortedPvaluesWithoutRanks, pValuesWithoutRanks, 'NORANKING')        
-        outlierVector_holmsWithRanks = holm_hypothesis_testing(keySortedPvaluesWithRanks, pValuesWithRanks, 'RANKING')
-        outlierVector_holmsWithoutRanks = holm_hypothesis_testing(keySortedPvaluesWithoutRanks, pValuesWithoutRanks, 'NORANKING')
+        outlierVector_bonferroniWithRanks = bonferroni_hypothesis_testing(keySortedPvaluesWithRanks, pValuesWithRanks, 'RANKING', len(testLines))
+        outlierVector_bonferroniWithoutRanks = bonferroni_hypothesis_testing(keySortedPvaluesWithoutRanks, pValuesWithoutRanks, 'NORANKING', len(testLines))        
+        outlierVector_holmsWithRanks = holm_hypothesis_testing(keySortedPvaluesWithRanks, pValuesWithRanks, 'RANKING', len(testLines))
+        outlierVector_holmsWithoutRanks = holm_hypothesis_testing(keySortedPvaluesWithoutRanks, pValuesWithoutRanks, 'NORANKING', len(testLines))
         
         #print(len(seq))
         #print(len(frienship)
