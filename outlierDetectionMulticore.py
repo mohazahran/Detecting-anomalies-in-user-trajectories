@@ -33,7 +33,7 @@ SEQ_FILE_PATH = '/home/zahran/Desktop/shareFolder/PARSED_pins_repins_win10_pinte
 TESTSET_COUNT_ADJUST = False
 WITH_FB_INFO = False
 WITH_INJECTIONS = True
-UNBIAS_CATS_WITH_FREQ = False
+UNBIAS_CATS_WITH_FREQ = True
 smoothingParam = 1.0   #smootihng parameter for unbiasing item counts.
 STAT_FILE = '/home/zahran/Desktop/shareFolder/Stats'
 
@@ -223,11 +223,12 @@ def outlierDetection_InjectionAnalysis(testLines, coreId, startLine, endLine, q,
                 newSeq.insert(i, actions[j])                
                 seqScore = calculateSequenceProb(user, newSeq, true_mem_size, hyper2id, obj2id, Theta_zh, Psi_sz, count_z)
                 if(UNBIAS_CATS_WITH_FREQ):
-                    if(actions[j] in smoothedProbs):
-                        unbiasingProb = smoothedProbs[actions[j]]                    
-                        seqScore = float(seqScore)/float(unbiasingProb)
-                    else:
-                        print ('cannot unbias: '+actions[j])
+                    unbiasingProb = 1.0
+                    for ac in newSeq:
+                        if(ac in smoothedProbs):
+                            unbiasingProb *= smoothedProbs[ac]                                         
+                    seqScore = float(seqScore)/float(unbiasingProb)
+                        
                     
                 scores[j] = seqScore
                 normalizingConst += seqScore
@@ -327,11 +328,11 @@ def outlierDetection_FBanalysis(testLines, coreId, startLine, endLine, q, store,
                 newSeq.insert(i, actions[j])                
                 seqScore = calculateSequenceProb(user, newSeq, true_mem_size, hyper2id, obj2id, Theta_zh, Psi_sz, count_z)
                 if(UNBIAS_CATS_WITH_FREQ):
-                    if(actions[j] in smoothedProbs):
-                        unbiasingProb = smoothedProbs[actions[j]]                    
-                        seqScore = float(seqScore)/float(unbiasingProb)
-                    else:
-                        print ('cannot unbias: '+actions[j])
+                    unbiasingProb = 1.0
+                    for ac in newSeq:
+                        if(ac in smoothedProbs):
+                            unbiasingProb *= smoothedProbs[ac]                                         
+                    seqScore = float(seqScore)/float(unbiasingProb)
                     
                 scores[j] = seqScore
                 normalizingConst += seqScore
