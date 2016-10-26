@@ -377,7 +377,7 @@ def outlierDetection_FBanalysis(testLines, coreId, startLine, endLine, q, store,
         mylog.write('\n\n')                        
         if(t%100 == 0):
             mylog.flush()
-            writer.close()
+            writer.flush()
         print('>>> proc: '+ str(coreId)+' finished '+ str(myCnt)+'/'+str(quota)+' instances ...')            
     mylog.close()
     writer.close()
@@ -593,6 +593,7 @@ def main():
     
 
 
-main()    
-#plac.call(main)
-print('DONE!')
+if __name__ == "__main__":
+    main()
+    #plac.call(main)
+    print('DONE!')
