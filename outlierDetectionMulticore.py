@@ -187,6 +187,15 @@ def outlierDetection_InjectionAnalysis(testLines, coreId, startLine, endLine, q,
     quota = endLine-startLine
     #tp,fp,fn,tn
     resStats = {'bon_rank':[0]*4, 'bon_noRank':[0]*4, 'holms_rank': [0]*4, 'holms_noRank':[0]*4}
+    
+    testSetCount = 0
+    for t in range(startLine, endLine):
+        tsLine = testLines[t]            
+        tmp = tsLine.strip().split('\t') 
+        user = tmp[0]      
+        if(user in hyper2id):                            
+            testSetCount += 1
+            
     for t in range(startLine, endLine):
         tsLine = testLines[t]    
         myCnt += 1               
@@ -241,10 +250,10 @@ def outlierDetection_InjectionAnalysis(testLines, coreId, startLine, endLine, q,
         keySortedPvaluesWithRanks = sorted(pValuesWithRanks, key=lambda k: (-pValuesWithRanks[k], k), reverse=True)
         keySortedPvaluesWithoutRanks = sorted(pValuesWithoutRanks, key=lambda k: (-pValuesWithoutRanks[k], k), reverse=True)        
 
-        outlierVector_bonferroniWithRanks = bonferroni_hypothesis_testing(keySortedPvaluesWithRanks, pValuesWithRanks, 'RANKING', len(testLines))
-        outlierVector_bonferroniWithoutRanks = bonferroni_hypothesis_testing(keySortedPvaluesWithoutRanks, pValuesWithoutRanks, 'NORANKING', len(testLines))        
-        outlierVector_holmsWithRanks = holm_hypothesis_testing(keySortedPvaluesWithRanks, pValuesWithRanks, 'RANKING', len(testLines))
-        outlierVector_holmsWithoutRanks = holm_hypothesis_testing(keySortedPvaluesWithoutRanks, pValuesWithoutRanks, 'NORANKING', len(testLines))
+        outlierVector_bonferroniWithRanks = bonferroni_hypothesis_testing(keySortedPvaluesWithRanks, pValuesWithRanks, 'RANKING', testSetCount)
+        outlierVector_bonferroniWithoutRanks = bonferroni_hypothesis_testing(keySortedPvaluesWithoutRanks, pValuesWithoutRanks, 'NORANKING', testSetCount)        
+        outlierVector_holmsWithRanks = holm_hypothesis_testing(keySortedPvaluesWithRanks, pValuesWithRanks, 'RANKING', testSetCount)
+        outlierVector_holmsWithoutRanks = holm_hypothesis_testing(keySortedPvaluesWithoutRanks, pValuesWithoutRanks, 'NORANKING', testSetCount)
         
         res_bon_rank = updateResultStats(resStats, outlierVector_bonferroniWithRanks, injectionMarkers, 'bon_rank')
         res_bon_noRank = updateResultStats(resStats, outlierVector_bonferroniWithoutRanks, injectionMarkers, 'bon_noRank')
@@ -290,6 +299,15 @@ def outlierDetection_FBanalysis(testLines, coreId, startLine, endLine, q, store,
     chiSqs = {'bon_rank':[0]*4, 'bon_noRank':[0]*4, 'holms_rank': [0]*4, 'holms_noRank':[0]*4}
     chiSqs_expected = {'bon_rank':[0]*4, 'bon_noRank':[0]*4, 'holms_rank': [0]*4, 'holms_noRank':[0]*4}
     quota = endLine-startLine
+    
+    testSetCount = 0
+    for t in range(startLine, endLine):
+        tsLine = testLines[t]            
+        tmp = tsLine.strip().split('\t') 
+        user = tmp[0]      
+        if(user in hyper2id):                            
+            testSetCount += 1
+        
     for t in range(startLine, endLine):
         tsLine = testLines[t]    
         myCnt += 1               
@@ -345,10 +363,10 @@ def outlierDetection_FBanalysis(testLines, coreId, startLine, endLine, q, store,
         keySortedPvaluesWithRanks = sorted(pValuesWithRanks, key=lambda k: (-pValuesWithRanks[k], k), reverse=True)
         keySortedPvaluesWithoutRanks = sorted(pValuesWithoutRanks, key=lambda k: (-pValuesWithoutRanks[k], k), reverse=True)
 
-        outlierVector_bonferroniWithRanks = bonferroni_hypothesis_testing(keySortedPvaluesWithRanks, pValuesWithRanks, 'RANKING', len(testLines))
-        outlierVector_bonferroniWithoutRanks = bonferroni_hypothesis_testing(keySortedPvaluesWithoutRanks, pValuesWithoutRanks, 'NORANKING', len(testLines))        
-        outlierVector_holmsWithRanks = holm_hypothesis_testing(keySortedPvaluesWithRanks, pValuesWithRanks, 'RANKING', len(testLines))
-        outlierVector_holmsWithoutRanks = holm_hypothesis_testing(keySortedPvaluesWithoutRanks, pValuesWithoutRanks, 'NORANKING', len(testLines))
+        outlierVector_bonferroniWithRanks = bonferroni_hypothesis_testing(keySortedPvaluesWithRanks, pValuesWithRanks, 'RANKING', testSetCount)
+        outlierVector_bonferroniWithoutRanks = bonferroni_hypothesis_testing(keySortedPvaluesWithoutRanks, pValuesWithoutRanks, 'NORANKING', testSetCount)        
+        outlierVector_holmsWithRanks = holm_hypothesis_testing(keySortedPvaluesWithRanks, pValuesWithRanks, 'RANKING', testSetCount)
+        outlierVector_holmsWithoutRanks = holm_hypothesis_testing(keySortedPvaluesWithoutRanks, pValuesWithoutRanks, 'NORANKING', testSetCount)
         
         writer.write('PvaluesWithRanks##'+str(pValuesWithRanks)+'||PvaluesWithoutRanks##'+str(pValuesWithoutRanks)+'||goldMarkers##'+str(frienship)+'\n')
         mylog.write('userId: '+str(tmp[0])+'\n')
