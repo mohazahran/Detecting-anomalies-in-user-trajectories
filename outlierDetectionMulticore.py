@@ -24,16 +24,14 @@ import math
 import os.path
 
 CORES = 2
-ALPHA_NORANKING = 0.0000005
-ALPHA_RANKING = 5
+ALPHA_NORANKING = 0.05
+ALPHA_RANKING = 0.05
 
 MODEL_PATH = '/home/zahran/Desktop/shareFolder/PARSED_pins_repins_win10_noop_NoLeaveOut_pinterest.h5'
-#SEQ_FILE_PATH = '/home/zahran/Desktop/shareFolder/sqlData_likes_full_info_fixed_ONLY_TRUE_friendship' 
-SEQ_FILE_PATH = '/home/zahran/Desktop/shareFolder/PARSED_pins_repins_win10_pinterest_INJECTED'
-TESTSET_COUNT_ADJUST = False
-WITH_FB_INFO = False
-WITH_INJECTIONS = True
-UNBIAS_CATS_WITH_FREQ = True
+SEQ_FILE_PATH = '/home/zahran/Desktop/shareFolder/sqlData_likes_full_info_fixed_ONLY_TRUE_friendship' 
+#SEQ_FILE_PATH = '/home/zahran/Desktop/shareFolder/PARSED_pins_repins_win10_pinterest_INJECTED'
+TESTSET_COUNT_ADJUST = True
+UNBIAS_CATS_WITH_FREQ = False
 smoothingParam = 1.0   #smootihng parameter for unbiasing item counts.
 STAT_FILE = '/home/zahran/Desktop/shareFolder/Stats'
 
@@ -79,7 +77,6 @@ def calculateSequenceProb(h, theSequence, true_mem_size, hyper2id, obj2id, Theta
         #print(seqProb, math.log(seqProb))
     return seqProb   
 
-
 def bonferroni_hypothesis_testing(keySortedPvalues, pValues, pvalType, testsetlen):
     if(pvalType == 'RANKING'):
         ALPHA = ALPHA_RANKING
@@ -102,7 +99,6 @@ def bonferroni_hypothesis_testing(keySortedPvalues, pValues, pvalType, testsetle
 #         return 'OUTLIER'
 #     return 'NORMAL'
 
-
 def holm_hypothesis_testing (keySortedPvalues, pValues, pvalType, testsetlen):
     if(pvalType == 'RANKING'):
         ALPHA = ALPHA_RANKING
@@ -124,8 +120,7 @@ def holm_hypothesis_testing (keySortedPvalues, pValues, pvalType, testsetlen):
         else:
             outlierVector[keySortedPvalues[i]] = 'NORMAL'
     return outlierVector
- 
-                              
+                             
 def getPvalueWithoutRanking(currentActionRank, keySortedProbs, probabilities):
     #normConst = 0.0
     #for i in range(len(probabilities)):
@@ -137,8 +132,7 @@ def getPvalueWithoutRanking(currentActionRank, keySortedProbs, probabilities):
     
     #prob = cdf/normConst
     return cdf
-        
-        
+               
 def updateChiSq(chiSqs, chiSqs_expected, decisions, friendship, dKey):
     
     for i in range(len(decisions)):        
@@ -186,10 +180,10 @@ def updateResultStats(resStats, decisions, injectionMarkers, dKey):
     except:
         return [0,0,0]
     
-
 def outlierDetection_InjectionAnalysis(testLines, coreId, startLine, endLine, q, store, true_mem_size, hyper2id, obj2id, Theta_zh, Psi_sz, count_z, smoothedProbs):
     myCnt = 0
     mylog = open(SEQ_FILE_PATH+'_ANAOMLY_ANALYSIS_'+str(coreId),'w')    
+    writer = open(SEQ_FILE_PATH+'_SCORES_ANAOMLY_ANALYSIS_'+str(coreId),'w')
     quota = endLine-startLine
     #tp,fp,fn,tn
     resStats = {'bon_rank':[0]*4, 'bon_noRank':[0]*4, 'holms_rank': [0]*4, 'holms_noRank':[0]*4}
@@ -201,6 +195,7 @@ def outlierDetection_InjectionAnalysis(testLines, coreId, startLine, endLine, q,
       
         if(user not in hyper2id):            
             mylog.write('User: '+str(user)+' is not found in trainingSet !\n')          
+            writer.write('User: '+str(user)+' is not found in trainingSet !\n')
             continue
               
         seq = tmp[1:true_mem_size+2]
@@ -244,7 +239,7 @@ def outlierDetection_InjectionAnalysis(testLines, coreId, startLine, endLine, q,
             pValuesWithoutRanks[i] = currentActionPvalueWithoutRanks
                     
         keySortedPvaluesWithRanks = sorted(pValuesWithRanks, key=lambda k: (-pValuesWithRanks[k], k), reverse=True)
-        keySortedPvaluesWithoutRanks = sorted(pValuesWithoutRanks, key=lambda k: (-pValuesWithoutRanks[k], k), reverse=True)
+        keySortedPvaluesWithoutRanks = sorted(pValuesWithoutRanks, key=lambda k: (-pValuesWithoutRanks[k], k), reverse=True)        
 
         outlierVector_bonferroniWithRanks = bonferroni_hypothesis_testing(keySortedPvaluesWithRanks, pValuesWithRanks, 'RANKING', len(testLines))
         outlierVector_bonferroniWithoutRanks = bonferroni_hypothesis_testing(keySortedPvaluesWithoutRanks, pValuesWithoutRanks, 'NORANKING', len(testLines))        
@@ -256,8 +251,7 @@ def outlierDetection_InjectionAnalysis(testLines, coreId, startLine, endLine, q,
         res_holms_rank = updateResultStats(resStats, outlierVector_holmsWithRanks, injectionMarkers, 'holms_rank')
         res_holms_noRank = updateResultStats(resStats, outlierVector_holmsWithoutRanks, injectionMarkers, 'holms_noRank')
         
-        #print(len(seq))
-        #print(len(frienship)
+        writer.write('PvaluesWithRanks##'+str(pValuesWithRanks)+'||PvaluesWithoutRanks##'+str(pValuesWithoutRanks)+'||goldMarkers##'+str(injectionMarkers)+'\n')
         mylog.write('userId: '+str(tmp[0])+'\n')
         mylog.write('Action pvalue_with_ranks bonferroni_withRanks holms_withRanks pValues_withoutRanks holms_withRanks bonferroni_withoutRanks holms_withoutRanks\n')
         for x in range(0,len(seq)):           
@@ -280,18 +274,19 @@ def outlierDetection_InjectionAnalysis(testLines, coreId, startLine, endLine, q,
         mylog.write('\n\n')                        
         if(t%100 == 0):
             mylog.flush()
+            writer.flush()
         print('>>> proc: '+ str(coreId)+' finished '+ str(myCnt)+'/'+str(quota)+' instances ...')            
     mylog.close()
+    writer.close()
     #seqFile.close()
     ret = resStats
     q.put(ret)
-
-    
+  
 def outlierDetection_FBanalysis(testLines, coreId, startLine, endLine, q, store, true_mem_size, hyper2id, obj2id, Theta_zh, Psi_sz, count_z, smoothedProbs):
     myCnt = 0
     mylog = open(SEQ_FILE_PATH+'_ANAOMLY_ANALYSIS_'+str(coreId),'w')
-    #seqFile = open(SEQ_FILE_PATH, 'r')
-    #myMat = [[0 for x in range(2)] for y in range(2)]
+    writer = open(SEQ_FILE_PATH+'_SCORES_ANAOMLY_ANALYSIS_'+str(coreId),'w')
+    
     chiSqs = {'bon_rank':[0]*4, 'bon_noRank':[0]*4, 'holms_rank': [0]*4, 'holms_noRank':[0]*4}
     chiSqs_expected = {'bon_rank':[0]*4, 'bon_noRank':[0]*4, 'holms_rank': [0]*4, 'holms_noRank':[0]*4}
     quota = endLine-startLine
@@ -302,14 +297,14 @@ def outlierDetection_FBanalysis(testLines, coreId, startLine, endLine, q, store,
         user = tmp[0]
       
         if(user not in hyper2id):            
-            mylog.write('User: '+str(user)+' is not found in trainingSet !\n')          
+            mylog.write('User: '+str(user)+' is not found in trainingSet !\n')
+            writer.write('User: '+str(user)+' is not found in trainingSet !\n')          
             continue
        
-        if(WITH_FB_INFO):
-            seq = tmp[1:true_mem_size+2]
-            frienship = tmp[true_mem_size+2:]            
-        else:
-            seq = tmp[1:]
+       
+        seq = tmp[1:true_mem_size+2]
+        frienship = tmp[true_mem_size+2:]            
+        
          
         actions = obj2id.keys()                  
         pValuesWithRanks = {}
@@ -355,46 +350,40 @@ def outlierDetection_FBanalysis(testLines, coreId, startLine, endLine, q, store,
         outlierVector_holmsWithRanks = holm_hypothesis_testing(keySortedPvaluesWithRanks, pValuesWithRanks, 'RANKING', len(testLines))
         outlierVector_holmsWithoutRanks = holm_hypothesis_testing(keySortedPvaluesWithoutRanks, pValuesWithoutRanks, 'NORANKING', len(testLines))
         
-        #print(len(seq))
-        #print(len(frienship)
+        writer.write('PvaluesWithRanks##'+str(pValuesWithRanks)+'||PvaluesWithoutRanks##'+str(pValuesWithoutRanks)+'||goldMarkers##'+str(frienship)+'\n')
         mylog.write('userId: '+str(tmp[0])+'\n')
         mylog.write('Action pvalue_with_ranks bonferroni_withRanks holms_withRanks pValues_withoutRanks holms_withRanks bonferroni_withoutRanks holms_withoutRanks\n')
         for x in range(0,len(seq)):
-            if(WITH_FB_INFO):
-                mylog.write('||'+str(seq[x])+'|| fb: '+str(frienship[x])+'|| ')                                
-            else:
-                mylog.write('||'+str(tmp[x+1])+'|| ')
-                
+            mylog.write('||'+str(seq[x])+'|| fb: '+str(frienship[x])+'|| ')                                
             mylog.write(str(pValuesWithRanks[x])+' ')
             mylog.write(str(outlierVector_bonferroniWithRanks[x])+' ')
             mylog.write(str(outlierVector_holmsWithRanks[x])+' ')
             mylog.write(str(pValuesWithoutRanks[x])+' ')
             mylog.write(str(outlierVector_bonferroniWithoutRanks[x])+' ')
-            mylog.write(str(outlierVector_holmsWithoutRanks[x])+' ')
-            
-            #chiSqs = {'bon_rank':[0]*4, 'bon_noRank':[0]*4, 'holms_rank': [0]*4, 'holms_noRank':[0]*4}
+            mylog.write(str(outlierVector_holmsWithoutRanks[x])+' ')                        
             mylog.write('\n')                                                    
-        if(WITH_FB_INFO):
-            chi_bon_rank = updateChiSq(chiSqs, chiSqs_expected, outlierVector_bonferroniWithRanks, frienship, 'bon_rank')
-            chi_bon_norank = updateChiSq(chiSqs, chiSqs_expected, outlierVector_bonferroniWithoutRanks, frienship, 'bon_noRank')
-            chi_holms_rank = updateChiSq(chiSqs, chiSqs_expected, outlierVector_holmsWithRanks, frienship, 'holms_rank')
-            chi_holms_norank = updateChiSq(chiSqs, chiSqs_expected, outlierVector_holmsWithoutRanks, frienship, 'holms_noRank')
+
+        chi_bon_rank = updateChiSq(chiSqs, chiSqs_expected, outlierVector_bonferroniWithRanks, frienship, 'bon_rank')
+        chi_bon_norank = updateChiSq(chiSqs, chiSqs_expected, outlierVector_bonferroniWithoutRanks, frienship, 'bon_noRank')
+        chi_holms_rank = updateChiSq(chiSqs, chiSqs_expected, outlierVector_holmsWithRanks, frienship, 'holms_rank')
+        chi_holms_norank = updateChiSq(chiSqs, chiSqs_expected, outlierVector_holmsWithoutRanks, frienship, 'holms_noRank')
                   
-            mylog.write('\npredictionCounts: '+str(chiSqs))
-            mylog.write('\nExpectedCounts:   '+str(chiSqs_expected))
-            mylog.write(str('\n'+'chi_bon_rank: '+str(chi_bon_rank)))
-            mylog.write(str('\n'+'chi_bon_norank: '+str(chi_bon_norank)))
-            mylog.write(str('\n'+'chi_holms_rank: '+str(chi_holms_rank)))
-            mylog.write(str('\n'+'chi_holms_norank: '+str(chi_holms_norank)))                    
+        mylog.write('\npredictionCounts: '+str(chiSqs))
+        mylog.write('\nExpectedCounts:   '+str(chiSqs_expected))
+        mylog.write(str('\n'+'chi_bon_rank: '+str(chi_bon_rank)))
+        mylog.write(str('\n'+'chi_bon_norank: '+str(chi_bon_norank)))
+        mylog.write(str('\n'+'chi_holms_rank: '+str(chi_holms_rank)))
+        mylog.write(str('\n'+'chi_holms_norank: '+str(chi_holms_norank)))                    
         mylog.write('\n\n')                        
         if(t%100 == 0):
             mylog.flush()
+            writer.close()
         print('>>> proc: '+ str(coreId)+' finished '+ str(myCnt)+'/'+str(quota)+' instances ...')            
     mylog.close()
+    writer.close()
     #seqFile.close()
     ret = [chiSqs, chiSqs_expected]
-    q.put(ret)
-                                            
+    q.put(ret)                                          
                                             
 def calculatingItemsFreq(trace_fpath, true_mem_size):
     smoothedProbs = {}    
@@ -425,8 +414,7 @@ def calculatingItemsFreq(trace_fpath, true_mem_size):
         w.write(key+'\t'+str(smoothedProbs[key])+'\n')
     w.close()
     return smoothedProbs
-    
-                
+                  
 def createTestingSeqFile(store):
     from_ = store['from_'][0][0]
     to = store['to'][0][0]
@@ -451,8 +439,7 @@ def createTestingSeqFile(store):
     w.close()
     r.close()
     return tpath                                            
-                                            
-                                            
+                                                                                        
 def doFbAnalysis():
     store = pd.HDFStore(MODEL_PATH)     
     
@@ -523,7 +510,6 @@ def doFbAnalysis():
                             
     print('\n>>> All DONE!')
     store.close()
-
 
 def doInjectionAnalysis():
     store = pd.HDFStore(MODEL_PATH)     
@@ -601,11 +587,12 @@ def doInjectionAnalysis():
     store.close()
                                        
 def main():   
-    #doFbAnalysis() 
-    doInjectionAnalysis()
+    doFbAnalysis() 
+    #doInjectionAnalysis()
   
     
 
-     
-plac.call(main)
+
+main()    
+#plac.call(main)
 print('DONE!')
