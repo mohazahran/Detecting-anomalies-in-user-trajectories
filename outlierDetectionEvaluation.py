@@ -125,6 +125,9 @@ def doChiSqaure(allData, ALPHA_RANKING, ALPHA_NORANKING, TESTSET_COUNT_ADJUST):
     wRanking = open(ANALYSIS_FILES_PATH+FILE_NAME+'CHISQ_ALPHA_RANKING', 'w')
     wNoRanking = open(ANALYSIS_FILES_PATH+FILE_NAME+'CHISQ_ALPHA_NORANKING', 'w')
     
+    minChiSqPvalue = [1000.0]*4
+    minAlphas = [10000.0]*4
+    
     wRanking.write('alpha, bon_rank_chiSqaure, bon_rank_chiSqaure\n')
     wNoRanking.write('alpha, bon_norank_chiSqaure, bon_norank_chiSqaure\n')
     
@@ -169,9 +172,36 @@ def doChiSqaure(allData, ALPHA_RANKING, ALPHA_NORANKING, TESTSET_COUNT_ADJUST):
             chi_holms_rank = updateChiSq(chiSqs, chiSqs_expected, outlierVector_holmsWithRanks, goldMarkers, 'holms_rank')
             chi_holms_norank = updateChiSq(chiSqs, chiSqs_expected, outlierVector_holmsWithoutRanks, goldMarkers, 'holms_noRank')
     
+        chi_bon_rankVal = float(str(chi_bon_rank).split('=')[-1].replace(')',''))
+        chi_holms_rankVal = float(str(chi_holms_rank).split('=')[-1].replace(')',''))
+        chi_bon_norankVal = float(str(chi_bon_norank).split('=')[-1].replace(')',''))
+        chi_holms_norankVal = float(str(chi_holms_norank).split('=')[-1].replace(')',''))
+        
+        wRanking.write(str(alphaRanking)+','+str(chi_bon_rankVal)+','+str(chi_holms_rankVal)+'\n')
+        wNoRanking.write(str(alphaNoRanking)+','+str(chi_bon_norankVal)+','+str(chi_holms_norankVal)+'\n')
+        
+        if(minChiSqPvalue[0]>chi_bon_rankVal):
+            minChiSqPvalue[0] = chi_bon_rankVal
+            minAlphas[0] = alphaRanking
+            
+        if(minChiSqPvalue[1]>chi_bon_norankVal):
+            minChiSqPvalue[1] = chi_bon_norankVal
+            minAlphas[1] = alphaNoRanking
+        
+        if(minChiSqPvalue[2]>chi_holms_rankVal):
+            minChiSqPvalue[2] = chi_holms_rankVal
+            minAlphas[2] = alphaRanking
+        
+        if(minChiSqPvalue[3]>chi_holms_norankVal):
+            minChiSqPvalue[3] = chi_holms_norankVal
+            minAlphas[3] = alphaNoRanking
     
-        wRanking.write(str(alphaRanking)+','+str(chi_bon_rank).split('=')[-1].replace(')','')+','+str(chi_holms_rank).split('=')[-1].replace(')','')+'\n')
-        wNoRanking.write(str(alphaNoRanking)+','+str(chi_bon_norank).split('=')[-1].replace(')','')+','+str(chi_holms_norank).split('=')[-1].replace(')','')+'\n')
+    wRanking.write('Min pvalue res_bon_rank  ='+str(minChiSqPvalue[0])+' alphaRank='+str(minAlphas[0])+'\n')
+    wRanking.write('Min pvalue res_holms_rank='+str(minChiSqPvalue[2])+' alphaRank='+str(minAlphas[2])+'\n')
+    
+    wNoRanking.write('Min pvalue res_bon_noRank  ='+str(minChiSqPvalue[1])+' alphanoRank='+str(minAlphas[1])+'\n')
+    wNoRanking.write('Min pvalue res_holms_noRank='+str(minChiSqPvalue[3])+' alphanoRank='+str(minAlphas[3])+'\n')
+      
     wRanking.close()
     wNoRanking.close
 
@@ -201,6 +231,9 @@ def doRecallPrecFscore(allData, ALPHA_RANKING, ALPHA_NORANKING, TESTSET_COUNT_AD
     
     wRanking.write('alpha,bon_rank[rec, prec, fscore], holms_rank[rec, prec, fscore]\n')
     wNoRanking.write('alpha,bon_norank[rec, prec, fscore], holms_norank[rec, prec, fscore]\n')
+               
+    maxFscores = [0.0]*4
+    maxAlphas = [0.0]*4
     
     for i in range(len(ALPHA_NORANKING)):
         print(i,'/',len(ALPHA_NORANKING))
@@ -237,25 +270,53 @@ def doRecallPrecFscore(allData, ALPHA_RANKING, ALPHA_NORANKING, TESTSET_COUNT_AD
             res_bon_noRank = updateResultStats(resStats, outlierVector_bonferroniWithoutRanks, goldMarkers, 'bon_noRank')
             res_holms_rank = updateResultStats(resStats, outlierVector_holmsWithRanks, goldMarkers, 'holms_rank')
             res_holms_noRank = updateResultStats(resStats, outlierVector_holmsWithoutRanks, goldMarkers, 'holms_noRank')
+            
+        if(maxFscores[0]<res_bon_rank[-1]):
+            maxFscores[0] = res_bon_rank[-1]
+            maxAlphas[0] = alphaRanking
+            
+        if(maxFscores[1]<res_bon_noRank[-1]):
+            maxFscores[1] = res_bon_noRank[-1]
+            maxAlphas[1] = alphaNoRanking
+        
+        if(maxFscores[2]<res_holms_rank[-1]):
+            maxFscores[2] = res_holms_rank[-1]
+            maxAlphas[2] = alphaRanking
+        
+        if(maxFscores[3]<res_holms_noRank[-1]):
+            maxFscores[3] = res_holms_noRank[-1]
+            maxAlphas[3] = alphaNoRanking
+                
+                
+                
+           
     
         
-        wRanking.write(str(alphaRanking)+','+str(res_bon_rank).split('=')[-1].replace(')','')+','+str(res_holms_rank).split('=')[-1].replace(')','')+'\n')
-        wNoRanking.write(str(alphaNoRanking)+','+str(res_bon_noRank).split('=')[-1].replace(')','')+','+str(res_holms_noRank).split('=')[-1].replace(')','')+'\n')
-        
+        wRanking.write(str(alphaRanking)+','+str(res_bon_rank)+','+str(res_holms_rank)+'\n')
+        wNoRanking.write(str(alphaNoRanking)+','+str(res_bon_noRank)+','+str(res_holms_noRank)+'\n')
+    
+    wRanking.write('Max recall res_bon_rank  ='+str(maxFscores[0])+' alphaRank='+str(maxAlphas[0])+'\n')
+    wRanking.write('Max recall res_holms_rank='+str(maxFscores[2])+' alphaRank='+str(maxAlphas[2])+'\n')
+    
+    wNoRanking.write('Max recall res_bon_noRank  ='+str(maxFscores[1])+' alphanoRank='+str(maxAlphas[1])+'\n')
+    wNoRanking.write('Max recall res_holms_noRank='+str(maxFscores[3])+' alphanoRank='+str(maxAlphas[3])+'\n')
+    
+    wNoRanking.write('\n')
+    
     wRanking.close()
     wNoRanking.close()
     
 def main():
        
-    ALPHA_NORANKING = np.arange(0.000005,0.1,0.00001) # start=0, step=0.1, end=1 (exlusive)
-    ALPHA_RANKING = np.arange(0.000005,0.1,0.00001)    
+    ALPHA_NORANKING = np.arange(0.000005,0.1,0.005) # start=0, step=0.1, end=1 (exlusive)
+    ALPHA_RANKING = np.arange(0.000005,0.1,0.005)    
     TESTSET_COUNT_ADJUST = True
     
     print('>>> Reading Data ...')
     allData = parseAnalysisFiles()
     print('>>> Evaluating ...')
-    #doChiSqaure(allData, ALPHA_RANKING, ALPHA_NORANKING, TESTSET_COUNT_ADJUST)
-    doRecallPrecFscore(allData, ALPHA_RANKING, ALPHA_NORANKING, TESTSET_COUNT_ADJUST)
+    doChiSqaure(allData, ALPHA_RANKING, ALPHA_NORANKING, TESTSET_COUNT_ADJUST)
+    #doRecallPrecFscore(allData, ALPHA_RANKING, ALPHA_NORANKING, TESTSET_COUNT_ADJUST)
   
     
 main()    
