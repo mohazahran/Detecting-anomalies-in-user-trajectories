@@ -83,7 +83,7 @@ def getPvalueWithoutRanking(currentActionRank, keySortedProbs, probabilities):
                
 def outlierDetection(testDic, quota, coreId, q, store, true_mem_size, hyper2id, obj2id, Theta_zh, Psi_sz, smoothedProbs):
     myCnt = 0    
-    writer = open(SEQ_FILE_PATH+'_SCORES_ANAOMLY_ANALYSIS_'+str(coreId),'w')
+    writer = open(SEQ_FILE_PATH+'_SCORES_ANOMALY_ANALYSIS_'+str(coreId),'w')
     
     for user in testDic:
         for testLine in testDic[user]:
