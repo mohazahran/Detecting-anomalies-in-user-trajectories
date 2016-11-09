@@ -805,8 +805,8 @@ static int __Pyx_ParseOptionalKeywords(PyObject *kwds, PyObject **argnames[],\
     PyObject *kwds2, PyObject *values[], Py_ssize_t num_pos_args,\
     const char* function_name);
 
-/* BufferIndexError.proto */
-static void __Pyx_RaiseBufferIndexError(int axis);
+/* None.proto */
+static CYTHON_INLINE void __Pyx_RaiseUnboundLocalError(const char *varname);
 
 /* BufferFormatCheck.proto */
 static CYTHON_INLINE int  __Pyx_GetBufferAndValidate(Py_buffer* buf, PyObject* obj,
@@ -843,20 +843,6 @@ static CYTHON_INLINE int __pyx_sub_acquisition_count_locked(
 static CYTHON_INLINE void __Pyx_INC_MEMVIEW(__Pyx_memviewslice *, int, int);
 static CYTHON_INLINE void __Pyx_XDEC_MEMVIEW(__Pyx_memviewslice *, int, int);
 
-/* GetModuleGlobalName.proto */
-static CYTHON_INLINE PyObject *__Pyx_GetModuleGlobalName(PyObject *name);
-
-/* PyObjectCall.proto */
-#if CYTHON_COMPILING_IN_CPYTHON
-static CYTHON_INLINE PyObject* __Pyx_PyObject_Call(PyObject *func, PyObject *arg, PyObject *kw);
-#else
-#define __Pyx_PyObject_Call(func, arg, kw) PyObject_Call(func, arg, kw)
-#endif
-
-/* ArgTypeTest.proto */
-static CYTHON_INLINE int __Pyx_ArgTypeTest(PyObject *obj, PyTypeObject *type, int none_allowed,
-    const char *name, int exact);
-
 /* PyThreadStateGet.proto */
 #if CYTHON_COMPILING_IN_CPYTHON
 #define __Pyx_PyThreadState_declare  PyThreadState *__pyx_tstate;
@@ -879,6 +865,22 @@ static CYTHON_INLINE void __Pyx_ErrFetchInState(PyThreadState *tstate, PyObject 
 #define __Pyx_ErrFetchWithState(type, value, tb)  PyErr_Fetch(type, value, tb)
 #define __Pyx_ErrRestore(type, value, tb)  PyErr_Restore(type, value, tb)
 #define __Pyx_ErrFetch(type, value, tb)  PyErr_Fetch(type, value, tb)
+#endif
+
+/* WriteUnraisableException.proto */
+static void __Pyx_WriteUnraisable(const char *name, int clineno,
+                                  int lineno, const char *filename,
+                                  int full_traceback, int nogil);
+
+/* ArgTypeTest.proto */
+static CYTHON_INLINE int __Pyx_ArgTypeTest(PyObject *obj, PyTypeObject *type, int none_allowed,
+    const char *name, int exact);
+
+/* PyObjectCall.proto */
+#if CYTHON_COMPILING_IN_CPYTHON
+static CYTHON_INLINE PyObject* __Pyx_PyObject_Call(PyObject *func, PyObject *arg, PyObject *kw);
+#else
+#define __Pyx_PyObject_Call(func, arg, kw) PyObject_Call(func, arg, kw)
 #endif
 
 /* RaiseException.proto */
@@ -1046,9 +1048,6 @@ static CYTHON_INLINE int __Pyx_PyList_Append(PyObject* list, PyObject* x) {
 #define __Pyx_PyList_Append(L,x) PyList_Append(L,x)
 #endif
 
-/* None.proto */
-static CYTHON_INLINE void __Pyx_RaiseUnboundLocalError(const char *varname);
-
 /* ForceInitThreads.proto */
 #ifndef __PYX_FORCE_INIT_THREADS
   #define __PYX_FORCE_INIT_THREADS 0
@@ -1056,11 +1055,6 @@ static CYTHON_INLINE void __Pyx_RaiseUnboundLocalError(const char *varname);
 
 /* None.proto */
 static CYTHON_INLINE long __Pyx_div_long(long, long);
-
-/* WriteUnraisableException.proto */
-static void __Pyx_WriteUnraisable(const char *name, int clineno,
-                                  int lineno, const char *filename,
-                                  int full_traceback, int nogil);
 
 /* PyObjectCallMethO.proto */
 #if CYTHON_COMPILING_IN_CPYTHON
@@ -1154,17 +1148,6 @@ static CYTHON_INLINE __Pyx_memviewslice __Pyx_PyObject_to_MemoryviewSlice_d_dc_d
 /* CIntToPy.proto */
 static CYTHON_INLINE PyObject* __Pyx_PyInt_From_int(int value);
 
-/* CIntToPy.proto */
-static CYTHON_INLINE PyObject* __Pyx_PyInt_From_long(long value);
-
-/* MemviewDtypeToObject.proto */
-static CYTHON_INLINE PyObject *__pyx_memview_get_int(const char *itemp);
-static CYTHON_INLINE int __pyx_memview_set_int(const char *itemp, PyObject *obj);
-
-/* MemviewDtypeToObject.proto */
-static CYTHON_INLINE PyObject *__pyx_memview_get_double(const char *itemp);
-static CYTHON_INLINE int __pyx_memview_set_double(const char *itemp, PyObject *obj);
-
 /* MemviewSliceCopyTemplate.proto */
 static __Pyx_memviewslice
 __pyx_memoryview_copy_new_contig(const __Pyx_memviewslice *from_mvs,
@@ -1174,6 +1157,9 @@ __pyx_memoryview_copy_new_contig(const __Pyx_memviewslice *from_mvs,
 
 /* CIntFromPy.proto */
 static CYTHON_INLINE int __Pyx_PyInt_As_int(PyObject *);
+
+/* CIntToPy.proto */
+static CYTHON_INLINE PyObject* __Pyx_PyInt_From_long(long value);
 
 /* CIntFromPy.proto */
 static CYTHON_INLINE char __Pyx_PyInt_As_char(PyObject *);
@@ -1210,6 +1196,8 @@ static PyObject *contiguous = 0;
 static PyObject *indirect_contiguous = 0;
 static int __pyx_memoryview_thread_locks_used;
 static PyThread_type_lock __pyx_memoryview_thread_locks[8];
+static double __pyx_f_16outlierDetection_13_eval_outlier_evaluate(int, __Pyx_memviewslice, int, int, __Pyx_memviewslice, __Pyx_memviewslice, int, int __pyx_skip_dispatch); /*proto*/
+static double __pyx_f_16outlierDetection_13_eval_outlier_calculateSequenceProb(__Pyx_memviewslice, int, int, int, __Pyx_memviewslice, __Pyx_memviewslice, int __pyx_skip_dispatch); /*proto*/
 static struct __pyx_array_obj *__pyx_array_new(PyObject *, Py_ssize_t, char *, char *, char *); /*proto*/
 static void *__pyx_align_pointer(void *, size_t); /*proto*/
 static PyObject *__pyx_memoryview_new(PyObject *, int, int, __Pyx_TypeInfo *); /*proto*/
@@ -1259,12 +1247,7 @@ static PyObject *__pyx_builtin_id;
 static PyObject *__pyx_builtin_IndexError;
 static const char __pyx_k_O[] = "O";
 static const char __pyx_k_c[] = "c";
-static const char __pyx_k_i[] = "i";
-static const char __pyx_k_j[] = "j";
-static const char __pyx_k_z[] = "z";
-static const char __pyx_k_i4[] = "i4";
 static const char __pyx_k_id[] = "id";
-static const char __pyx_k_np[] = "np";
 static const char __pyx_k_env[] = "env";
 static const char __pyx_k_obj[] = "obj";
 static const char __pyx_k_base[] = "base";
@@ -1279,15 +1262,11 @@ static const char __pyx_k_stop[] = "stop";
 static const char __pyx_k_test[] = "__test__";
 static const char __pyx_k_ASCII[] = "ASCII";
 static const char __pyx_k_class[] = "__class__";
-static const char __pyx_k_dtype[] = "dtype";
 static const char __pyx_k_error[] = "error";
 static const char __pyx_k_flags[] = "flags";
-static const char __pyx_k_numpy[] = "numpy";
-static const char __pyx_k_prior[] = "prior";
 static const char __pyx_k_range[] = "range";
 static const char __pyx_k_shape[] = "shape";
 static const char __pyx_k_start[] = "start";
-static const char __pyx_k_zeros[] = "zeros";
 static const char __pyx_k_Psi_sz[] = "Psi_sz";
 static const char __pyx_k_encode[] = "encode";
 static const char __pyx_k_format[] = "format";
@@ -1296,30 +1275,22 @@ static const char __pyx_k_name_2[] = "__name__";
 static const char __pyx_k_struct[] = "struct";
 static const char __pyx_k_unpack[] = "unpack";
 static const char __pyx_k_userId[] = "userId";
-static const char __pyx_k_window[] = "window";
 static const char __pyx_k_xrange[] = "xrange";
 static const char __pyx_k_fortran[] = "fortran";
 static const char __pyx_k_history[] = "history";
 static const char __pyx_k_memview[] = "memview";
-static const char __pyx_k_seqProb[] = "seqProb";
 static const char __pyx_k_Ellipsis[] = "Ellipsis";
 static const char __pyx_k_Theta_zh[] = "Theta_zh";
-static const char __pyx_k_candProb[] = "candProb";
-static const char __pyx_k_evaluate[] = "evaluate";
 static const char __pyx_k_itemsize[] = "itemsize";
-static const char __pyx_k_seqProbZ[] = "seqProbZ";
 static const char __pyx_k_TypeError[] = "TypeError";
 static const char __pyx_k_enumerate[] = "enumerate";
 static const char __pyx_k_IndexError[] = "IndexError";
 static const char __pyx_k_ValueError[] = "ValueError";
 static const char __pyx_k_historyLen[] = "historyLen";
-static const char __pyx_k_mem_factor[] = "mem_factor";
 static const char __pyx_k_pyx_vtable[] = "__pyx_vtable__";
 static const char __pyx_k_MemoryError[] = "MemoryError";
 static const char __pyx_k_targetObjId[] = "targetObjId";
 static const char __pyx_k_theSequence[] = "theSequence";
-static const char __pyx_k_targetObjIdx[] = "targetObjIdx";
-static const char __pyx_k_candidateProb[] = "candidateProb";
 static const char __pyx_k_pyx_getbuffer[] = "__pyx_getbuffer";
 static const char __pyx_k_true_mem_size[] = "true_mem_size";
 static const char __pyx_k_theSequenceLen[] = "theSequenceLen";
@@ -1327,7 +1298,6 @@ static const char __pyx_k_allocate_buffer[] = "allocate_buffer";
 static const char __pyx_k_dtype_is_object[] = "dtype_is_object";
 static const char __pyx_k_strided_and_direct[] = "<strided and direct>";
 static const char __pyx_k_strided_and_indirect[] = "<strided and indirect>";
-static const char __pyx_k_calculateSequenceProb[] = "calculateSequenceProb";
 static const char __pyx_k_contiguous_and_direct[] = "<contiguous and direct>";
 static const char __pyx_k_MemoryView_of_r_object[] = "<MemoryView of %r object>";
 static const char __pyx_k_MemoryView_of_r_at_0x_x[] = "<MemoryView of %r at 0x%x>";
@@ -1336,9 +1306,7 @@ static const char __pyx_k_Cannot_index_with_type_s[] = "Cannot index with type '
 static const char __pyx_k_Invalid_shape_in_axis_d_d[] = "Invalid shape in axis %d: %d.";
 static const char __pyx_k_itemsize_0_for_cython_array[] = "itemsize <= 0 for cython.array";
 static const char __pyx_k_unable_to_allocate_array_data[] = "unable to allocate array data.";
-static const char __pyx_k_outlierDetection__eval_outlier[] = "outlierDetection._eval_outlier";
 static const char __pyx_k_strided_and_direct_or_indirect[] = "<strided and direct or indirect>";
-static const char __pyx_k_home_zahran_workspace_tribeFlow[] = "/home/zahran/workspace/tribeFlow_new/outlierDetection/_eval_outlier.pyx";
 static const char __pyx_k_Buffer_view_does_not_expose_stri[] = "Buffer view does not expose strides";
 static const char __pyx_k_Can_only_create_a_buffer_that_is[] = "Can only create a buffer that is contiguous in memory.";
 static const char __pyx_k_Empty_shape_tuple_for_cython_arr[] = "Empty shape tuple for cython.array";
@@ -1372,19 +1340,14 @@ static PyObject *__pyx_n_s_allocate_buffer;
 static PyObject *__pyx_n_s_base;
 static PyObject *__pyx_n_s_c;
 static PyObject *__pyx_n_u_c;
-static PyObject *__pyx_n_s_calculateSequenceProb;
-static PyObject *__pyx_n_s_candProb;
-static PyObject *__pyx_n_s_candidateProb;
 static PyObject *__pyx_n_s_class;
 static PyObject *__pyx_kp_s_contiguous_and_direct;
 static PyObject *__pyx_kp_s_contiguous_and_indirect;
-static PyObject *__pyx_n_s_dtype;
 static PyObject *__pyx_n_s_dtype_is_object;
 static PyObject *__pyx_n_s_encode;
 static PyObject *__pyx_n_s_enumerate;
 static PyObject *__pyx_n_s_env;
 static PyObject *__pyx_n_s_error;
-static PyObject *__pyx_n_s_evaluate;
 static PyObject *__pyx_n_s_flags;
 static PyObject *__pyx_n_s_format;
 static PyObject *__pyx_n_s_fortran;
@@ -1392,32 +1355,21 @@ static PyObject *__pyx_n_u_fortran;
 static PyObject *__pyx_kp_s_got_differing_extents_in_dimensi;
 static PyObject *__pyx_n_s_history;
 static PyObject *__pyx_n_s_historyLen;
-static PyObject *__pyx_kp_s_home_zahran_workspace_tribeFlow;
-static PyObject *__pyx_n_s_i;
-static PyObject *__pyx_n_s_i4;
 static PyObject *__pyx_n_s_id;
 static PyObject *__pyx_n_s_import;
 static PyObject *__pyx_n_s_itemsize;
 static PyObject *__pyx_kp_s_itemsize_0_for_cython_array;
-static PyObject *__pyx_n_s_j;
 static PyObject *__pyx_n_s_main;
-static PyObject *__pyx_n_s_mem_factor;
 static PyObject *__pyx_n_s_memview;
 static PyObject *__pyx_n_s_mode;
 static PyObject *__pyx_n_s_name;
 static PyObject *__pyx_n_s_name_2;
 static PyObject *__pyx_n_s_ndim;
-static PyObject *__pyx_n_s_np;
-static PyObject *__pyx_n_s_numpy;
 static PyObject *__pyx_n_s_obj;
-static PyObject *__pyx_n_s_outlierDetection__eval_outlier;
 static PyObject *__pyx_n_s_pack;
-static PyObject *__pyx_n_s_prior;
 static PyObject *__pyx_n_s_pyx_getbuffer;
 static PyObject *__pyx_n_s_pyx_vtable;
 static PyObject *__pyx_n_s_range;
-static PyObject *__pyx_n_s_seqProb;
-static PyObject *__pyx_n_s_seqProbZ;
 static PyObject *__pyx_n_s_shape;
 static PyObject *__pyx_n_s_size;
 static PyObject *__pyx_n_s_start;
@@ -1428,7 +1380,6 @@ static PyObject *__pyx_kp_s_strided_and_direct_or_indirect;
 static PyObject *__pyx_kp_s_strided_and_indirect;
 static PyObject *__pyx_n_s_struct;
 static PyObject *__pyx_n_s_targetObjId;
-static PyObject *__pyx_n_s_targetObjIdx;
 static PyObject *__pyx_n_s_test;
 static PyObject *__pyx_n_s_theSequence;
 static PyObject *__pyx_n_s_theSequenceLen;
@@ -1437,10 +1388,7 @@ static PyObject *__pyx_kp_s_unable_to_allocate_array_data;
 static PyObject *__pyx_kp_s_unable_to_allocate_shape_and_str;
 static PyObject *__pyx_n_s_unpack;
 static PyObject *__pyx_n_s_userId;
-static PyObject *__pyx_n_s_window;
 static PyObject *__pyx_n_s_xrange;
-static PyObject *__pyx_n_s_z;
-static PyObject *__pyx_n_s_zeros;
 static PyObject *__pyx_pf_16outlierDetection_13_eval_outlier_evaluate(CYTHON_UNUSED PyObject *__pyx_self, int __pyx_v_userId, __Pyx_memviewslice __pyx_v_history, int __pyx_v_historyLen, int __pyx_v_targetObjId, __Pyx_memviewslice __pyx_v_Theta_zh, __Pyx_memviewslice __pyx_v_Psi_sz, int __pyx_v_env); /* proto */
 static PyObject *__pyx_pf_16outlierDetection_13_eval_outlier_2calculateSequenceProb(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_theSequence, int __pyx_v_theSequenceLen, int __pyx_v_true_mem_size, int __pyx_v_userId, __Pyx_memviewslice __pyx_v_Theta_zh, __Pyx_memviewslice __pyx_v_Psi_sz); /* proto */
 static int __pyx_array___pyx_pf_15View_dot_MemoryView_5array___cinit__(struct __pyx_array_obj *__pyx_v_self, PyObject *__pyx_v_shape, Py_ssize_t __pyx_v_itemsize, PyObject *__pyx_v_format, PyObject *__pyx_v_mode, int __pyx_v_allocate_buffer); /* proto */
@@ -1496,26 +1444,131 @@ static PyObject *__pyx_slice__11;
 static PyObject *__pyx_slice__12;
 static PyObject *__pyx_tuple__13;
 static PyObject *__pyx_tuple__14;
+static PyObject *__pyx_tuple__15;
 static PyObject *__pyx_tuple__16;
+static PyObject *__pyx_tuple__17;
 static PyObject *__pyx_tuple__18;
-static PyObject *__pyx_tuple__19;
-static PyObject *__pyx_tuple__20;
-static PyObject *__pyx_tuple__21;
-static PyObject *__pyx_tuple__22;
-static PyObject *__pyx_codeobj__15;
-static PyObject *__pyx_codeobj__17;
 
 /* "outlierDetection/_eval_outlier.pyx":4
  * 
- * 
- * def evaluate(int userId, int[:] history, int historyLen, int targetObjId, double[:, ::1] Theta_zh, double[:, ::1] Psi_sz, int env):             # <<<<<<<<<<<<<<
+ * @boundscheck(False)
+ * cpdef double evaluate(int userId, int[:] history, int historyLen, int targetObjId, double[:, ::1] Theta_zh, double[:, ::1] Psi_sz, int env) nogil:             # <<<<<<<<<<<<<<
  *     cdef double mem_factor = 1.0
  *     cdef double candidateProb = 0.0
  */
 
+static PyObject *__pyx_pw_16outlierDetection_13_eval_outlier_1evaluate(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static double __pyx_f_16outlierDetection_13_eval_outlier_evaluate(int __pyx_v_userId, __Pyx_memviewslice __pyx_v_history, int __pyx_v_historyLen, int __pyx_v_targetObjId, __Pyx_memviewslice __pyx_v_Theta_zh, __Pyx_memviewslice __pyx_v_Psi_sz, int __pyx_v_env, CYTHON_UNUSED int __pyx_skip_dispatch) {
+  double __pyx_v_mem_factor;
+  double __pyx_v_candidateProb;
+  int __pyx_v_j;
+  double __pyx_r;
+  int __pyx_t_1;
+  int __pyx_t_2;
+  Py_ssize_t __pyx_t_3;
+  Py_ssize_t __pyx_t_4;
+  Py_ssize_t __pyx_t_5;
+  Py_ssize_t __pyx_t_6;
+  Py_ssize_t __pyx_t_7;
+  Py_ssize_t __pyx_t_8;
+  Py_ssize_t __pyx_t_9;
+
+  /* "outlierDetection/_eval_outlier.pyx":5
+ * @boundscheck(False)
+ * cpdef double evaluate(int userId, int[:] history, int historyLen, int targetObjId, double[:, ::1] Theta_zh, double[:, ::1] Psi_sz, int env) nogil:
+ *     cdef double mem_factor = 1.0             # <<<<<<<<<<<<<<
+ *     cdef double candidateProb = 0.0
+ *     cdef int j = 0
+ */
+  __pyx_v_mem_factor = 1.0;
+
+  /* "outlierDetection/_eval_outlier.pyx":6
+ * cpdef double evaluate(int userId, int[:] history, int historyLen, int targetObjId, double[:, ::1] Theta_zh, double[:, ::1] Psi_sz, int env) nogil:
+ *     cdef double mem_factor = 1.0
+ *     cdef double candidateProb = 0.0             # <<<<<<<<<<<<<<
+ *     cdef int j = 0
+ *     for j in xrange(historyLen):#for all B
+ */
+  __pyx_v_candidateProb = 0.0;
+
+  /* "outlierDetection/_eval_outlier.pyx":7
+ *     cdef double mem_factor = 1.0
+ *     cdef double candidateProb = 0.0
+ *     cdef int j = 0             # <<<<<<<<<<<<<<
+ *     for j in xrange(historyLen):#for all B
+ *         #i.e. multiply all psi[objid1,z]*psi[objid2,z]*..psi[objidB,z]
+ */
+  __pyx_v_j = 0;
+
+  /* "outlierDetection/_eval_outlier.pyx":8
+ *     cdef double candidateProb = 0.0
+ *     cdef int j = 0
+ *     for j in xrange(historyLen):#for all B             # <<<<<<<<<<<<<<
+ *         #i.e. multiply all psi[objid1,z]*psi[objid2,z]*..psi[objidB,z]
+ *         mem_factor *= Psi_sz[history[j], env] # Psi[objId, env z]
+ */
+  __pyx_t_1 = __pyx_v_historyLen;
+  for (__pyx_t_2 = 0; __pyx_t_2 < __pyx_t_1; __pyx_t_2+=1) {
+    __pyx_v_j = __pyx_t_2;
+
+    /* "outlierDetection/_eval_outlier.pyx":10
+ *     for j in xrange(historyLen):#for all B
+ *         #i.e. multiply all psi[objid1,z]*psi[objid2,z]*..psi[objidB,z]
+ *         mem_factor *= Psi_sz[history[j], env] # Psi[objId, env z]             # <<<<<<<<<<<<<<
+ *     #mem_factor *= 1.0 / (1 - Psi_sz[history[len(history)-1], env])# 1-Psi_sz[mem[B-1],z] == 1-psi_sz[objIdB,z]
+ *     candidateProb += mem_factor * Psi_sz[targetObjId, env] * Theta_zh[env, userId]
+ */
+    __pyx_t_3 = __pyx_v_j;
+    if (__pyx_t_3 < 0) __pyx_t_3 += __pyx_v_history.shape[0];
+    __pyx_t_4 = (*((int *) ( /* dim=0 */ (__pyx_v_history.data + __pyx_t_3 * __pyx_v_history.strides[0]) )));
+    __pyx_t_5 = __pyx_v_env;
+    if (__pyx_t_4 < 0) __pyx_t_4 += __pyx_v_Psi_sz.shape[0];
+    if (__pyx_t_5 < 0) __pyx_t_5 += __pyx_v_Psi_sz.shape[1];
+    __pyx_v_mem_factor = (__pyx_v_mem_factor * (*((double *) ( /* dim=1 */ ((char *) (((double *) ( /* dim=0 */ (__pyx_v_Psi_sz.data + __pyx_t_4 * __pyx_v_Psi_sz.strides[0]) )) + __pyx_t_5)) ))));
+  }
+
+  /* "outlierDetection/_eval_outlier.pyx":12
+ *         mem_factor *= Psi_sz[history[j], env] # Psi[objId, env z]
+ *     #mem_factor *= 1.0 / (1 - Psi_sz[history[len(history)-1], env])# 1-Psi_sz[mem[B-1],z] == 1-psi_sz[objIdB,z]
+ *     candidateProb += mem_factor * Psi_sz[targetObjId, env] * Theta_zh[env, userId]             # <<<<<<<<<<<<<<
+ *     return candidateProb
+ * 
+ */
+  __pyx_t_6 = __pyx_v_targetObjId;
+  __pyx_t_7 = __pyx_v_env;
+  if (__pyx_t_6 < 0) __pyx_t_6 += __pyx_v_Psi_sz.shape[0];
+  if (__pyx_t_7 < 0) __pyx_t_7 += __pyx_v_Psi_sz.shape[1];
+  __pyx_t_8 = __pyx_v_env;
+  __pyx_t_9 = __pyx_v_userId;
+  if (__pyx_t_8 < 0) __pyx_t_8 += __pyx_v_Theta_zh.shape[0];
+  if (__pyx_t_9 < 0) __pyx_t_9 += __pyx_v_Theta_zh.shape[1];
+  __pyx_v_candidateProb = (__pyx_v_candidateProb + ((__pyx_v_mem_factor * (*((double *) ( /* dim=1 */ ((char *) (((double *) ( /* dim=0 */ (__pyx_v_Psi_sz.data + __pyx_t_6 * __pyx_v_Psi_sz.strides[0]) )) + __pyx_t_7)) )))) * (*((double *) ( /* dim=1 */ ((char *) (((double *) ( /* dim=0 */ (__pyx_v_Theta_zh.data + __pyx_t_8 * __pyx_v_Theta_zh.strides[0]) )) + __pyx_t_9)) )))));
+
+  /* "outlierDetection/_eval_outlier.pyx":13
+ *     #mem_factor *= 1.0 / (1 - Psi_sz[history[len(history)-1], env])# 1-Psi_sz[mem[B-1],z] == 1-psi_sz[objIdB,z]
+ *     candidateProb += mem_factor * Psi_sz[targetObjId, env] * Theta_zh[env, userId]
+ *     return candidateProb             # <<<<<<<<<<<<<<
+ * 
+ * @boundscheck(False)
+ */
+  __pyx_r = __pyx_v_candidateProb;
+  goto __pyx_L0;
+
+  /* "outlierDetection/_eval_outlier.pyx":4
+ * 
+ * @boundscheck(False)
+ * cpdef double evaluate(int userId, int[:] history, int historyLen, int targetObjId, double[:, ::1] Theta_zh, double[:, ::1] Psi_sz, int env) nogil:             # <<<<<<<<<<<<<<
+ *     cdef double mem_factor = 1.0
+ *     cdef double candidateProb = 0.0
+ */
+
+  /* function exit code */
+  __pyx_L0:;
+  return __pyx_r;
+}
+
 /* Python wrapper */
 static PyObject *__pyx_pw_16outlierDetection_13_eval_outlier_1evaluate(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static PyMethodDef __pyx_mdef_16outlierDetection_13_eval_outlier_1evaluate = {"evaluate", (PyCFunction)__pyx_pw_16outlierDetection_13_eval_outlier_1evaluate, METH_VARARGS|METH_KEYWORDS, 0};
 static PyObject *__pyx_pw_16outlierDetection_13_eval_outlier_1evaluate(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   int __pyx_v_userId;
   __Pyx_memviewslice __pyx_v_history = { 0, 0, { 0 }, { 0 }, { 0 } };
@@ -1618,161 +1671,23 @@ static PyObject *__pyx_pw_16outlierDetection_13_eval_outlier_1evaluate(PyObject 
 }
 
 static PyObject *__pyx_pf_16outlierDetection_13_eval_outlier_evaluate(CYTHON_UNUSED PyObject *__pyx_self, int __pyx_v_userId, __Pyx_memviewslice __pyx_v_history, int __pyx_v_historyLen, int __pyx_v_targetObjId, __Pyx_memviewslice __pyx_v_Theta_zh, __Pyx_memviewslice __pyx_v_Psi_sz, int __pyx_v_env) {
-  double __pyx_v_mem_factor;
-  double __pyx_v_candidateProb;
-  int __pyx_v_j;
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
-  int __pyx_t_1;
-  int __pyx_t_2;
-  Py_ssize_t __pyx_t_3;
-  int __pyx_t_4;
-  Py_ssize_t __pyx_t_5;
-  Py_ssize_t __pyx_t_6;
-  Py_ssize_t __pyx_t_7;
-  Py_ssize_t __pyx_t_8;
-  Py_ssize_t __pyx_t_9;
-  Py_ssize_t __pyx_t_10;
-  PyObject *__pyx_t_11 = NULL;
+  PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("evaluate", 0);
-
-  /* "outlierDetection/_eval_outlier.pyx":5
- * 
- * def evaluate(int userId, int[:] history, int historyLen, int targetObjId, double[:, ::1] Theta_zh, double[:, ::1] Psi_sz, int env):
- *     cdef double mem_factor = 1.0             # <<<<<<<<<<<<<<
- *     cdef double candidateProb = 0.0
- *     cdef int j = 0
- */
-  __pyx_v_mem_factor = 1.0;
-
-  /* "outlierDetection/_eval_outlier.pyx":6
- * def evaluate(int userId, int[:] history, int historyLen, int targetObjId, double[:, ::1] Theta_zh, double[:, ::1] Psi_sz, int env):
- *     cdef double mem_factor = 1.0
- *     cdef double candidateProb = 0.0             # <<<<<<<<<<<<<<
- *     cdef int j = 0
- *     for j in xrange(historyLen):#for all B
- */
-  __pyx_v_candidateProb = 0.0;
-
-  /* "outlierDetection/_eval_outlier.pyx":7
- *     cdef double mem_factor = 1.0
- *     cdef double candidateProb = 0.0
- *     cdef int j = 0             # <<<<<<<<<<<<<<
- *     for j in xrange(historyLen):#for all B
- *         #i.e. multiply all psi[objid1,z]*psi[objid2,z]*..psi[objidB,z]
- */
-  __pyx_v_j = 0;
-
-  /* "outlierDetection/_eval_outlier.pyx":8
- *     cdef double candidateProb = 0.0
- *     cdef int j = 0
- *     for j in xrange(historyLen):#for all B             # <<<<<<<<<<<<<<
- *         #i.e. multiply all psi[objid1,z]*psi[objid2,z]*..psi[objidB,z]
- *         mem_factor *= Psi_sz[history[j], env] # Psi[objId, env z]
- */
-  __pyx_t_1 = __pyx_v_historyLen;
-  for (__pyx_t_2 = 0; __pyx_t_2 < __pyx_t_1; __pyx_t_2+=1) {
-    __pyx_v_j = __pyx_t_2;
-
-    /* "outlierDetection/_eval_outlier.pyx":10
- *     for j in xrange(historyLen):#for all B
- *         #i.e. multiply all psi[objid1,z]*psi[objid2,z]*..psi[objidB,z]
- *         mem_factor *= Psi_sz[history[j], env] # Psi[objId, env z]             # <<<<<<<<<<<<<<
- *     #mem_factor *= 1.0 / (1 - Psi_sz[history[len(history)-1], env])# 1-Psi_sz[mem[B-1],z] == 1-psi_sz[objIdB,z]
- *     candidateProb += mem_factor * Psi_sz[targetObjId, env] * Theta_zh[env, userId]
- */
-    __pyx_t_3 = __pyx_v_j;
-    __pyx_t_4 = -1;
-    if (__pyx_t_3 < 0) {
-      __pyx_t_3 += __pyx_v_history.shape[0];
-      if (unlikely(__pyx_t_3 < 0)) __pyx_t_4 = 0;
-    } else if (unlikely(__pyx_t_3 >= __pyx_v_history.shape[0])) __pyx_t_4 = 0;
-    if (unlikely(__pyx_t_4 != -1)) {
-      __Pyx_RaiseBufferIndexError(__pyx_t_4);
-      __PYX_ERR(0, 10, __pyx_L1_error)
-    }
-    __pyx_t_5 = (*((int *) ( /* dim=0 */ (__pyx_v_history.data + __pyx_t_3 * __pyx_v_history.strides[0]) )));
-    __pyx_t_6 = __pyx_v_env;
-    __pyx_t_4 = -1;
-    if (__pyx_t_5 < 0) {
-      __pyx_t_5 += __pyx_v_Psi_sz.shape[0];
-      if (unlikely(__pyx_t_5 < 0)) __pyx_t_4 = 0;
-    } else if (unlikely(__pyx_t_5 >= __pyx_v_Psi_sz.shape[0])) __pyx_t_4 = 0;
-    if (__pyx_t_6 < 0) {
-      __pyx_t_6 += __pyx_v_Psi_sz.shape[1];
-      if (unlikely(__pyx_t_6 < 0)) __pyx_t_4 = 1;
-    } else if (unlikely(__pyx_t_6 >= __pyx_v_Psi_sz.shape[1])) __pyx_t_4 = 1;
-    if (unlikely(__pyx_t_4 != -1)) {
-      __Pyx_RaiseBufferIndexError(__pyx_t_4);
-      __PYX_ERR(0, 10, __pyx_L1_error)
-    }
-    __pyx_v_mem_factor = (__pyx_v_mem_factor * (*((double *) ( /* dim=1 */ ((char *) (((double *) ( /* dim=0 */ (__pyx_v_Psi_sz.data + __pyx_t_5 * __pyx_v_Psi_sz.strides[0]) )) + __pyx_t_6)) ))));
-  }
-
-  /* "outlierDetection/_eval_outlier.pyx":12
- *         mem_factor *= Psi_sz[history[j], env] # Psi[objId, env z]
- *     #mem_factor *= 1.0 / (1 - Psi_sz[history[len(history)-1], env])# 1-Psi_sz[mem[B-1],z] == 1-psi_sz[objIdB,z]
- *     candidateProb += mem_factor * Psi_sz[targetObjId, env] * Theta_zh[env, userId]             # <<<<<<<<<<<<<<
- *     return candidateProb
- * 
- */
-  __pyx_t_7 = __pyx_v_targetObjId;
-  __pyx_t_8 = __pyx_v_env;
-  __pyx_t_1 = -1;
-  if (__pyx_t_7 < 0) {
-    __pyx_t_7 += __pyx_v_Psi_sz.shape[0];
-    if (unlikely(__pyx_t_7 < 0)) __pyx_t_1 = 0;
-  } else if (unlikely(__pyx_t_7 >= __pyx_v_Psi_sz.shape[0])) __pyx_t_1 = 0;
-  if (__pyx_t_8 < 0) {
-    __pyx_t_8 += __pyx_v_Psi_sz.shape[1];
-    if (unlikely(__pyx_t_8 < 0)) __pyx_t_1 = 1;
-  } else if (unlikely(__pyx_t_8 >= __pyx_v_Psi_sz.shape[1])) __pyx_t_1 = 1;
-  if (unlikely(__pyx_t_1 != -1)) {
-    __Pyx_RaiseBufferIndexError(__pyx_t_1);
-    __PYX_ERR(0, 12, __pyx_L1_error)
-  }
-  __pyx_t_9 = __pyx_v_env;
-  __pyx_t_10 = __pyx_v_userId;
-  __pyx_t_1 = -1;
-  if (__pyx_t_9 < 0) {
-    __pyx_t_9 += __pyx_v_Theta_zh.shape[0];
-    if (unlikely(__pyx_t_9 < 0)) __pyx_t_1 = 0;
-  } else if (unlikely(__pyx_t_9 >= __pyx_v_Theta_zh.shape[0])) __pyx_t_1 = 0;
-  if (__pyx_t_10 < 0) {
-    __pyx_t_10 += __pyx_v_Theta_zh.shape[1];
-    if (unlikely(__pyx_t_10 < 0)) __pyx_t_1 = 1;
-  } else if (unlikely(__pyx_t_10 >= __pyx_v_Theta_zh.shape[1])) __pyx_t_1 = 1;
-  if (unlikely(__pyx_t_1 != -1)) {
-    __Pyx_RaiseBufferIndexError(__pyx_t_1);
-    __PYX_ERR(0, 12, __pyx_L1_error)
-  }
-  __pyx_v_candidateProb = (__pyx_v_candidateProb + ((__pyx_v_mem_factor * (*((double *) ( /* dim=1 */ ((char *) (((double *) ( /* dim=0 */ (__pyx_v_Psi_sz.data + __pyx_t_7 * __pyx_v_Psi_sz.strides[0]) )) + __pyx_t_8)) )))) * (*((double *) ( /* dim=1 */ ((char *) (((double *) ( /* dim=0 */ (__pyx_v_Theta_zh.data + __pyx_t_9 * __pyx_v_Theta_zh.strides[0]) )) + __pyx_t_10)) )))));
-
-  /* "outlierDetection/_eval_outlier.pyx":13
- *     #mem_factor *= 1.0 / (1 - Psi_sz[history[len(history)-1], env])# 1-Psi_sz[mem[B-1],z] == 1-psi_sz[objIdB,z]
- *     candidateProb += mem_factor * Psi_sz[targetObjId, env] * Theta_zh[env, userId]
- *     return candidateProb             # <<<<<<<<<<<<<<
- * 
- * def calculateSequenceProb(int[:] theSequence, int theSequenceLen, int true_mem_size, int userId, double[:, ::1] Theta_zh, double[:, ::1] Psi_sz):
- */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_11 = PyFloat_FromDouble(__pyx_v_candidateProb); if (unlikely(!__pyx_t_11)) __PYX_ERR(0, 13, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_11);
-  __pyx_r = __pyx_t_11;
-  __pyx_t_11 = 0;
+  if (unlikely(!__pyx_v_history.memview)) { __Pyx_RaiseUnboundLocalError("history"); __PYX_ERR(0, 4, __pyx_L1_error) }
+  if (unlikely(!__pyx_v_Theta_zh.memview)) { __Pyx_RaiseUnboundLocalError("Theta_zh"); __PYX_ERR(0, 4, __pyx_L1_error) }
+  if (unlikely(!__pyx_v_Psi_sz.memview)) { __Pyx_RaiseUnboundLocalError("Psi_sz"); __PYX_ERR(0, 4, __pyx_L1_error) }
+  __pyx_t_1 = PyFloat_FromDouble(__pyx_f_16outlierDetection_13_eval_outlier_evaluate(__pyx_v_userId, __pyx_v_history, __pyx_v_historyLen, __pyx_v_targetObjId, __pyx_v_Theta_zh, __pyx_v_Psi_sz, __pyx_v_env, 0)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
   goto __pyx_L0;
-
-  /* "outlierDetection/_eval_outlier.pyx":4
- * 
- * 
- * def evaluate(int userId, int[:] history, int historyLen, int targetObjId, double[:, ::1] Theta_zh, double[:, ::1] Psi_sz, int env):             # <<<<<<<<<<<<<<
- *     cdef double mem_factor = 1.0
- *     cdef double candidateProb = 0.0
- */
 
   /* function exit code */
   __pyx_L1_error:;
-  __Pyx_XDECREF(__pyx_t_11);
+  __Pyx_XDECREF(__pyx_t_1);
   __Pyx_AddTraceback("outlierDetection._eval_outlier.evaluate", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
@@ -1784,17 +1699,352 @@ static PyObject *__pyx_pf_16outlierDetection_13_eval_outlier_evaluate(CYTHON_UNU
   return __pyx_r;
 }
 
-/* "outlierDetection/_eval_outlier.pyx":15
- *     return candidateProb
+/* "outlierDetection/_eval_outlier.pyx":16
  * 
- * def calculateSequenceProb(int[:] theSequence, int theSequenceLen, int true_mem_size, int userId, double[:, ::1] Theta_zh, double[:, ::1] Psi_sz):             # <<<<<<<<<<<<<<
+ * @boundscheck(False)
+ * cpdef double calculateSequenceProb(int[:] theSequence, int theSequenceLen, int true_mem_size, int userId, double[:, ::1] Theta_zh, double[:, ::1] Psi_sz) nogil:             # <<<<<<<<<<<<<<
  *     cdef double seqProb = 0.0
  *     cdef double seqProbZ = 1.0
  */
 
+static PyObject *__pyx_pw_16outlierDetection_13_eval_outlier_3calculateSequenceProb(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static double __pyx_f_16outlierDetection_13_eval_outlier_calculateSequenceProb(__Pyx_memviewslice __pyx_v_theSequence, int __pyx_v_theSequenceLen, int __pyx_v_true_mem_size, int __pyx_v_userId, __Pyx_memviewslice __pyx_v_Theta_zh, __Pyx_memviewslice __pyx_v_Psi_sz, CYTHON_UNUSED int __pyx_skip_dispatch) {
+  double __pyx_v_seqProb;
+  double __pyx_v_seqProbZ;
+  int __pyx_v_targetObjId;
+  double __pyx_v_prior;
+  double __pyx_v_candProb;
+  int __pyx_v_window;
+  __Pyx_memviewslice __pyx_v_history = { 0, 0, { 0 }, { 0 }, { 0 } };
+  int __pyx_v_historyLen;
+  int __pyx_v_targetObjIdx;
+  int __pyx_v_z;
+  CYTHON_UNUSED int __pyx_v_i;
+  int __pyx_v_wmax;
+  double __pyx_r;
+  int __pyx_t_1;
+  int __pyx_t_2;
+  int __pyx_t_3;
+  Py_ssize_t __pyx_t_4;
+  int __pyx_t_5;
+  Py_ssize_t __pyx_t_6;
+  Py_ssize_t __pyx_t_7;
+  Py_ssize_t __pyx_t_8;
+  Py_ssize_t __pyx_t_9;
+  int __pyx_t_10;
+  long __pyx_t_11;
+  long __pyx_t_12;
+  __Pyx_memviewslice __pyx_t_13 = { 0, 0, { 0 }, { 0 }, { 0 } };
+
+  /* "outlierDetection/_eval_outlier.pyx":17
+ * @boundscheck(False)
+ * cpdef double calculateSequenceProb(int[:] theSequence, int theSequenceLen, int true_mem_size, int userId, double[:, ::1] Theta_zh, double[:, ::1] Psi_sz) nogil:
+ *     cdef double seqProb = 0.0             # <<<<<<<<<<<<<<
+ *     cdef double seqProbZ = 1.0
+ *     cdef int targetObjId = -1
+ */
+  __pyx_v_seqProb = 0.0;
+
+  /* "outlierDetection/_eval_outlier.pyx":18
+ * cpdef double calculateSequenceProb(int[:] theSequence, int theSequenceLen, int true_mem_size, int userId, double[:, ::1] Theta_zh, double[:, ::1] Psi_sz) nogil:
+ *     cdef double seqProb = 0.0
+ *     cdef double seqProbZ = 1.0             # <<<<<<<<<<<<<<
+ *     cdef int targetObjId = -1
+ *     cdef double prior = 0.0
+ */
+  __pyx_v_seqProbZ = 1.0;
+
+  /* "outlierDetection/_eval_outlier.pyx":19
+ *     cdef double seqProb = 0.0
+ *     cdef double seqProbZ = 1.0
+ *     cdef int targetObjId = -1             # <<<<<<<<<<<<<<
+ *     cdef double prior = 0.0
+ *     cdef double candProb = 0.0
+ */
+  __pyx_v_targetObjId = -1;
+
+  /* "outlierDetection/_eval_outlier.pyx":20
+ *     cdef double seqProbZ = 1.0
+ *     cdef int targetObjId = -1
+ *     cdef double prior = 0.0             # <<<<<<<<<<<<<<
+ *     cdef double candProb = 0.0
+ *     cdef int window = 0
+ */
+  __pyx_v_prior = 0.0;
+
+  /* "outlierDetection/_eval_outlier.pyx":21
+ *     cdef int targetObjId = -1
+ *     cdef double prior = 0.0
+ *     cdef double candProb = 0.0             # <<<<<<<<<<<<<<
+ *     cdef int window = 0
+ *     #cdef int[:] history = np.zeros(theSequenceLen, dtype='i4')
+ */
+  __pyx_v_candProb = 0.0;
+
+  /* "outlierDetection/_eval_outlier.pyx":22
+ *     cdef double prior = 0.0
+ *     cdef double candProb = 0.0
+ *     cdef int window = 0             # <<<<<<<<<<<<<<
+ *     #cdef int[:] history = np.zeros(theSequenceLen, dtype='i4')
+ *     cdef int[:] history
+ */
+  __pyx_v_window = 0;
+
+  /* "outlierDetection/_eval_outlier.pyx":25
+ *     #cdef int[:] history = np.zeros(theSequenceLen, dtype='i4')
+ *     cdef int[:] history
+ *     cdef int historyLen = 0             # <<<<<<<<<<<<<<
+ *     cdef int targetObjIdx, z, i = 0
+ *     cdef int wmax = 0
+ */
+  __pyx_v_historyLen = 0;
+
+  /* "outlierDetection/_eval_outlier.pyx":26
+ *     cdef int[:] history
+ *     cdef int historyLen = 0
+ *     cdef int targetObjIdx, z, i = 0             # <<<<<<<<<<<<<<
+ *     cdef int wmax = 0
+ * 
+ */
+  __pyx_v_i = 0;
+
+  /* "outlierDetection/_eval_outlier.pyx":27
+ *     cdef int historyLen = 0
+ *     cdef int targetObjIdx, z, i = 0
+ *     cdef int wmax = 0             # <<<<<<<<<<<<<<
+ * 
+ *     window = min(true_mem_size, theSequenceLen)
+ */
+  __pyx_v_wmax = 0;
+
+  /* "outlierDetection/_eval_outlier.pyx":29
+ *     cdef int wmax = 0
+ * 
+ *     window = min(true_mem_size, theSequenceLen)             # <<<<<<<<<<<<<<
+ *     for z in xrange(Psi_sz.shape[1]): #for envs
+ *         seqProbZ = 1.0
+ */
+  __pyx_t_1 = __pyx_v_theSequenceLen;
+  __pyx_t_2 = __pyx_v_true_mem_size;
+  if (((__pyx_t_1 < __pyx_t_2) != 0)) {
+    __pyx_t_3 = __pyx_t_1;
+  } else {
+    __pyx_t_3 = __pyx_t_2;
+  }
+  __pyx_v_window = __pyx_t_3;
+
+  /* "outlierDetection/_eval_outlier.pyx":30
+ * 
+ *     window = min(true_mem_size, theSequenceLen)
+ *     for z in xrange(Psi_sz.shape[1]): #for envs             # <<<<<<<<<<<<<<
+ *         seqProbZ = 1.0
+ *         for targetObjIdx in range(0,theSequenceLen): #targetObjIdx=0 cannot be predicted we have to skip it
+ */
+  __pyx_t_4 = (__pyx_v_Psi_sz.shape[1]);
+  for (__pyx_t_3 = 0; __pyx_t_3 < __pyx_t_4; __pyx_t_3+=1) {
+    __pyx_v_z = __pyx_t_3;
+
+    /* "outlierDetection/_eval_outlier.pyx":31
+ *     window = min(true_mem_size, theSequenceLen)
+ *     for z in xrange(Psi_sz.shape[1]): #for envs
+ *         seqProbZ = 1.0             # <<<<<<<<<<<<<<
+ *         for targetObjIdx in range(0,theSequenceLen): #targetObjIdx=0 cannot be predicted we have to skip it
+ *             if(targetObjIdx == 0):
+ */
+    __pyx_v_seqProbZ = 1.0;
+
+    /* "outlierDetection/_eval_outlier.pyx":32
+ *     for z in xrange(Psi_sz.shape[1]): #for envs
+ *         seqProbZ = 1.0
+ *         for targetObjIdx in range(0,theSequenceLen): #targetObjIdx=0 cannot be predicted we have to skip it             # <<<<<<<<<<<<<<
+ *             if(targetObjIdx == 0):
+ *                 targetObjId = theSequence[targetObjIdx]
+ */
+    __pyx_t_1 = __pyx_v_theSequenceLen;
+    for (__pyx_t_2 = 0; __pyx_t_2 < __pyx_t_1; __pyx_t_2+=1) {
+      __pyx_v_targetObjIdx = __pyx_t_2;
+
+      /* "outlierDetection/_eval_outlier.pyx":33
+ *         seqProbZ = 1.0
+ *         for targetObjIdx in range(0,theSequenceLen): #targetObjIdx=0 cannot be predicted we have to skip it
+ *             if(targetObjIdx == 0):             # <<<<<<<<<<<<<<
+ *                 targetObjId = theSequence[targetObjIdx]
+ *                 prior = Psi_sz[targetObjId, z]
+ */
+      __pyx_t_5 = ((__pyx_v_targetObjIdx == 0) != 0);
+      if (__pyx_t_5) {
+
+        /* "outlierDetection/_eval_outlier.pyx":34
+ *         for targetObjIdx in range(0,theSequenceLen): #targetObjIdx=0 cannot be predicted we have to skip it
+ *             if(targetObjIdx == 0):
+ *                 targetObjId = theSequence[targetObjIdx]             # <<<<<<<<<<<<<<
+ *                 prior = Psi_sz[targetObjId, z]
+ *                 seqProbZ *= prior
+ */
+        __pyx_t_6 = __pyx_v_targetObjIdx;
+        if (__pyx_t_6 < 0) __pyx_t_6 += __pyx_v_theSequence.shape[0];
+        __pyx_v_targetObjId = (*((int *) ( /* dim=0 */ (__pyx_v_theSequence.data + __pyx_t_6 * __pyx_v_theSequence.strides[0]) )));
+
+        /* "outlierDetection/_eval_outlier.pyx":35
+ *             if(targetObjIdx == 0):
+ *                 targetObjId = theSequence[targetObjIdx]
+ *                 prior = Psi_sz[targetObjId, z]             # <<<<<<<<<<<<<<
+ *                 seqProbZ *= prior
+ *             else:
+ */
+        __pyx_t_7 = __pyx_v_targetObjId;
+        __pyx_t_8 = __pyx_v_z;
+        if (__pyx_t_7 < 0) __pyx_t_7 += __pyx_v_Psi_sz.shape[0];
+        if (__pyx_t_8 < 0) __pyx_t_8 += __pyx_v_Psi_sz.shape[1];
+        __pyx_v_prior = (*((double *) ( /* dim=1 */ ((char *) (((double *) ( /* dim=0 */ (__pyx_v_Psi_sz.data + __pyx_t_7 * __pyx_v_Psi_sz.strides[0]) )) + __pyx_t_8)) )));
+
+        /* "outlierDetection/_eval_outlier.pyx":36
+ *                 targetObjId = theSequence[targetObjIdx]
+ *                 prior = Psi_sz[targetObjId, z]
+ *                 seqProbZ *= prior             # <<<<<<<<<<<<<<
+ *             else:
+ *                 targetObjId = theSequence[targetObjIdx]
+ */
+        __pyx_v_seqProbZ = (__pyx_v_seqProbZ * __pyx_v_prior);
+
+        /* "outlierDetection/_eval_outlier.pyx":33
+ *         seqProbZ = 1.0
+ *         for targetObjIdx in range(0,theSequenceLen): #targetObjIdx=0 cannot be predicted we have to skip it
+ *             if(targetObjIdx == 0):             # <<<<<<<<<<<<<<
+ *                 targetObjId = theSequence[targetObjIdx]
+ *                 prior = Psi_sz[targetObjId, z]
+ */
+        goto __pyx_L7;
+      }
+
+      /* "outlierDetection/_eval_outlier.pyx":38
+ *                 seqProbZ *= prior
+ *             else:
+ *                 targetObjId = theSequence[targetObjIdx]             # <<<<<<<<<<<<<<
+ *                 wmax = max(0,targetObjIdx-window)
+ *                 history = theSequence[wmax: targetObjIdx] # look back 'window' actions.
+ */
+      /*else*/ {
+        __pyx_t_9 = __pyx_v_targetObjIdx;
+        if (__pyx_t_9 < 0) __pyx_t_9 += __pyx_v_theSequence.shape[0];
+        __pyx_v_targetObjId = (*((int *) ( /* dim=0 */ (__pyx_v_theSequence.data + __pyx_t_9 * __pyx_v_theSequence.strides[0]) )));
+
+        /* "outlierDetection/_eval_outlier.pyx":39
+ *             else:
+ *                 targetObjId = theSequence[targetObjIdx]
+ *                 wmax = max(0,targetObjIdx-window)             # <<<<<<<<<<<<<<
+ *                 history = theSequence[wmax: targetObjIdx] # look back 'window' actions.
+ *                 historyLen = targetObjIdx-wmax
+ */
+        __pyx_t_10 = (__pyx_v_targetObjIdx - __pyx_v_window);
+        __pyx_t_11 = 0;
+        if (((__pyx_t_10 > __pyx_t_11) != 0)) {
+          __pyx_t_12 = __pyx_t_10;
+        } else {
+          __pyx_t_12 = __pyx_t_11;
+        }
+        __pyx_v_wmax = __pyx_t_12;
+
+        /* "outlierDetection/_eval_outlier.pyx":40
+ *                 targetObjId = theSequence[targetObjIdx]
+ *                 wmax = max(0,targetObjIdx-window)
+ *                 history = theSequence[wmax: targetObjIdx] # look back 'window' actions.             # <<<<<<<<<<<<<<
+ *                 historyLen = targetObjIdx-wmax
+ *                 candProb = evaluate(userId, history, historyLen, targetObjId, Theta_zh, Psi_sz, z) #(int[:, ::1] HOs, double[:, ::1] Theta_zh, double[:, ::1] Psi_sz, int[::1] count_z, int env):
+ */
+        __pyx_t_13.data = __pyx_v_theSequence.data;
+        __pyx_t_13.memview = __pyx_v_theSequence.memview;
+        __PYX_INC_MEMVIEW(&__pyx_t_13, 0);
+        __pyx_t_10 = -1;
+        if (unlikely(__pyx_memoryview_slice_memviewslice(
+    &__pyx_t_13,
+    __pyx_v_theSequence.shape[0], __pyx_v_theSequence.strides[0], __pyx_v_theSequence.suboffsets[0],
+    0,
+    0,
+    &__pyx_t_10,
+    __pyx_v_wmax,
+    __pyx_v_targetObjIdx,
+    0,
+    1,
+    1,
+    0,
+    1) < 0))
+{
+    __PYX_ERR(0, 40, __pyx_L1_error)
+}
+
+__PYX_XDEC_MEMVIEW(&__pyx_v_history, 0);
+        __pyx_v_history = __pyx_t_13;
+        __pyx_t_13.memview = NULL;
+        __pyx_t_13.data = NULL;
+
+        /* "outlierDetection/_eval_outlier.pyx":41
+ *                 wmax = max(0,targetObjIdx-window)
+ *                 history = theSequence[wmax: targetObjIdx] # look back 'window' actions.
+ *                 historyLen = targetObjIdx-wmax             # <<<<<<<<<<<<<<
+ *                 candProb = evaluate(userId, history, historyLen, targetObjId, Theta_zh, Psi_sz, z) #(int[:, ::1] HOs, double[:, ::1] Theta_zh, double[:, ::1] Psi_sz, int[::1] count_z, int env):
+ *                 seqProbZ *= candProb
+ */
+        __pyx_v_historyLen = (__pyx_v_targetObjIdx - __pyx_v_wmax);
+
+        /* "outlierDetection/_eval_outlier.pyx":42
+ *                 history = theSequence[wmax: targetObjIdx] # look back 'window' actions.
+ *                 historyLen = targetObjIdx-wmax
+ *                 candProb = evaluate(userId, history, historyLen, targetObjId, Theta_zh, Psi_sz, z) #(int[:, ::1] HOs, double[:, ::1] Theta_zh, double[:, ::1] Psi_sz, int[::1] count_z, int env):             # <<<<<<<<<<<<<<
+ *                 seqProbZ *= candProb
+ *         seqProb += seqProbZ
+ */
+        __pyx_v_candProb = __pyx_f_16outlierDetection_13_eval_outlier_evaluate(__pyx_v_userId, __pyx_v_history, __pyx_v_historyLen, __pyx_v_targetObjId, __pyx_v_Theta_zh, __pyx_v_Psi_sz, __pyx_v_z, 0);
+
+        /* "outlierDetection/_eval_outlier.pyx":43
+ *                 historyLen = targetObjIdx-wmax
+ *                 candProb = evaluate(userId, history, historyLen, targetObjId, Theta_zh, Psi_sz, z) #(int[:, ::1] HOs, double[:, ::1] Theta_zh, double[:, ::1] Psi_sz, int[::1] count_z, int env):
+ *                 seqProbZ *= candProb             # <<<<<<<<<<<<<<
+ *         seqProb += seqProbZ
+ *     return seqProb
+ */
+        __pyx_v_seqProbZ = (__pyx_v_seqProbZ * __pyx_v_candProb);
+      }
+      __pyx_L7:;
+    }
+
+    /* "outlierDetection/_eval_outlier.pyx":44
+ *                 candProb = evaluate(userId, history, historyLen, targetObjId, Theta_zh, Psi_sz, z) #(int[:, ::1] HOs, double[:, ::1] Theta_zh, double[:, ::1] Psi_sz, int[::1] count_z, int env):
+ *                 seqProbZ *= candProb
+ *         seqProb += seqProbZ             # <<<<<<<<<<<<<<
+ *     return seqProb
+ */
+    __pyx_v_seqProb = (__pyx_v_seqProb + __pyx_v_seqProbZ);
+  }
+
+  /* "outlierDetection/_eval_outlier.pyx":45
+ *                 seqProbZ *= candProb
+ *         seqProb += seqProbZ
+ *     return seqProb             # <<<<<<<<<<<<<<
+ */
+  __pyx_r = __pyx_v_seqProb;
+  goto __pyx_L0;
+
+  /* "outlierDetection/_eval_outlier.pyx":16
+ * 
+ * @boundscheck(False)
+ * cpdef double calculateSequenceProb(int[:] theSequence, int theSequenceLen, int true_mem_size, int userId, double[:, ::1] Theta_zh, double[:, ::1] Psi_sz) nogil:             # <<<<<<<<<<<<<<
+ *     cdef double seqProb = 0.0
+ *     cdef double seqProbZ = 1.0
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __PYX_XDEC_MEMVIEW(&__pyx_t_13, 0);
+  __Pyx_WriteUnraisable("outlierDetection._eval_outlier.calculateSequenceProb", __pyx_clineno, __pyx_lineno, __pyx_filename, 0, 1);
+  __pyx_r = 0;
+  __pyx_L0:;
+  __PYX_XDEC_MEMVIEW(&__pyx_v_history, 0);
+  return __pyx_r;
+}
+
 /* Python wrapper */
 static PyObject *__pyx_pw_16outlierDetection_13_eval_outlier_3calculateSequenceProb(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static PyMethodDef __pyx_mdef_16outlierDetection_13_eval_outlier_3calculateSequenceProb = {"calculateSequenceProb", (PyCFunction)__pyx_pw_16outlierDetection_13_eval_outlier_3calculateSequenceProb, METH_VARARGS|METH_KEYWORDS, 0};
 static PyObject *__pyx_pw_16outlierDetection_13_eval_outlier_3calculateSequenceProb(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   __Pyx_memviewslice __pyx_v_theSequence = { 0, 0, { 0 }, { 0 }, { 0 } };
   int __pyx_v_theSequenceLen;
@@ -1829,31 +2079,31 @@ static PyObject *__pyx_pw_16outlierDetection_13_eval_outlier_3calculateSequenceP
         case  1:
         if (likely((values[1] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_theSequenceLen)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("calculateSequenceProb", 1, 6, 6, 1); __PYX_ERR(0, 15, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("calculateSequenceProb", 1, 6, 6, 1); __PYX_ERR(0, 16, __pyx_L3_error)
         }
         case  2:
         if (likely((values[2] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_true_mem_size)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("calculateSequenceProb", 1, 6, 6, 2); __PYX_ERR(0, 15, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("calculateSequenceProb", 1, 6, 6, 2); __PYX_ERR(0, 16, __pyx_L3_error)
         }
         case  3:
         if (likely((values[3] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_userId)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("calculateSequenceProb", 1, 6, 6, 3); __PYX_ERR(0, 15, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("calculateSequenceProb", 1, 6, 6, 3); __PYX_ERR(0, 16, __pyx_L3_error)
         }
         case  4:
         if (likely((values[4] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_Theta_zh)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("calculateSequenceProb", 1, 6, 6, 4); __PYX_ERR(0, 15, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("calculateSequenceProb", 1, 6, 6, 4); __PYX_ERR(0, 16, __pyx_L3_error)
         }
         case  5:
         if (likely((values[5] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_Psi_sz)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("calculateSequenceProb", 1, 6, 6, 5); __PYX_ERR(0, 15, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("calculateSequenceProb", 1, 6, 6, 5); __PYX_ERR(0, 16, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "calculateSequenceProb") < 0)) __PYX_ERR(0, 15, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "calculateSequenceProb") < 0)) __PYX_ERR(0, 16, __pyx_L3_error)
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) != 6) {
       goto __pyx_L5_argtuple_error;
@@ -1865,16 +2115,16 @@ static PyObject *__pyx_pw_16outlierDetection_13_eval_outlier_3calculateSequenceP
       values[4] = PyTuple_GET_ITEM(__pyx_args, 4);
       values[5] = PyTuple_GET_ITEM(__pyx_args, 5);
     }
-    __pyx_v_theSequence = __Pyx_PyObject_to_MemoryviewSlice_ds_int(values[0]); if (unlikely(!__pyx_v_theSequence.memview)) __PYX_ERR(0, 15, __pyx_L3_error)
-    __pyx_v_theSequenceLen = __Pyx_PyInt_As_int(values[1]); if (unlikely((__pyx_v_theSequenceLen == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 15, __pyx_L3_error)
-    __pyx_v_true_mem_size = __Pyx_PyInt_As_int(values[2]); if (unlikely((__pyx_v_true_mem_size == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 15, __pyx_L3_error)
-    __pyx_v_userId = __Pyx_PyInt_As_int(values[3]); if (unlikely((__pyx_v_userId == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 15, __pyx_L3_error)
-    __pyx_v_Theta_zh = __Pyx_PyObject_to_MemoryviewSlice_d_dc_double(values[4]); if (unlikely(!__pyx_v_Theta_zh.memview)) __PYX_ERR(0, 15, __pyx_L3_error)
-    __pyx_v_Psi_sz = __Pyx_PyObject_to_MemoryviewSlice_d_dc_double(values[5]); if (unlikely(!__pyx_v_Psi_sz.memview)) __PYX_ERR(0, 15, __pyx_L3_error)
+    __pyx_v_theSequence = __Pyx_PyObject_to_MemoryviewSlice_ds_int(values[0]); if (unlikely(!__pyx_v_theSequence.memview)) __PYX_ERR(0, 16, __pyx_L3_error)
+    __pyx_v_theSequenceLen = __Pyx_PyInt_As_int(values[1]); if (unlikely((__pyx_v_theSequenceLen == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 16, __pyx_L3_error)
+    __pyx_v_true_mem_size = __Pyx_PyInt_As_int(values[2]); if (unlikely((__pyx_v_true_mem_size == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 16, __pyx_L3_error)
+    __pyx_v_userId = __Pyx_PyInt_As_int(values[3]); if (unlikely((__pyx_v_userId == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 16, __pyx_L3_error)
+    __pyx_v_Theta_zh = __Pyx_PyObject_to_MemoryviewSlice_d_dc_double(values[4]); if (unlikely(!__pyx_v_Theta_zh.memview)) __PYX_ERR(0, 16, __pyx_L3_error)
+    __pyx_v_Psi_sz = __Pyx_PyObject_to_MemoryviewSlice_d_dc_double(values[5]); if (unlikely(!__pyx_v_Psi_sz.memview)) __PYX_ERR(0, 16, __pyx_L3_error)
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("calculateSequenceProb", 1, 6, 6, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 15, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("calculateSequenceProb", 1, 6, 6, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 16, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("outlierDetection._eval_outlier.calculateSequenceProb", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -1888,454 +2138,26 @@ static PyObject *__pyx_pw_16outlierDetection_13_eval_outlier_3calculateSequenceP
 }
 
 static PyObject *__pyx_pf_16outlierDetection_13_eval_outlier_2calculateSequenceProb(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_theSequence, int __pyx_v_theSequenceLen, int __pyx_v_true_mem_size, int __pyx_v_userId, __Pyx_memviewslice __pyx_v_Theta_zh, __Pyx_memviewslice __pyx_v_Psi_sz) {
-  double __pyx_v_seqProb;
-  double __pyx_v_seqProbZ;
-  int __pyx_v_targetObjId;
-  double __pyx_v_prior;
-  double __pyx_v_candProb;
-  int __pyx_v_window;
-  __Pyx_memviewslice __pyx_v_history = { 0, 0, { 0 }, { 0 }, { 0 } };
-  int __pyx_v_targetObjIdx;
-  int __pyx_v_z;
-  CYTHON_UNUSED int __pyx_v_i;
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
-  PyObject *__pyx_t_2 = NULL;
-  PyObject *__pyx_t_3 = NULL;
-  PyObject *__pyx_t_4 = NULL;
-  __Pyx_memviewslice __pyx_t_5 = { 0, 0, { 0 }, { 0 }, { 0 } };
-  int __pyx_t_6;
-  int __pyx_t_7;
-  int __pyx_t_8;
-  Py_ssize_t __pyx_t_9;
-  int __pyx_t_10;
-  Py_ssize_t __pyx_t_11;
-  int __pyx_t_12;
-  Py_ssize_t __pyx_t_13;
-  Py_ssize_t __pyx_t_14;
-  Py_ssize_t __pyx_t_15;
-  long __pyx_t_16;
-  long __pyx_t_17;
-  PyObject *__pyx_t_18 = NULL;
-  Py_ssize_t __pyx_t_19;
-  PyObject *__pyx_t_20 = NULL;
-  PyObject *__pyx_t_21 = NULL;
-  PyObject *__pyx_t_22 = NULL;
-  PyObject *__pyx_t_23 = NULL;
-  PyObject *__pyx_t_24 = NULL;
-  PyObject *__pyx_t_25 = NULL;
-  double __pyx_t_26;
   __Pyx_RefNannySetupContext("calculateSequenceProb", 0);
-
-  /* "outlierDetection/_eval_outlier.pyx":16
- * 
- * def calculateSequenceProb(int[:] theSequence, int theSequenceLen, int true_mem_size, int userId, double[:, ::1] Theta_zh, double[:, ::1] Psi_sz):
- *     cdef double seqProb = 0.0             # <<<<<<<<<<<<<<
- *     cdef double seqProbZ = 1.0
- *     cdef int targetObjId = -1
- */
-  __pyx_v_seqProb = 0.0;
-
-  /* "outlierDetection/_eval_outlier.pyx":17
- * def calculateSequenceProb(int[:] theSequence, int theSequenceLen, int true_mem_size, int userId, double[:, ::1] Theta_zh, double[:, ::1] Psi_sz):
- *     cdef double seqProb = 0.0
- *     cdef double seqProbZ = 1.0             # <<<<<<<<<<<<<<
- *     cdef int targetObjId = -1
- *     cdef double prior = 0.0
- */
-  __pyx_v_seqProbZ = 1.0;
-
-  /* "outlierDetection/_eval_outlier.pyx":18
- *     cdef double seqProb = 0.0
- *     cdef double seqProbZ = 1.0
- *     cdef int targetObjId = -1             # <<<<<<<<<<<<<<
- *     cdef double prior = 0.0
- *     cdef double candProb = 0.0
- */
-  __pyx_v_targetObjId = -1;
-
-  /* "outlierDetection/_eval_outlier.pyx":19
- *     cdef double seqProbZ = 1.0
- *     cdef int targetObjId = -1
- *     cdef double prior = 0.0             # <<<<<<<<<<<<<<
- *     cdef double candProb = 0.0
- *     cdef int window = 0
- */
-  __pyx_v_prior = 0.0;
-
-  /* "outlierDetection/_eval_outlier.pyx":20
- *     cdef int targetObjId = -1
- *     cdef double prior = 0.0
- *     cdef double candProb = 0.0             # <<<<<<<<<<<<<<
- *     cdef int window = 0
- *     cdef int[:] history = np.zeros(theSequenceLen, dtype='i4')
- */
-  __pyx_v_candProb = 0.0;
-
-  /* "outlierDetection/_eval_outlier.pyx":21
- *     cdef double prior = 0.0
- *     cdef double candProb = 0.0
- *     cdef int window = 0             # <<<<<<<<<<<<<<
- *     cdef int[:] history = np.zeros(theSequenceLen, dtype='i4')
- *     cdef int targetObjIdx, z, i = 0
- */
-  __pyx_v_window = 0;
-
-  /* "outlierDetection/_eval_outlier.pyx":22
- *     cdef double candProb = 0.0
- *     cdef int window = 0
- *     cdef int[:] history = np.zeros(theSequenceLen, dtype='i4')             # <<<<<<<<<<<<<<
- *     cdef int targetObjIdx, z, i = 0
- * 
- */
-  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 22, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_zeros); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 22, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_theSequenceLen); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 22, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_3 = PyTuple_New(1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 22, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_3);
-  __Pyx_GIVEREF(__pyx_t_1);
-  PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_t_1);
-  __pyx_t_1 = 0;
-  __pyx_t_1 = PyDict_New(); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 22, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_dtype, __pyx_n_s_i4) < 0) __PYX_ERR(0, 22, __pyx_L1_error)
-  __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_3, __pyx_t_1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 22, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_4);
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_5 = __Pyx_PyObject_to_MemoryviewSlice_ds_int(__pyx_t_4);
-  if (unlikely(!__pyx_t_5.memview)) __PYX_ERR(0, 22, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  __pyx_v_history = __pyx_t_5;
-  __pyx_t_5.memview = NULL;
-  __pyx_t_5.data = NULL;
-
-  /* "outlierDetection/_eval_outlier.pyx":23
- *     cdef int window = 0
- *     cdef int[:] history = np.zeros(theSequenceLen, dtype='i4')
- *     cdef int targetObjIdx, z, i = 0             # <<<<<<<<<<<<<<
- * 
- *     window = min(true_mem_size, theSequenceLen)
- */
-  __pyx_v_i = 0;
-
-  /* "outlierDetection/_eval_outlier.pyx":25
- *     cdef int targetObjIdx, z, i = 0
- * 
- *     window = min(true_mem_size, theSequenceLen)             # <<<<<<<<<<<<<<
- *     for z in xrange(Psi_sz.shape[1]): #for envs
- *         seqProbZ = 1.0
- */
-  __pyx_t_6 = __pyx_v_theSequenceLen;
-  __pyx_t_7 = __pyx_v_true_mem_size;
-  if (((__pyx_t_6 < __pyx_t_7) != 0)) {
-    __pyx_t_8 = __pyx_t_6;
-  } else {
-    __pyx_t_8 = __pyx_t_7;
-  }
-  __pyx_v_window = __pyx_t_8;
-
-  /* "outlierDetection/_eval_outlier.pyx":26
- * 
- *     window = min(true_mem_size, theSequenceLen)
- *     for z in xrange(Psi_sz.shape[1]): #for envs             # <<<<<<<<<<<<<<
- *         seqProbZ = 1.0
- *         for targetObjIdx in range(0,theSequenceLen): #targetObjIdx=0 cannot be predicted we have to skip it
- */
-  __pyx_t_9 = (__pyx_v_Psi_sz.shape[1]);
-  for (__pyx_t_8 = 0; __pyx_t_8 < __pyx_t_9; __pyx_t_8+=1) {
-    __pyx_v_z = __pyx_t_8;
-
-    /* "outlierDetection/_eval_outlier.pyx":27
- *     window = min(true_mem_size, theSequenceLen)
- *     for z in xrange(Psi_sz.shape[1]): #for envs
- *         seqProbZ = 1.0             # <<<<<<<<<<<<<<
- *         for targetObjIdx in range(0,theSequenceLen): #targetObjIdx=0 cannot be predicted we have to skip it
- *             if(targetObjIdx == 0):
- */
-    __pyx_v_seqProbZ = 1.0;
-
-    /* "outlierDetection/_eval_outlier.pyx":28
- *     for z in xrange(Psi_sz.shape[1]): #for envs
- *         seqProbZ = 1.0
- *         for targetObjIdx in range(0,theSequenceLen): #targetObjIdx=0 cannot be predicted we have to skip it             # <<<<<<<<<<<<<<
- *             if(targetObjIdx == 0):
- *                 targetObjId = theSequence[targetObjIdx]
- */
-    __pyx_t_6 = __pyx_v_theSequenceLen;
-    for (__pyx_t_7 = 0; __pyx_t_7 < __pyx_t_6; __pyx_t_7+=1) {
-      __pyx_v_targetObjIdx = __pyx_t_7;
-
-      /* "outlierDetection/_eval_outlier.pyx":29
- *         seqProbZ = 1.0
- *         for targetObjIdx in range(0,theSequenceLen): #targetObjIdx=0 cannot be predicted we have to skip it
- *             if(targetObjIdx == 0):             # <<<<<<<<<<<<<<
- *                 targetObjId = theSequence[targetObjIdx]
- *                 prior = Psi_sz[targetObjId, z]
- */
-      __pyx_t_10 = ((__pyx_v_targetObjIdx == 0) != 0);
-      if (__pyx_t_10) {
-
-        /* "outlierDetection/_eval_outlier.pyx":30
- *         for targetObjIdx in range(0,theSequenceLen): #targetObjIdx=0 cannot be predicted we have to skip it
- *             if(targetObjIdx == 0):
- *                 targetObjId = theSequence[targetObjIdx]             # <<<<<<<<<<<<<<
- *                 prior = Psi_sz[targetObjId, z]
- *                 seqProbZ *= prior
- */
-        __pyx_t_11 = __pyx_v_targetObjIdx;
-        __pyx_t_12 = -1;
-        if (__pyx_t_11 < 0) {
-          __pyx_t_11 += __pyx_v_theSequence.shape[0];
-          if (unlikely(__pyx_t_11 < 0)) __pyx_t_12 = 0;
-        } else if (unlikely(__pyx_t_11 >= __pyx_v_theSequence.shape[0])) __pyx_t_12 = 0;
-        if (unlikely(__pyx_t_12 != -1)) {
-          __Pyx_RaiseBufferIndexError(__pyx_t_12);
-          __PYX_ERR(0, 30, __pyx_L1_error)
-        }
-        __pyx_v_targetObjId = (*((int *) ( /* dim=0 */ (__pyx_v_theSequence.data + __pyx_t_11 * __pyx_v_theSequence.strides[0]) )));
-
-        /* "outlierDetection/_eval_outlier.pyx":31
- *             if(targetObjIdx == 0):
- *                 targetObjId = theSequence[targetObjIdx]
- *                 prior = Psi_sz[targetObjId, z]             # <<<<<<<<<<<<<<
- *                 seqProbZ *= prior
- *             else:
- */
-        __pyx_t_13 = __pyx_v_targetObjId;
-        __pyx_t_14 = __pyx_v_z;
-        __pyx_t_12 = -1;
-        if (__pyx_t_13 < 0) {
-          __pyx_t_13 += __pyx_v_Psi_sz.shape[0];
-          if (unlikely(__pyx_t_13 < 0)) __pyx_t_12 = 0;
-        } else if (unlikely(__pyx_t_13 >= __pyx_v_Psi_sz.shape[0])) __pyx_t_12 = 0;
-        if (__pyx_t_14 < 0) {
-          __pyx_t_14 += __pyx_v_Psi_sz.shape[1];
-          if (unlikely(__pyx_t_14 < 0)) __pyx_t_12 = 1;
-        } else if (unlikely(__pyx_t_14 >= __pyx_v_Psi_sz.shape[1])) __pyx_t_12 = 1;
-        if (unlikely(__pyx_t_12 != -1)) {
-          __Pyx_RaiseBufferIndexError(__pyx_t_12);
-          __PYX_ERR(0, 31, __pyx_L1_error)
-        }
-        __pyx_v_prior = (*((double *) ( /* dim=1 */ ((char *) (((double *) ( /* dim=0 */ (__pyx_v_Psi_sz.data + __pyx_t_13 * __pyx_v_Psi_sz.strides[0]) )) + __pyx_t_14)) )));
-
-        /* "outlierDetection/_eval_outlier.pyx":32
- *                 targetObjId = theSequence[targetObjIdx]
- *                 prior = Psi_sz[targetObjId, z]
- *                 seqProbZ *= prior             # <<<<<<<<<<<<<<
- *             else:
- *                 targetObjId = theSequence[targetObjIdx]
- */
-        __pyx_v_seqProbZ = (__pyx_v_seqProbZ * __pyx_v_prior);
-
-        /* "outlierDetection/_eval_outlier.pyx":29
- *         seqProbZ = 1.0
- *         for targetObjIdx in range(0,theSequenceLen): #targetObjIdx=0 cannot be predicted we have to skip it
- *             if(targetObjIdx == 0):             # <<<<<<<<<<<<<<
- *                 targetObjId = theSequence[targetObjIdx]
- *                 prior = Psi_sz[targetObjId, z]
- */
-        goto __pyx_L7;
-      }
-
-      /* "outlierDetection/_eval_outlier.pyx":34
- *                 seqProbZ *= prior
- *             else:
- *                 targetObjId = theSequence[targetObjIdx]             # <<<<<<<<<<<<<<
- *                 history = theSequence[max(0,targetObjIdx-window): targetObjIdx] # look back 'window' actions.
- * 
- */
-      /*else*/ {
-        __pyx_t_15 = __pyx_v_targetObjIdx;
-        __pyx_t_12 = -1;
-        if (__pyx_t_15 < 0) {
-          __pyx_t_15 += __pyx_v_theSequence.shape[0];
-          if (unlikely(__pyx_t_15 < 0)) __pyx_t_12 = 0;
-        } else if (unlikely(__pyx_t_15 >= __pyx_v_theSequence.shape[0])) __pyx_t_12 = 0;
-        if (unlikely(__pyx_t_12 != -1)) {
-          __Pyx_RaiseBufferIndexError(__pyx_t_12);
-          __PYX_ERR(0, 34, __pyx_L1_error)
-        }
-        __pyx_v_targetObjId = (*((int *) ( /* dim=0 */ (__pyx_v_theSequence.data + __pyx_t_15 * __pyx_v_theSequence.strides[0]) )));
-
-        /* "outlierDetection/_eval_outlier.pyx":35
- *             else:
- *                 targetObjId = theSequence[targetObjIdx]
- *                 history = theSequence[max(0,targetObjIdx-window): targetObjIdx] # look back 'window' actions.             # <<<<<<<<<<<<<<
- * 
- *                 candProb = evaluate(userId, history, len(history), targetObjId, Theta_zh, Psi_sz, z) #(int[:, ::1] HOs, double[:, ::1] Theta_zh, double[:, ::1] Psi_sz, int[::1] count_z, int env):
- */
-        __pyx_t_12 = (__pyx_v_targetObjIdx - __pyx_v_window);
-        __pyx_t_16 = 0;
-        if (((__pyx_t_12 > __pyx_t_16) != 0)) {
-          __pyx_t_17 = __pyx_t_12;
-        } else {
-          __pyx_t_17 = __pyx_t_16;
-        }
-        __pyx_t_5.data = __pyx_v_theSequence.data;
-        __pyx_t_5.memview = __pyx_v_theSequence.memview;
-        __PYX_INC_MEMVIEW(&__pyx_t_5, 0);
-        __pyx_t_12 = -1;
-        if (unlikely(__pyx_memoryview_slice_memviewslice(
-    &__pyx_t_5,
-    __pyx_v_theSequence.shape[0], __pyx_v_theSequence.strides[0], __pyx_v_theSequence.suboffsets[0],
-    0,
-    0,
-    &__pyx_t_12,
-    __pyx_t_17,
-    __pyx_v_targetObjIdx,
-    0,
-    1,
-    1,
-    0,
-    1) < 0))
-{
-    __PYX_ERR(0, 35, __pyx_L1_error)
-}
-
-__PYX_XDEC_MEMVIEW(&__pyx_v_history, 1);
-        __pyx_v_history = __pyx_t_5;
-        __pyx_t_5.memview = NULL;
-        __pyx_t_5.data = NULL;
-
-        /* "outlierDetection/_eval_outlier.pyx":37
- *                 history = theSequence[max(0,targetObjIdx-window): targetObjIdx] # look back 'window' actions.
- * 
- *                 candProb = evaluate(userId, history, len(history), targetObjId, Theta_zh, Psi_sz, z) #(int[:, ::1] HOs, double[:, ::1] Theta_zh, double[:, ::1] Psi_sz, int[::1] count_z, int env):             # <<<<<<<<<<<<<<
- *                 seqProbZ *= candProb
- *         seqProb += seqProbZ
- */
-        __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_evaluate); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 37, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_1);
-        __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_userId); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 37, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_3);
-        __pyx_t_2 = __pyx_memoryview_fromslice(__pyx_v_history, 1, (PyObject *(*)(char *)) __pyx_memview_get_int, (int (*)(char *, PyObject *)) __pyx_memview_set_int, 0);; if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 37, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_2);
-        __pyx_t_18 = __pyx_memoryview_fromslice(__pyx_v_history, 1, (PyObject *(*)(char *)) __pyx_memview_get_int, (int (*)(char *, PyObject *)) __pyx_memview_set_int, 0);; if (unlikely(!__pyx_t_18)) __PYX_ERR(0, 37, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_18);
-        __pyx_t_19 = PyObject_Length(__pyx_t_18); if (unlikely(__pyx_t_19 == -1)) __PYX_ERR(0, 37, __pyx_L1_error)
-        __Pyx_DECREF(__pyx_t_18); __pyx_t_18 = 0;
-        __pyx_t_18 = PyInt_FromSsize_t(__pyx_t_19); if (unlikely(!__pyx_t_18)) __PYX_ERR(0, 37, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_18);
-        __pyx_t_20 = __Pyx_PyInt_From_int(__pyx_v_targetObjId); if (unlikely(!__pyx_t_20)) __PYX_ERR(0, 37, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_20);
-        __pyx_t_21 = __pyx_memoryview_fromslice(__pyx_v_Theta_zh, 2, (PyObject *(*)(char *)) __pyx_memview_get_double, (int (*)(char *, PyObject *)) __pyx_memview_set_double, 0);; if (unlikely(!__pyx_t_21)) __PYX_ERR(0, 37, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_21);
-        __pyx_t_22 = __pyx_memoryview_fromslice(__pyx_v_Psi_sz, 2, (PyObject *(*)(char *)) __pyx_memview_get_double, (int (*)(char *, PyObject *)) __pyx_memview_set_double, 0);; if (unlikely(!__pyx_t_22)) __PYX_ERR(0, 37, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_22);
-        __pyx_t_23 = __Pyx_PyInt_From_int(__pyx_v_z); if (unlikely(!__pyx_t_23)) __PYX_ERR(0, 37, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_23);
-        __pyx_t_24 = NULL;
-        __pyx_t_19 = 0;
-        if (CYTHON_COMPILING_IN_CPYTHON && unlikely(PyMethod_Check(__pyx_t_1))) {
-          __pyx_t_24 = PyMethod_GET_SELF(__pyx_t_1);
-          if (likely(__pyx_t_24)) {
-            PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_1);
-            __Pyx_INCREF(__pyx_t_24);
-            __Pyx_INCREF(function);
-            __Pyx_DECREF_SET(__pyx_t_1, function);
-            __pyx_t_19 = 1;
-          }
-        }
-        __pyx_t_25 = PyTuple_New(7+__pyx_t_19); if (unlikely(!__pyx_t_25)) __PYX_ERR(0, 37, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_25);
-        if (__pyx_t_24) {
-          __Pyx_GIVEREF(__pyx_t_24); PyTuple_SET_ITEM(__pyx_t_25, 0, __pyx_t_24); __pyx_t_24 = NULL;
-        }
-        __Pyx_GIVEREF(__pyx_t_3);
-        PyTuple_SET_ITEM(__pyx_t_25, 0+__pyx_t_19, __pyx_t_3);
-        __Pyx_GIVEREF(__pyx_t_2);
-        PyTuple_SET_ITEM(__pyx_t_25, 1+__pyx_t_19, __pyx_t_2);
-        __Pyx_GIVEREF(__pyx_t_18);
-        PyTuple_SET_ITEM(__pyx_t_25, 2+__pyx_t_19, __pyx_t_18);
-        __Pyx_GIVEREF(__pyx_t_20);
-        PyTuple_SET_ITEM(__pyx_t_25, 3+__pyx_t_19, __pyx_t_20);
-        __Pyx_GIVEREF(__pyx_t_21);
-        PyTuple_SET_ITEM(__pyx_t_25, 4+__pyx_t_19, __pyx_t_21);
-        __Pyx_GIVEREF(__pyx_t_22);
-        PyTuple_SET_ITEM(__pyx_t_25, 5+__pyx_t_19, __pyx_t_22);
-        __Pyx_GIVEREF(__pyx_t_23);
-        PyTuple_SET_ITEM(__pyx_t_25, 6+__pyx_t_19, __pyx_t_23);
-        __pyx_t_3 = 0;
-        __pyx_t_2 = 0;
-        __pyx_t_18 = 0;
-        __pyx_t_20 = 0;
-        __pyx_t_21 = 0;
-        __pyx_t_22 = 0;
-        __pyx_t_23 = 0;
-        __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_t_25, NULL); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 37, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_4);
-        __Pyx_DECREF(__pyx_t_25); __pyx_t_25 = 0;
-        __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-        __pyx_t_26 = __pyx_PyFloat_AsDouble(__pyx_t_4); if (unlikely((__pyx_t_26 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 37, __pyx_L1_error)
-        __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-        __pyx_v_candProb = __pyx_t_26;
-
-        /* "outlierDetection/_eval_outlier.pyx":38
- * 
- *                 candProb = evaluate(userId, history, len(history), targetObjId, Theta_zh, Psi_sz, z) #(int[:, ::1] HOs, double[:, ::1] Theta_zh, double[:, ::1] Psi_sz, int[::1] count_z, int env):
- *                 seqProbZ *= candProb             # <<<<<<<<<<<<<<
- *         seqProb += seqProbZ
- *     return seqProb
- */
-        __pyx_v_seqProbZ = (__pyx_v_seqProbZ * __pyx_v_candProb);
-      }
-      __pyx_L7:;
-    }
-
-    /* "outlierDetection/_eval_outlier.pyx":39
- *                 candProb = evaluate(userId, history, len(history), targetObjId, Theta_zh, Psi_sz, z) #(int[:, ::1] HOs, double[:, ::1] Theta_zh, double[:, ::1] Psi_sz, int[::1] count_z, int env):
- *                 seqProbZ *= candProb
- *         seqProb += seqProbZ             # <<<<<<<<<<<<<<
- *     return seqProb
- */
-    __pyx_v_seqProb = (__pyx_v_seqProb + __pyx_v_seqProbZ);
-  }
-
-  /* "outlierDetection/_eval_outlier.pyx":40
- *                 seqProbZ *= candProb
- *         seqProb += seqProbZ
- *     return seqProb             # <<<<<<<<<<<<<<
- */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_4 = PyFloat_FromDouble(__pyx_v_seqProb); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 40, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_4);
-  __pyx_r = __pyx_t_4;
-  __pyx_t_4 = 0;
+  if (unlikely(!__pyx_v_theSequence.memview)) { __Pyx_RaiseUnboundLocalError("theSequence"); __PYX_ERR(0, 16, __pyx_L1_error) }
+  if (unlikely(!__pyx_v_Theta_zh.memview)) { __Pyx_RaiseUnboundLocalError("Theta_zh"); __PYX_ERR(0, 16, __pyx_L1_error) }
+  if (unlikely(!__pyx_v_Psi_sz.memview)) { __Pyx_RaiseUnboundLocalError("Psi_sz"); __PYX_ERR(0, 16, __pyx_L1_error) }
+  __pyx_t_1 = PyFloat_FromDouble(__pyx_f_16outlierDetection_13_eval_outlier_calculateSequenceProb(__pyx_v_theSequence, __pyx_v_theSequenceLen, __pyx_v_true_mem_size, __pyx_v_userId, __pyx_v_Theta_zh, __pyx_v_Psi_sz, 0)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 16, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
   goto __pyx_L0;
-
-  /* "outlierDetection/_eval_outlier.pyx":15
- *     return candidateProb
- * 
- * def calculateSequenceProb(int[:] theSequence, int theSequenceLen, int true_mem_size, int userId, double[:, ::1] Theta_zh, double[:, ::1] Psi_sz):             # <<<<<<<<<<<<<<
- *     cdef double seqProb = 0.0
- *     cdef double seqProbZ = 1.0
- */
 
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_XDECREF(__pyx_t_2);
-  __Pyx_XDECREF(__pyx_t_3);
-  __Pyx_XDECREF(__pyx_t_4);
-  __PYX_XDEC_MEMVIEW(&__pyx_t_5, 1);
-  __Pyx_XDECREF(__pyx_t_18);
-  __Pyx_XDECREF(__pyx_t_20);
-  __Pyx_XDECREF(__pyx_t_21);
-  __Pyx_XDECREF(__pyx_t_22);
-  __Pyx_XDECREF(__pyx_t_23);
-  __Pyx_XDECREF(__pyx_t_24);
-  __Pyx_XDECREF(__pyx_t_25);
   __Pyx_AddTraceback("outlierDetection._eval_outlier.calculateSequenceProb", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
-  __PYX_XDEC_MEMVIEW(&__pyx_v_history, 1);
   __PYX_XDEC_MEMVIEW(&__pyx_v_theSequence, 1);
   __PYX_XDEC_MEMVIEW(&__pyx_v_Theta_zh, 1);
   __PYX_XDEC_MEMVIEW(&__pyx_v_Psi_sz, 1);
@@ -14582,6 +14404,8 @@ static PyTypeObject __pyx_type___pyx_memoryviewslice = {
 };
 
 static PyMethodDef __pyx_methods[] = {
+  {"evaluate", (PyCFunction)__pyx_pw_16outlierDetection_13_eval_outlier_1evaluate, METH_VARARGS|METH_KEYWORDS, 0},
+  {"calculateSequenceProb", (PyCFunction)__pyx_pw_16outlierDetection_13_eval_outlier_3calculateSequenceProb, METH_VARARGS|METH_KEYWORDS, 0},
   {0, 0, 0, 0}
 };
 
@@ -14628,19 +14452,14 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_base, __pyx_k_base, sizeof(__pyx_k_base), 0, 0, 1, 1},
   {&__pyx_n_s_c, __pyx_k_c, sizeof(__pyx_k_c), 0, 0, 1, 1},
   {&__pyx_n_u_c, __pyx_k_c, sizeof(__pyx_k_c), 0, 1, 0, 1},
-  {&__pyx_n_s_calculateSequenceProb, __pyx_k_calculateSequenceProb, sizeof(__pyx_k_calculateSequenceProb), 0, 0, 1, 1},
-  {&__pyx_n_s_candProb, __pyx_k_candProb, sizeof(__pyx_k_candProb), 0, 0, 1, 1},
-  {&__pyx_n_s_candidateProb, __pyx_k_candidateProb, sizeof(__pyx_k_candidateProb), 0, 0, 1, 1},
   {&__pyx_n_s_class, __pyx_k_class, sizeof(__pyx_k_class), 0, 0, 1, 1},
   {&__pyx_kp_s_contiguous_and_direct, __pyx_k_contiguous_and_direct, sizeof(__pyx_k_contiguous_and_direct), 0, 0, 1, 0},
   {&__pyx_kp_s_contiguous_and_indirect, __pyx_k_contiguous_and_indirect, sizeof(__pyx_k_contiguous_and_indirect), 0, 0, 1, 0},
-  {&__pyx_n_s_dtype, __pyx_k_dtype, sizeof(__pyx_k_dtype), 0, 0, 1, 1},
   {&__pyx_n_s_dtype_is_object, __pyx_k_dtype_is_object, sizeof(__pyx_k_dtype_is_object), 0, 0, 1, 1},
   {&__pyx_n_s_encode, __pyx_k_encode, sizeof(__pyx_k_encode), 0, 0, 1, 1},
   {&__pyx_n_s_enumerate, __pyx_k_enumerate, sizeof(__pyx_k_enumerate), 0, 0, 1, 1},
   {&__pyx_n_s_env, __pyx_k_env, sizeof(__pyx_k_env), 0, 0, 1, 1},
   {&__pyx_n_s_error, __pyx_k_error, sizeof(__pyx_k_error), 0, 0, 1, 1},
-  {&__pyx_n_s_evaluate, __pyx_k_evaluate, sizeof(__pyx_k_evaluate), 0, 0, 1, 1},
   {&__pyx_n_s_flags, __pyx_k_flags, sizeof(__pyx_k_flags), 0, 0, 1, 1},
   {&__pyx_n_s_format, __pyx_k_format, sizeof(__pyx_k_format), 0, 0, 1, 1},
   {&__pyx_n_s_fortran, __pyx_k_fortran, sizeof(__pyx_k_fortran), 0, 0, 1, 1},
@@ -14648,32 +14467,21 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_kp_s_got_differing_extents_in_dimensi, __pyx_k_got_differing_extents_in_dimensi, sizeof(__pyx_k_got_differing_extents_in_dimensi), 0, 0, 1, 0},
   {&__pyx_n_s_history, __pyx_k_history, sizeof(__pyx_k_history), 0, 0, 1, 1},
   {&__pyx_n_s_historyLen, __pyx_k_historyLen, sizeof(__pyx_k_historyLen), 0, 0, 1, 1},
-  {&__pyx_kp_s_home_zahran_workspace_tribeFlow, __pyx_k_home_zahran_workspace_tribeFlow, sizeof(__pyx_k_home_zahran_workspace_tribeFlow), 0, 0, 1, 0},
-  {&__pyx_n_s_i, __pyx_k_i, sizeof(__pyx_k_i), 0, 0, 1, 1},
-  {&__pyx_n_s_i4, __pyx_k_i4, sizeof(__pyx_k_i4), 0, 0, 1, 1},
   {&__pyx_n_s_id, __pyx_k_id, sizeof(__pyx_k_id), 0, 0, 1, 1},
   {&__pyx_n_s_import, __pyx_k_import, sizeof(__pyx_k_import), 0, 0, 1, 1},
   {&__pyx_n_s_itemsize, __pyx_k_itemsize, sizeof(__pyx_k_itemsize), 0, 0, 1, 1},
   {&__pyx_kp_s_itemsize_0_for_cython_array, __pyx_k_itemsize_0_for_cython_array, sizeof(__pyx_k_itemsize_0_for_cython_array), 0, 0, 1, 0},
-  {&__pyx_n_s_j, __pyx_k_j, sizeof(__pyx_k_j), 0, 0, 1, 1},
   {&__pyx_n_s_main, __pyx_k_main, sizeof(__pyx_k_main), 0, 0, 1, 1},
-  {&__pyx_n_s_mem_factor, __pyx_k_mem_factor, sizeof(__pyx_k_mem_factor), 0, 0, 1, 1},
   {&__pyx_n_s_memview, __pyx_k_memview, sizeof(__pyx_k_memview), 0, 0, 1, 1},
   {&__pyx_n_s_mode, __pyx_k_mode, sizeof(__pyx_k_mode), 0, 0, 1, 1},
   {&__pyx_n_s_name, __pyx_k_name, sizeof(__pyx_k_name), 0, 0, 1, 1},
   {&__pyx_n_s_name_2, __pyx_k_name_2, sizeof(__pyx_k_name_2), 0, 0, 1, 1},
   {&__pyx_n_s_ndim, __pyx_k_ndim, sizeof(__pyx_k_ndim), 0, 0, 1, 1},
-  {&__pyx_n_s_np, __pyx_k_np, sizeof(__pyx_k_np), 0, 0, 1, 1},
-  {&__pyx_n_s_numpy, __pyx_k_numpy, sizeof(__pyx_k_numpy), 0, 0, 1, 1},
   {&__pyx_n_s_obj, __pyx_k_obj, sizeof(__pyx_k_obj), 0, 0, 1, 1},
-  {&__pyx_n_s_outlierDetection__eval_outlier, __pyx_k_outlierDetection__eval_outlier, sizeof(__pyx_k_outlierDetection__eval_outlier), 0, 0, 1, 1},
   {&__pyx_n_s_pack, __pyx_k_pack, sizeof(__pyx_k_pack), 0, 0, 1, 1},
-  {&__pyx_n_s_prior, __pyx_k_prior, sizeof(__pyx_k_prior), 0, 0, 1, 1},
   {&__pyx_n_s_pyx_getbuffer, __pyx_k_pyx_getbuffer, sizeof(__pyx_k_pyx_getbuffer), 0, 0, 1, 1},
   {&__pyx_n_s_pyx_vtable, __pyx_k_pyx_vtable, sizeof(__pyx_k_pyx_vtable), 0, 0, 1, 1},
   {&__pyx_n_s_range, __pyx_k_range, sizeof(__pyx_k_range), 0, 0, 1, 1},
-  {&__pyx_n_s_seqProb, __pyx_k_seqProb, sizeof(__pyx_k_seqProb), 0, 0, 1, 1},
-  {&__pyx_n_s_seqProbZ, __pyx_k_seqProbZ, sizeof(__pyx_k_seqProbZ), 0, 0, 1, 1},
   {&__pyx_n_s_shape, __pyx_k_shape, sizeof(__pyx_k_shape), 0, 0, 1, 1},
   {&__pyx_n_s_size, __pyx_k_size, sizeof(__pyx_k_size), 0, 0, 1, 1},
   {&__pyx_n_s_start, __pyx_k_start, sizeof(__pyx_k_start), 0, 0, 1, 1},
@@ -14684,7 +14492,6 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_kp_s_strided_and_indirect, __pyx_k_strided_and_indirect, sizeof(__pyx_k_strided_and_indirect), 0, 0, 1, 0},
   {&__pyx_n_s_struct, __pyx_k_struct, sizeof(__pyx_k_struct), 0, 0, 1, 1},
   {&__pyx_n_s_targetObjId, __pyx_k_targetObjId, sizeof(__pyx_k_targetObjId), 0, 0, 1, 1},
-  {&__pyx_n_s_targetObjIdx, __pyx_k_targetObjIdx, sizeof(__pyx_k_targetObjIdx), 0, 0, 1, 1},
   {&__pyx_n_s_test, __pyx_k_test, sizeof(__pyx_k_test), 0, 0, 1, 1},
   {&__pyx_n_s_theSequence, __pyx_k_theSequence, sizeof(__pyx_k_theSequence), 0, 0, 1, 1},
   {&__pyx_n_s_theSequenceLen, __pyx_k_theSequenceLen, sizeof(__pyx_k_theSequenceLen), 0, 0, 1, 1},
@@ -14693,10 +14500,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_kp_s_unable_to_allocate_shape_and_str, __pyx_k_unable_to_allocate_shape_and_str, sizeof(__pyx_k_unable_to_allocate_shape_and_str), 0, 0, 1, 0},
   {&__pyx_n_s_unpack, __pyx_k_unpack, sizeof(__pyx_k_unpack), 0, 0, 1, 1},
   {&__pyx_n_s_userId, __pyx_k_userId, sizeof(__pyx_k_userId), 0, 0, 1, 1},
-  {&__pyx_n_s_window, __pyx_k_window, sizeof(__pyx_k_window), 0, 0, 1, 1},
   {&__pyx_n_s_xrange, __pyx_k_xrange, sizeof(__pyx_k_xrange), 0, 0, 1, 1},
-  {&__pyx_n_s_z, __pyx_k_z, sizeof(__pyx_k_z), 0, 0, 1, 1},
-  {&__pyx_n_s_zeros, __pyx_k_zeros, sizeof(__pyx_k_zeros), 0, 0, 1, 1},
   {0, 0, 0, 0, 0, 0, 0}
 };
 static int __Pyx_InitCachedBuiltins(void) {
@@ -14705,7 +14509,7 @@ static int __Pyx_InitCachedBuiltins(void) {
   #else
   __pyx_builtin_xrange = __Pyx_GetBuiltinName(__pyx_n_s_xrange); if (!__pyx_builtin_xrange) __PYX_ERR(0, 8, __pyx_L1_error)
   #endif
-  __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_range) __PYX_ERR(0, 28, __pyx_L1_error)
+  __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_range) __PYX_ERR(0, 32, __pyx_L1_error)
   __pyx_builtin_ValueError = __Pyx_GetBuiltinName(__pyx_n_s_ValueError); if (!__pyx_builtin_ValueError) __PYX_ERR(1, 131, __pyx_L1_error)
   __pyx_builtin_MemoryError = __Pyx_GetBuiltinName(__pyx_n_s_MemoryError); if (!__pyx_builtin_MemoryError) __PYX_ERR(1, 146, __pyx_L1_error)
   __pyx_builtin_enumerate = __Pyx_GetBuiltinName(__pyx_n_s_enumerate); if (!__pyx_builtin_enumerate) __PYX_ERR(1, 149, __pyx_L1_error)
@@ -14868,30 +14672,6 @@ static int __Pyx_InitCachedConstants(void) {
   __Pyx_GOTREF(__pyx_tuple__13);
   __Pyx_GIVEREF(__pyx_tuple__13);
 
-  /* "outlierDetection/_eval_outlier.pyx":4
- * 
- * 
- * def evaluate(int userId, int[:] history, int historyLen, int targetObjId, double[:, ::1] Theta_zh, double[:, ::1] Psi_sz, int env):             # <<<<<<<<<<<<<<
- *     cdef double mem_factor = 1.0
- *     cdef double candidateProb = 0.0
- */
-  __pyx_tuple__14 = PyTuple_Pack(10, __pyx_n_s_userId, __pyx_n_s_history, __pyx_n_s_historyLen, __pyx_n_s_targetObjId, __pyx_n_s_Theta_zh, __pyx_n_s_Psi_sz, __pyx_n_s_env, __pyx_n_s_mem_factor, __pyx_n_s_candidateProb, __pyx_n_s_j); if (unlikely(!__pyx_tuple__14)) __PYX_ERR(0, 4, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__14);
-  __Pyx_GIVEREF(__pyx_tuple__14);
-  __pyx_codeobj__15 = (PyObject*)__Pyx_PyCode_New(7, 0, 10, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__14, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_zahran_workspace_tribeFlow, __pyx_n_s_evaluate, 4, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__15)) __PYX_ERR(0, 4, __pyx_L1_error)
-
-  /* "outlierDetection/_eval_outlier.pyx":15
- *     return candidateProb
- * 
- * def calculateSequenceProb(int[:] theSequence, int theSequenceLen, int true_mem_size, int userId, double[:, ::1] Theta_zh, double[:, ::1] Psi_sz):             # <<<<<<<<<<<<<<
- *     cdef double seqProb = 0.0
- *     cdef double seqProbZ = 1.0
- */
-  __pyx_tuple__16 = PyTuple_Pack(16, __pyx_n_s_theSequence, __pyx_n_s_theSequenceLen, __pyx_n_s_true_mem_size, __pyx_n_s_userId, __pyx_n_s_Theta_zh, __pyx_n_s_Psi_sz, __pyx_n_s_seqProb, __pyx_n_s_seqProbZ, __pyx_n_s_targetObjId, __pyx_n_s_prior, __pyx_n_s_candProb, __pyx_n_s_window, __pyx_n_s_history, __pyx_n_s_targetObjIdx, __pyx_n_s_z, __pyx_n_s_i); if (unlikely(!__pyx_tuple__16)) __PYX_ERR(0, 15, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__16);
-  __Pyx_GIVEREF(__pyx_tuple__16);
-  __pyx_codeobj__17 = (PyObject*)__Pyx_PyCode_New(6, 0, 16, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__16, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_zahran_workspace_tribeFlow, __pyx_n_s_calculateSequenceProb, 15, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__17)) __PYX_ERR(0, 15, __pyx_L1_error)
-
   /* "View.MemoryView":282
  *         return self.name
  * 
@@ -14899,9 +14679,9 @@ static int __Pyx_InitCachedConstants(void) {
  * cdef strided = Enum("<strided and direct>") # default
  * cdef indirect = Enum("<strided and indirect>")
  */
-  __pyx_tuple__18 = PyTuple_Pack(1, __pyx_kp_s_strided_and_direct_or_indirect); if (unlikely(!__pyx_tuple__18)) __PYX_ERR(1, 282, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__18);
-  __Pyx_GIVEREF(__pyx_tuple__18);
+  __pyx_tuple__14 = PyTuple_Pack(1, __pyx_kp_s_strided_and_direct_or_indirect); if (unlikely(!__pyx_tuple__14)) __PYX_ERR(1, 282, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__14);
+  __Pyx_GIVEREF(__pyx_tuple__14);
 
   /* "View.MemoryView":283
  * 
@@ -14910,9 +14690,9 @@ static int __Pyx_InitCachedConstants(void) {
  * cdef indirect = Enum("<strided and indirect>")
  * 
  */
-  __pyx_tuple__19 = PyTuple_Pack(1, __pyx_kp_s_strided_and_direct); if (unlikely(!__pyx_tuple__19)) __PYX_ERR(1, 283, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__19);
-  __Pyx_GIVEREF(__pyx_tuple__19);
+  __pyx_tuple__15 = PyTuple_Pack(1, __pyx_kp_s_strided_and_direct); if (unlikely(!__pyx_tuple__15)) __PYX_ERR(1, 283, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__15);
+  __Pyx_GIVEREF(__pyx_tuple__15);
 
   /* "View.MemoryView":284
  * cdef generic = Enum("<strided and direct or indirect>")
@@ -14921,9 +14701,9 @@ static int __Pyx_InitCachedConstants(void) {
  * 
  * 
  */
-  __pyx_tuple__20 = PyTuple_Pack(1, __pyx_kp_s_strided_and_indirect); if (unlikely(!__pyx_tuple__20)) __PYX_ERR(1, 284, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__20);
-  __Pyx_GIVEREF(__pyx_tuple__20);
+  __pyx_tuple__16 = PyTuple_Pack(1, __pyx_kp_s_strided_and_indirect); if (unlikely(!__pyx_tuple__16)) __PYX_ERR(1, 284, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__16);
+  __Pyx_GIVEREF(__pyx_tuple__16);
 
   /* "View.MemoryView":287
  * 
@@ -14932,9 +14712,9 @@ static int __Pyx_InitCachedConstants(void) {
  * cdef indirect_contiguous = Enum("<contiguous and indirect>")
  * 
  */
-  __pyx_tuple__21 = PyTuple_Pack(1, __pyx_kp_s_contiguous_and_direct); if (unlikely(!__pyx_tuple__21)) __PYX_ERR(1, 287, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__21);
-  __Pyx_GIVEREF(__pyx_tuple__21);
+  __pyx_tuple__17 = PyTuple_Pack(1, __pyx_kp_s_contiguous_and_direct); if (unlikely(!__pyx_tuple__17)) __PYX_ERR(1, 287, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__17);
+  __Pyx_GIVEREF(__pyx_tuple__17);
 
   /* "View.MemoryView":288
  * 
@@ -14943,9 +14723,9 @@ static int __Pyx_InitCachedConstants(void) {
  * 
  * 
  */
-  __pyx_tuple__22 = PyTuple_Pack(1, __pyx_kp_s_contiguous_and_indirect); if (unlikely(!__pyx_tuple__22)) __PYX_ERR(1, 288, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__22);
-  __Pyx_GIVEREF(__pyx_tuple__22);
+  __pyx_tuple__18 = PyTuple_Pack(1, __pyx_kp_s_contiguous_and_indirect); if (unlikely(!__pyx_tuple__18)) __PYX_ERR(1, 288, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__18);
+  __Pyx_GIVEREF(__pyx_tuple__18);
   __Pyx_RefNannyFinishContext();
   return 0;
   __pyx_L1_error:;
@@ -15092,43 +14872,9 @@ PyMODINIT_FUNC PyInit__eval_outlier(void)
   #endif
 
   /* "outlierDetection/_eval_outlier.pyx":1
- * import numpy as np             # <<<<<<<<<<<<<<
+ * from cython import boundscheck, wraparound             # <<<<<<<<<<<<<<
  * 
- * 
- */
-  __pyx_t_1 = __Pyx_Import(__pyx_n_s_numpy, 0, -1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_np, __pyx_t_1) < 0) __PYX_ERR(0, 1, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-
-  /* "outlierDetection/_eval_outlier.pyx":4
- * 
- * 
- * def evaluate(int userId, int[:] history, int historyLen, int targetObjId, double[:, ::1] Theta_zh, double[:, ::1] Psi_sz, int env):             # <<<<<<<<<<<<<<
- *     cdef double mem_factor = 1.0
- *     cdef double candidateProb = 0.0
- */
-  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_16outlierDetection_13_eval_outlier_1evaluate, NULL, __pyx_n_s_outlierDetection__eval_outlier); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_evaluate, __pyx_t_1) < 0) __PYX_ERR(0, 4, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-
-  /* "outlierDetection/_eval_outlier.pyx":15
- *     return candidateProb
- * 
- * def calculateSequenceProb(int[:] theSequence, int theSequenceLen, int true_mem_size, int userId, double[:, ::1] Theta_zh, double[:, ::1] Psi_sz):             # <<<<<<<<<<<<<<
- *     cdef double seqProb = 0.0
- *     cdef double seqProbZ = 1.0
- */
-  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_16outlierDetection_13_eval_outlier_3calculateSequenceProb, NULL, __pyx_n_s_outlierDetection__eval_outlier); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 15, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_calculateSequenceProb, __pyx_t_1) < 0) __PYX_ERR(0, 15, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-
-  /* "outlierDetection/_eval_outlier.pyx":1
- * import numpy as np             # <<<<<<<<<<<<<<
- * 
- * 
+ * @boundscheck(False)
  */
   __pyx_t_1 = PyDict_New(); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
@@ -15155,7 +14901,7 @@ PyMODINIT_FUNC PyInit__eval_outlier(void)
  * cdef strided = Enum("<strided and direct>") # default
  * cdef indirect = Enum("<strided and indirect>")
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__18, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 282, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__14, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 282, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_XGOTREF(generic);
   __Pyx_DECREF_SET(generic, __pyx_t_1);
@@ -15169,7 +14915,7 @@ PyMODINIT_FUNC PyInit__eval_outlier(void)
  * cdef indirect = Enum("<strided and indirect>")
  * 
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__19, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 283, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__15, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 283, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_XGOTREF(strided);
   __Pyx_DECREF_SET(strided, __pyx_t_1);
@@ -15183,7 +14929,7 @@ PyMODINIT_FUNC PyInit__eval_outlier(void)
  * 
  * 
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__20, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 284, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__16, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 284, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_XGOTREF(indirect);
   __Pyx_DECREF_SET(indirect, __pyx_t_1);
@@ -15197,7 +14943,7 @@ PyMODINIT_FUNC PyInit__eval_outlier(void)
  * cdef indirect_contiguous = Enum("<contiguous and indirect>")
  * 
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__21, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 287, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__17, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 287, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_XGOTREF(contiguous);
   __Pyx_DECREF_SET(contiguous, __pyx_t_1);
@@ -15211,7 +14957,7 @@ PyMODINIT_FUNC PyInit__eval_outlier(void)
  * 
  * 
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__22, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 288, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__18, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 288, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_XGOTREF(indirect_contiguous);
   __Pyx_DECREF_SET(indirect_contiguous, __pyx_t_1);
@@ -15474,10 +15220,9 @@ bad:
     return -1;
 }
 
-/* BufferIndexError */
-static void __Pyx_RaiseBufferIndexError(int axis) {
-  PyErr_Format(PyExc_IndexError,
-     "Out of bounds on buffer access (axis %d)", axis);
+/* None */
+static CYTHON_INLINE void __Pyx_RaiseUnboundLocalError(const char *varname) {
+    PyErr_Format(PyExc_UnboundLocalError, "local variable '%s' referenced before assignment", varname);
 }
 
 /* BufferFormatCheck */
@@ -16165,46 +15910,74 @@ static CYTHON_INLINE void __Pyx_XDEC_MEMVIEW(__Pyx_memviewslice *memslice,
     }
 }
 
-/* GetModuleGlobalName */
-  static CYTHON_INLINE PyObject *__Pyx_GetModuleGlobalName(PyObject *name) {
-    PyObject *result;
-#if CYTHON_COMPILING_IN_CPYTHON
-    result = PyDict_GetItem(__pyx_d, name);
-    if (likely(result)) {
-        Py_INCREF(result);
-    } else {
-#else
-    result = PyObject_GetItem(__pyx_d, name);
-    if (!result) {
-        PyErr_Clear();
-#endif
-        result = __Pyx_GetBuiltinName(name);
-    }
-    return result;
+/* PyErrFetchRestore */
+  #if CYTHON_COMPILING_IN_CPYTHON
+static CYTHON_INLINE void __Pyx_ErrRestoreInState(PyThreadState *tstate, PyObject *type, PyObject *value, PyObject *tb) {
+    PyObject *tmp_type, *tmp_value, *tmp_tb;
+    tmp_type = tstate->curexc_type;
+    tmp_value = tstate->curexc_value;
+    tmp_tb = tstate->curexc_traceback;
+    tstate->curexc_type = type;
+    tstate->curexc_value = value;
+    tstate->curexc_traceback = tb;
+    Py_XDECREF(tmp_type);
+    Py_XDECREF(tmp_value);
+    Py_XDECREF(tmp_tb);
 }
+static CYTHON_INLINE void __Pyx_ErrFetchInState(PyThreadState *tstate, PyObject **type, PyObject **value, PyObject **tb) {
+    *type = tstate->curexc_type;
+    *value = tstate->curexc_value;
+    *tb = tstate->curexc_traceback;
+    tstate->curexc_type = 0;
+    tstate->curexc_value = 0;
+    tstate->curexc_traceback = 0;
+}
+#endif
 
-/* PyObjectCall */
-    #if CYTHON_COMPILING_IN_CPYTHON
-static CYTHON_INLINE PyObject* __Pyx_PyObject_Call(PyObject *func, PyObject *arg, PyObject *kw) {
-    PyObject *result;
-    ternaryfunc call = func->ob_type->tp_call;
-    if (unlikely(!call))
-        return PyObject_Call(func, arg, kw);
-    if (unlikely(Py_EnterRecursiveCall((char*)" while calling a Python object")))
-        return NULL;
-    result = (*call)(func, arg, kw);
-    Py_LeaveRecursiveCall();
-    if (unlikely(!result) && unlikely(!PyErr_Occurred())) {
-        PyErr_SetString(
-            PyExc_SystemError,
-            "NULL result without error in PyObject_Call");
-    }
-    return result;
-}
+/* WriteUnraisableException */
+  static void __Pyx_WriteUnraisable(const char *name, CYTHON_UNUSED int clineno,
+                                  CYTHON_UNUSED int lineno, CYTHON_UNUSED const char *filename,
+                                  int full_traceback, CYTHON_UNUSED int nogil) {
+    PyObject *old_exc, *old_val, *old_tb;
+    PyObject *ctx;
+    __Pyx_PyThreadState_declare
+#ifdef WITH_THREAD
+    PyGILState_STATE state;
+    if (nogil)
+        state = PyGILState_Ensure();
+#ifdef _MSC_VER
+    else state = (PyGILState_STATE)-1;
 #endif
+#endif
+    __Pyx_PyThreadState_assign
+    __Pyx_ErrFetch(&old_exc, &old_val, &old_tb);
+    if (full_traceback) {
+        Py_XINCREF(old_exc);
+        Py_XINCREF(old_val);
+        Py_XINCREF(old_tb);
+        __Pyx_ErrRestore(old_exc, old_val, old_tb);
+        PyErr_PrintEx(1);
+    }
+    #if PY_MAJOR_VERSION < 3
+    ctx = PyString_FromString(name);
+    #else
+    ctx = PyUnicode_FromString(name);
+    #endif
+    __Pyx_ErrRestore(old_exc, old_val, old_tb);
+    if (!ctx) {
+        PyErr_WriteUnraisable(Py_None);
+    } else {
+        PyErr_WriteUnraisable(ctx);
+        Py_DECREF(ctx);
+    }
+#ifdef WITH_THREAD
+    if (nogil)
+        PyGILState_Release(state);
+#endif
+}
 
 /* ArgTypeTest */
-    static void __Pyx_RaiseArgumentTypeInvalid(const char* name, PyObject *obj, PyTypeObject *type) {
+  static void __Pyx_RaiseArgumentTypeInvalid(const char* name, PyObject *obj, PyTypeObject *type) {
     PyErr_Format(PyExc_TypeError,
         "Argument '%.200s' has incorrect type (expected %.200s, got %.200s)",
         name, type->tp_name, Py_TYPE(obj)->tp_name);
@@ -16230,32 +16003,28 @@ static CYTHON_INLINE int __Pyx_ArgTypeTest(PyObject *obj, PyTypeObject *type, in
     return 0;
 }
 
-/* PyErrFetchRestore */
-    #if CYTHON_COMPILING_IN_CPYTHON
-static CYTHON_INLINE void __Pyx_ErrRestoreInState(PyThreadState *tstate, PyObject *type, PyObject *value, PyObject *tb) {
-    PyObject *tmp_type, *tmp_value, *tmp_tb;
-    tmp_type = tstate->curexc_type;
-    tmp_value = tstate->curexc_value;
-    tmp_tb = tstate->curexc_traceback;
-    tstate->curexc_type = type;
-    tstate->curexc_value = value;
-    tstate->curexc_traceback = tb;
-    Py_XDECREF(tmp_type);
-    Py_XDECREF(tmp_value);
-    Py_XDECREF(tmp_tb);
-}
-static CYTHON_INLINE void __Pyx_ErrFetchInState(PyThreadState *tstate, PyObject **type, PyObject **value, PyObject **tb) {
-    *type = tstate->curexc_type;
-    *value = tstate->curexc_value;
-    *tb = tstate->curexc_traceback;
-    tstate->curexc_type = 0;
-    tstate->curexc_value = 0;
-    tstate->curexc_traceback = 0;
+/* PyObjectCall */
+  #if CYTHON_COMPILING_IN_CPYTHON
+static CYTHON_INLINE PyObject* __Pyx_PyObject_Call(PyObject *func, PyObject *arg, PyObject *kw) {
+    PyObject *result;
+    ternaryfunc call = func->ob_type->tp_call;
+    if (unlikely(!call))
+        return PyObject_Call(func, arg, kw);
+    if (unlikely(Py_EnterRecursiveCall((char*)" while calling a Python object")))
+        return NULL;
+    result = (*call)(func, arg, kw);
+    Py_LeaveRecursiveCall();
+    if (unlikely(!result) && unlikely(!PyErr_Occurred())) {
+        PyErr_SetString(
+            PyExc_SystemError,
+            "NULL result without error in PyObject_Call");
+    }
+    return result;
 }
 #endif
 
 /* RaiseException */
-    #if PY_MAJOR_VERSION < 3
+  #if PY_MAJOR_VERSION < 3
 static void __Pyx_Raise(PyObject *type, PyObject *value, PyObject *tb,
                         CYTHON_UNUSED PyObject *cause) {
     __Pyx_PyThreadState_declare
@@ -16418,7 +16187,7 @@ bad:
 #endif
 
 /* BytesEquals */
-      static CYTHON_INLINE int __Pyx_PyBytes_Equals(PyObject* s1, PyObject* s2, int equals) {
+    static CYTHON_INLINE int __Pyx_PyBytes_Equals(PyObject* s1, PyObject* s2, int equals) {
 #if CYTHON_COMPILING_IN_PYPY
     return PyObject_RichCompareBool(s1, s2, equals);
 #else
@@ -16456,7 +16225,7 @@ bad:
 }
 
 /* UnicodeEquals */
-      static CYTHON_INLINE int __Pyx_PyUnicode_Equals(PyObject* s1, PyObject* s2, int equals) {
+    static CYTHON_INLINE int __Pyx_PyUnicode_Equals(PyObject* s1, PyObject* s2, int equals) {
 #if CYTHON_COMPILING_IN_PYPY
     return PyObject_RichCompareBool(s1, s2, equals);
 #else
@@ -16540,7 +16309,7 @@ return_ne:
 }
 
 /* None */
-      static CYTHON_INLINE Py_ssize_t __Pyx_div_Py_ssize_t(Py_ssize_t a, Py_ssize_t b) {
+    static CYTHON_INLINE Py_ssize_t __Pyx_div_Py_ssize_t(Py_ssize_t a, Py_ssize_t b) {
     Py_ssize_t q = a / b;
     Py_ssize_t r = a - q*b;
     q -= ((r != 0) & ((r ^ b) < 0));
@@ -16548,7 +16317,7 @@ return_ne:
 }
 
 /* GetAttr */
-      static CYTHON_INLINE PyObject *__Pyx_GetAttr(PyObject *o, PyObject *n) {
+    static CYTHON_INLINE PyObject *__Pyx_GetAttr(PyObject *o, PyObject *n) {
 #if CYTHON_COMPILING_IN_CPYTHON
 #if PY_MAJOR_VERSION >= 3
     if (likely(PyUnicode_Check(n)))
@@ -16561,7 +16330,7 @@ return_ne:
 }
 
 /* decode_c_string */
-      static CYTHON_INLINE PyObject* __Pyx_decode_c_string(
+    static CYTHON_INLINE PyObject* __Pyx_decode_c_string(
          const char* cstring, Py_ssize_t start, Py_ssize_t stop,
          const char* encoding, const char* errors,
          PyObject* (*decode_func)(const char *s, Py_ssize_t size, const char *errors)) {
@@ -16594,25 +16363,25 @@ return_ne:
 }
 
 /* RaiseTooManyValuesToUnpack */
-      static CYTHON_INLINE void __Pyx_RaiseTooManyValuesError(Py_ssize_t expected) {
+    static CYTHON_INLINE void __Pyx_RaiseTooManyValuesError(Py_ssize_t expected) {
     PyErr_Format(PyExc_ValueError,
                  "too many values to unpack (expected %" CYTHON_FORMAT_SSIZE_T "d)", expected);
 }
 
 /* RaiseNeedMoreValuesToUnpack */
-      static CYTHON_INLINE void __Pyx_RaiseNeedMoreValuesError(Py_ssize_t index) {
+    static CYTHON_INLINE void __Pyx_RaiseNeedMoreValuesError(Py_ssize_t index) {
     PyErr_Format(PyExc_ValueError,
                  "need more than %" CYTHON_FORMAT_SSIZE_T "d value%.1s to unpack",
                  index, (index == 1) ? "" : "s");
 }
 
 /* RaiseNoneIterError */
-      static CYTHON_INLINE void __Pyx_RaiseNoneNotIterableError(void) {
+    static CYTHON_INLINE void __Pyx_RaiseNoneNotIterableError(void) {
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not iterable");
 }
 
 /* ExtTypeTest */
-      static CYTHON_INLINE int __Pyx_TypeTest(PyObject *obj, PyTypeObject *type) {
+    static CYTHON_INLINE int __Pyx_TypeTest(PyObject *obj, PyTypeObject *type) {
     if (unlikely(!type)) {
         PyErr_SetString(PyExc_SystemError, "Missing type object");
         return 0;
@@ -16625,7 +16394,7 @@ return_ne:
 }
 
 /* SaveResetException */
-      #if CYTHON_COMPILING_IN_CPYTHON
+    #if CYTHON_COMPILING_IN_CPYTHON
 static CYTHON_INLINE void __Pyx__ExceptionSave(PyThreadState *tstate, PyObject **type, PyObject **value, PyObject **tb) {
     *type = tstate->exc_type;
     *value = tstate->exc_value;
@@ -16649,7 +16418,7 @@ static CYTHON_INLINE void __Pyx__ExceptionReset(PyThreadState *tstate, PyObject 
 #endif
 
 /* PyErrExceptionMatches */
-      #if CYTHON_COMPILING_IN_CPYTHON
+    #if CYTHON_COMPILING_IN_CPYTHON
 static CYTHON_INLINE int __Pyx_PyErr_ExceptionMatchesInState(PyThreadState* tstate, PyObject* err) {
     PyObject *exc_type = tstate->curexc_type;
     if (exc_type == err) return 1;
@@ -16659,7 +16428,7 @@ static CYTHON_INLINE int __Pyx_PyErr_ExceptionMatchesInState(PyThreadState* tsta
 #endif
 
 /* GetException */
-      #if CYTHON_COMPILING_IN_CPYTHON
+    #if CYTHON_COMPILING_IN_CPYTHON
 static int __Pyx__GetException(PyThreadState *tstate, PyObject **type, PyObject **value, PyObject **tb) {
 #else
 static int __Pyx_GetException(PyObject **type, PyObject **value, PyObject **tb) {
@@ -16720,7 +16489,7 @@ bad:
 }
 
 /* SwapException */
-        #if CYTHON_COMPILING_IN_CPYTHON
+      #if CYTHON_COMPILING_IN_CPYTHON
 static CYTHON_INLINE void __Pyx__ExceptionSwap(PyThreadState *tstate, PyObject **type, PyObject **value, PyObject **tb) {
     PyObject *tmp_type, *tmp_value, *tmp_tb;
     tmp_type = tstate->exc_type;
@@ -16745,7 +16514,7 @@ static CYTHON_INLINE void __Pyx_ExceptionSwap(PyObject **type, PyObject **value,
 #endif
 
 /* Import */
-        static PyObject *__Pyx_Import(PyObject *name, PyObject *from_list, int level) {
+      static PyObject *__Pyx_Import(PyObject *name, PyObject *from_list, int level) {
     PyObject *empty_list = 0;
     PyObject *module = 0;
     PyObject *global_dict = 0;
@@ -16819,7 +16588,7 @@ bad:
 }
 
 /* GetItemInt */
-        static CYTHON_INLINE PyObject *__Pyx_GetItemInt_Generic(PyObject *o, PyObject* j) {
+      static CYTHON_INLINE PyObject *__Pyx_GetItemInt_Generic(PyObject *o, PyObject* j) {
     PyObject *r;
     if (!j) return NULL;
     r = PyObject_GetItem(o, j);
@@ -16900,7 +16669,7 @@ static CYTHON_INLINE PyObject *__Pyx_GetItemInt_Fast(PyObject *o, Py_ssize_t i, 
 }
 
 /* PyIntBinop */
-        #if CYTHON_COMPILING_IN_CPYTHON
+      #if CYTHON_COMPILING_IN_CPYTHON
 static PyObject* __Pyx_PyInt_AddObjC(PyObject *op1, PyObject *op2, CYTHON_UNUSED long intval, CYTHON_UNUSED int inplace) {
     #if PY_MAJOR_VERSION < 3
     if (likely(PyInt_CheckExact(op1))) {
@@ -16998,62 +16767,15 @@ static PyObject* __Pyx_PyInt_AddObjC(PyObject *op1, PyObject *op2, CYTHON_UNUSED
 #endif
 
 /* None */
-        static CYTHON_INLINE void __Pyx_RaiseUnboundLocalError(const char *varname) {
-    PyErr_Format(PyExc_UnboundLocalError, "local variable '%s' referenced before assignment", varname);
-}
-
-/* None */
-        static CYTHON_INLINE long __Pyx_div_long(long a, long b) {
+      static CYTHON_INLINE long __Pyx_div_long(long a, long b) {
     long q = a / b;
     long r = a - q*b;
     q -= ((r != 0) & ((r ^ b) < 0));
     return q;
 }
 
-/* WriteUnraisableException */
-        static void __Pyx_WriteUnraisable(const char *name, CYTHON_UNUSED int clineno,
-                                  CYTHON_UNUSED int lineno, CYTHON_UNUSED const char *filename,
-                                  int full_traceback, CYTHON_UNUSED int nogil) {
-    PyObject *old_exc, *old_val, *old_tb;
-    PyObject *ctx;
-    __Pyx_PyThreadState_declare
-#ifdef WITH_THREAD
-    PyGILState_STATE state;
-    if (nogil)
-        state = PyGILState_Ensure();
-#ifdef _MSC_VER
-    else state = (PyGILState_STATE)-1;
-#endif
-#endif
-    __Pyx_PyThreadState_assign
-    __Pyx_ErrFetch(&old_exc, &old_val, &old_tb);
-    if (full_traceback) {
-        Py_XINCREF(old_exc);
-        Py_XINCREF(old_val);
-        Py_XINCREF(old_tb);
-        __Pyx_ErrRestore(old_exc, old_val, old_tb);
-        PyErr_PrintEx(1);
-    }
-    #if PY_MAJOR_VERSION < 3
-    ctx = PyString_FromString(name);
-    #else
-    ctx = PyUnicode_FromString(name);
-    #endif
-    __Pyx_ErrRestore(old_exc, old_val, old_tb);
-    if (!ctx) {
-        PyErr_WriteUnraisable(Py_None);
-    } else {
-        PyErr_WriteUnraisable(ctx);
-        Py_DECREF(ctx);
-    }
-#ifdef WITH_THREAD
-    if (nogil)
-        PyGILState_Release(state);
-#endif
-}
-
 /* PyObjectCallMethO */
-        #if CYTHON_COMPILING_IN_CPYTHON
+      #if CYTHON_COMPILING_IN_CPYTHON
 static CYTHON_INLINE PyObject* __Pyx_PyObject_CallMethO(PyObject *func, PyObject *arg) {
     PyObject *self, *result;
     PyCFunction cfunc;
@@ -17073,7 +16795,7 @@ static CYTHON_INLINE PyObject* __Pyx_PyObject_CallMethO(PyObject *func, PyObject
 #endif
 
 /* PyObjectCallOneArg */
-        #if CYTHON_COMPILING_IN_CPYTHON
+      #if CYTHON_COMPILING_IN_CPYTHON
 static PyObject* __Pyx__PyObject_CallOneArg(PyObject *func, PyObject *arg) {
     PyObject *result;
     PyObject *args = PyTuple_New(1);
@@ -17108,7 +16830,7 @@ static CYTHON_INLINE PyObject* __Pyx_PyObject_CallOneArg(PyObject *func, PyObjec
 #endif
 
 /* SetVTable */
-          static int __Pyx_SetVtable(PyObject *dict, void *vtable) {
+        static int __Pyx_SetVtable(PyObject *dict, void *vtable) {
 #if PY_VERSION_HEX >= 0x02070000
     PyObject *ob = PyCapsule_New(vtable, 0, 0);
 #else
@@ -17126,7 +16848,7 @@ bad:
 }
 
 /* CodeObjectCache */
-          static int __pyx_bisect_code_objects(__Pyx_CodeObjectCacheEntry* entries, int count, int code_line) {
+        static int __pyx_bisect_code_objects(__Pyx_CodeObjectCacheEntry* entries, int count, int code_line) {
     int start = 0, mid = 0, end = count - 1;
     if (end >= 0 && code_line > entries[end].code_line) {
         return count;
@@ -17206,7 +16928,7 @@ static void __pyx_insert_code_object(int code_line, PyCodeObject* code_object) {
 }
 
 /* AddTraceback */
-          #include "compile.h"
+        #include "compile.h"
 #include "frameobject.h"
 #include "traceback.h"
 static PyCodeObject* __Pyx_CreateCodeObjectForTraceback(
@@ -17307,8 +17029,8 @@ static void __Pyx_ReleaseBuffer(Py_buffer *view) {
 #endif
 
 
-          /* MemviewSliceIsContig */
-          static int
+        /* MemviewSliceIsContig */
+        static int
 __pyx_memviewslice_is_contig(const __Pyx_memviewslice mvs,
                              char order, int ndim)
 {
@@ -17331,7 +17053,7 @@ __pyx_memviewslice_is_contig(const __Pyx_memviewslice mvs,
 }
 
 /* OverlappingSlices */
-          static void
+        static void
 __pyx_get_array_memory_extents(__Pyx_memviewslice *slice,
                                void **out_start, void **out_end,
                                int ndim, size_t itemsize)
@@ -17367,7 +17089,7 @@ __pyx_slices_overlap(__Pyx_memviewslice *slice1,
 }
 
 /* Capsule */
-          static CYTHON_INLINE PyObject *
+        static CYTHON_INLINE PyObject *
 __pyx_capsule_create(void *p, CYTHON_UNUSED const char *sig)
 {
     PyObject *cobj;
@@ -17380,7 +17102,7 @@ __pyx_capsule_create(void *p, CYTHON_UNUSED const char *sig)
 }
 
 /* CIntFromPyVerify */
-          #define __PYX_VERIFY_RETURN_INT(target_type, func_type, func_value)\
+        #define __PYX_VERIFY_RETURN_INT(target_type, func_type, func_value)\
     __PYX__VERIFY_RETURN_INT(target_type, func_type, func_value, 0)
 #define __PYX_VERIFY_RETURN_INT_EXC(target_type, func_type, func_value)\
     __PYX__VERIFY_RETURN_INT(target_type, func_type, func_value, 1)
@@ -17402,7 +17124,7 @@ __pyx_capsule_create(void *p, CYTHON_UNUSED const char *sig)
     }
 
 /* TypeInfoCompare */
-          static int
+        static int
 __pyx_typeinfo_cmp(__Pyx_TypeInfo *a, __Pyx_TypeInfo *b)
 {
     int i;
@@ -17443,7 +17165,7 @@ __pyx_typeinfo_cmp(__Pyx_TypeInfo *a, __Pyx_TypeInfo *b)
 }
 
 /* MemviewSliceValidateAndInit */
-          static int
+        static int
 __pyx_check_strides(Py_buffer *buf, int dim, int ndim, int spec)
 {
     if (buf->shape[dim] <= 1)
@@ -17625,7 +17347,7 @@ no_fail:
 }
 
 /* ObjectToMemviewSlice */
-          static CYTHON_INLINE __Pyx_memviewslice __Pyx_PyObject_to_MemoryviewSlice_ds_int(PyObject *obj) {
+        static CYTHON_INLINE __Pyx_memviewslice __Pyx_PyObject_to_MemoryviewSlice_ds_int(PyObject *obj) {
     __Pyx_memviewslice result = { 0, 0, { 0 }, { 0 }, { 0 } };
     __Pyx_BufFmt_StackElem stack[1];
     int axes_specs[] = { (__Pyx_MEMVIEW_DIRECT | __Pyx_MEMVIEW_STRIDED) };
@@ -17648,7 +17370,7 @@ __pyx_fail:
 }
 
 /* ObjectToMemviewSlice */
-          static CYTHON_INLINE __Pyx_memviewslice __Pyx_PyObject_to_MemoryviewSlice_d_dc_double(PyObject *obj) {
+        static CYTHON_INLINE __Pyx_memviewslice __Pyx_PyObject_to_MemoryviewSlice_d_dc_double(PyObject *obj) {
     __Pyx_memviewslice result = { 0, 0, { 0 }, { 0 }, { 0 } };
     __Pyx_BufFmt_StackElem stack[1];
     int axes_specs[] = { (__Pyx_MEMVIEW_DIRECT | __Pyx_MEMVIEW_FOLLOW), (__Pyx_MEMVIEW_DIRECT | __Pyx_MEMVIEW_CONTIG) };
@@ -17671,7 +17393,7 @@ __pyx_fail:
 }
 
 /* CIntToPy */
-          static CYTHON_INLINE PyObject* __Pyx_PyInt_From_int(int value) {
+        static CYTHON_INLINE PyObject* __Pyx_PyInt_From_int(int value) {
     const int neg_one = (int) -1, const_zero = (int) 0;
     const int is_unsigned = neg_one > const_zero;
     if (is_unsigned) {
@@ -17697,59 +17419,8 @@ __pyx_fail:
     }
 }
 
-/* CIntToPy */
-          static CYTHON_INLINE PyObject* __Pyx_PyInt_From_long(long value) {
-    const long neg_one = (long) -1, const_zero = (long) 0;
-    const int is_unsigned = neg_one > const_zero;
-    if (is_unsigned) {
-        if (sizeof(long) < sizeof(long)) {
-            return PyInt_FromLong((long) value);
-        } else if (sizeof(long) <= sizeof(unsigned long)) {
-            return PyLong_FromUnsignedLong((unsigned long) value);
-        } else if (sizeof(long) <= sizeof(unsigned PY_LONG_LONG)) {
-            return PyLong_FromUnsignedLongLong((unsigned PY_LONG_LONG) value);
-        }
-    } else {
-        if (sizeof(long) <= sizeof(long)) {
-            return PyInt_FromLong((long) value);
-        } else if (sizeof(long) <= sizeof(PY_LONG_LONG)) {
-            return PyLong_FromLongLong((PY_LONG_LONG) value);
-        }
-    }
-    {
-        int one = 1; int little = (int)*(unsigned char *)&one;
-        unsigned char *bytes = (unsigned char *)&value;
-        return _PyLong_FromByteArray(bytes, sizeof(long),
-                                     little, !is_unsigned);
-    }
-}
-
-/* MemviewDtypeToObject */
-          static CYTHON_INLINE PyObject *__pyx_memview_get_int(const char *itemp) {
-    return (PyObject *) __Pyx_PyInt_From_int(*(int *) itemp);
-}
-static CYTHON_INLINE int __pyx_memview_set_int(const char *itemp, PyObject *obj) {
-    int value = __Pyx_PyInt_As_int(obj);
-    if ((value == (int)-1) && PyErr_Occurred())
-        return 0;
-    *(int *) itemp = value;
-    return 1;
-}
-
-/* MemviewDtypeToObject */
-          static CYTHON_INLINE PyObject *__pyx_memview_get_double(const char *itemp) {
-    return (PyObject *) PyFloat_FromDouble(*(double *) itemp);
-}
-static CYTHON_INLINE int __pyx_memview_set_double(const char *itemp, PyObject *obj) {
-    double value = __pyx_PyFloat_AsDouble(obj);
-    if ((value == (double)-1) && PyErr_Occurred())
-        return 0;
-    *(double *) itemp = value;
-    return 1;
-}
-
 /* MemviewSliceCopyTemplate */
-          static __Pyx_memviewslice
+        static __Pyx_memviewslice
 __pyx_memoryview_copy_new_contig(const __Pyx_memviewslice *from_mvs,
                                  const char *mode, int ndim,
                                  size_t sizeof_dtype, int contig_flag,
@@ -17816,7 +17487,7 @@ no_fail:
 }
 
 /* CIntFromPy */
-          static CYTHON_INLINE int __Pyx_PyInt_As_int(PyObject *x) {
+        static CYTHON_INLINE int __Pyx_PyInt_As_int(PyObject *x) {
     const int neg_one = (int) -1, const_zero = (int) 0;
     const int is_unsigned = neg_one > const_zero;
 #if PY_MAJOR_VERSION < 3
@@ -18000,8 +17671,35 @@ raise_neg_overflow:
     return (int) -1;
 }
 
+/* CIntToPy */
+        static CYTHON_INLINE PyObject* __Pyx_PyInt_From_long(long value) {
+    const long neg_one = (long) -1, const_zero = (long) 0;
+    const int is_unsigned = neg_one > const_zero;
+    if (is_unsigned) {
+        if (sizeof(long) < sizeof(long)) {
+            return PyInt_FromLong((long) value);
+        } else if (sizeof(long) <= sizeof(unsigned long)) {
+            return PyLong_FromUnsignedLong((unsigned long) value);
+        } else if (sizeof(long) <= sizeof(unsigned PY_LONG_LONG)) {
+            return PyLong_FromUnsignedLongLong((unsigned PY_LONG_LONG) value);
+        }
+    } else {
+        if (sizeof(long) <= sizeof(long)) {
+            return PyInt_FromLong((long) value);
+        } else if (sizeof(long) <= sizeof(PY_LONG_LONG)) {
+            return PyLong_FromLongLong((PY_LONG_LONG) value);
+        }
+    }
+    {
+        int one = 1; int little = (int)*(unsigned char *)&one;
+        unsigned char *bytes = (unsigned char *)&value;
+        return _PyLong_FromByteArray(bytes, sizeof(long),
+                                     little, !is_unsigned);
+    }
+}
+
 /* CIntFromPy */
-          static CYTHON_INLINE char __Pyx_PyInt_As_char(PyObject *x) {
+        static CYTHON_INLINE char __Pyx_PyInt_As_char(PyObject *x) {
     const char neg_one = (char) -1, const_zero = (char) 0;
     const int is_unsigned = neg_one > const_zero;
 #if PY_MAJOR_VERSION < 3
@@ -18186,7 +17884,7 @@ raise_neg_overflow:
 }
 
 /* CIntFromPy */
-          static CYTHON_INLINE long __Pyx_PyInt_As_long(PyObject *x) {
+        static CYTHON_INLINE long __Pyx_PyInt_As_long(PyObject *x) {
     const long neg_one = (long) -1, const_zero = (long) 0;
     const int is_unsigned = neg_one > const_zero;
 #if PY_MAJOR_VERSION < 3
@@ -18371,7 +18069,7 @@ raise_neg_overflow:
 }
 
 /* CheckBinaryVersion */
-          static int __Pyx_check_binary_version(void) {
+        static int __Pyx_check_binary_version(void) {
     char ctversion[4], rtversion[4];
     PyOS_snprintf(ctversion, 4, "%d.%d", PY_MAJOR_VERSION, PY_MINOR_VERSION);
     PyOS_snprintf(rtversion, 4, "%s", Py_GetVersion());
@@ -18387,7 +18085,7 @@ raise_neg_overflow:
 }
 
 /* InitStrings */
-          static int __Pyx_InitStrings(__Pyx_StringTabEntry *t) {
+        static int __Pyx_InitStrings(__Pyx_StringTabEntry *t) {
     while (t->p) {
         #if PY_MAJOR_VERSION < 3
         if (t->is_unicode) {

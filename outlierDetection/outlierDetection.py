@@ -5,25 +5,18 @@ Created on Aug 9, 2016
 @author: zahran
 '''
 
-#from __future__ import division, print_function
-from scipy.stats import chisquare
-from collections import OrderedDict
-from multiprocessing import Process, Queue
 
-import tribeflow
+from multiprocessing import Process, Queue
 import pandas as pd
-import plac
 import numpy as np
-import math
 import os.path
 import cProfile
 import _eval_outlier
 
-CORES = 2
+CORES = 4
 MODEL_PATH = '/home/zahran/Desktop/shareFolder/PARSED_pins_repins_win10_noop_NoLeaveOut_pinterest.h5'
 #SEQ_FILE_PATH = '/home/zahran/Desktop/shareFolder/sqlData_likes_full_info_fixed_ONLY_TRUE_friendship' 
 SEQ_FILE_PATH = '/home/zahran/Desktop/shareFolder/PARSED_pins_repins_win10_pinterest_INJECTED'
-TESTSET_COUNT_ADJUST = True
 UNBIAS_CATS_WITH_FREQ = False
 smoothingParam = 1.0   #smootihng parameter for unbiasing item counts.
 STAT_FILE = '/home/zahran/Desktop/shareFolder/Stats'
@@ -112,7 +105,8 @@ def outlierDetection(testDic, quota, coreId, q, store, true_mem_size, hyper2id, 
                     #npNewSeq = np.array(newSeq, dtype=str) 
                     newSeqIds = [obj2id[s] for s in newSeq]   
                     newSeqIds_np = np.array(newSeqIds, dtype = 'i4').copy()
-                    seqScore = _eval_outlier.calculateSequenceProb(newSeqIds_np, len(newSeqIds_np), true_mem_size, userId, Theta_zh, Psi_sz)                                            
+                   
+                    seqScore = _eval_outlier.calculateSequenceProb(newSeqIds_np, len(newSeqIds_np), true_mem_size, userId, Theta_zh, Psi_sz)                                                              
                     #seqScore = calculateSequenceProb(newSeq, true_mem_size, userId, obj2id, Theta_zh, Psi_sz)
                     if(UNBIAS_CATS_WITH_FREQ):
                         unbiasingProb = 1.0
@@ -235,6 +229,7 @@ def distributeOutlierDetection():
     
     print('Number of test samples: '+str(testSetCount))   
     myProcs = []
+    testSetCount = 20    
     idealCoreQuota = testSetCount // CORES
     userList = testDic.keys()    
     uid = 0
@@ -255,7 +250,7 @@ def distributeOutlierDetection():
                 if(leftCores >0):
                     idealCoreQuota = testSetCount // leftCores 
                 print('>>> Starting process: '+str(i)+' on '+str(coreShare)+' samples.')
-                p.start()       
+                p.start()                     
                 break
                                     
         myProcs.append(p)        
@@ -282,7 +277,7 @@ def main():
     
 
 if __name__ == "__main__":
-    main()    
-    #cProfile.run('distributeOutlierDetection()')
+    #main()    
+    cProfile.run('distributeOutlierDetection()')
     #plac.call(main)
     print('DONE!')

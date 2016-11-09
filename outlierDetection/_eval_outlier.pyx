@@ -1,7 +1,7 @@
-import numpy as np
+from cython import boundscheck, wraparound
 
-
-def evaluate(int userId, int[:] history, int historyLen, int targetObjId, double[:, ::1] Theta_zh, double[:, ::1] Psi_sz, int env):        
+@boundscheck(False)
+cpdef double evaluate(int userId, int[:] history, int historyLen, int targetObjId, double[:, ::1] Theta_zh, double[:, ::1] Psi_sz, int env) nogil:        
     cdef double mem_factor = 1.0    
     cdef double candidateProb = 0.0    
     cdef int j = 0
@@ -12,15 +12,19 @@ def evaluate(int userId, int[:] history, int historyLen, int targetObjId, double
     candidateProb += mem_factor * Psi_sz[targetObjId, env] * Theta_zh[env, userId]                                              
     return candidateProb
 
-def calculateSequenceProb(int[:] theSequence, int theSequenceLen, int true_mem_size, int userId, double[:, ::1] Theta_zh, double[:, ::1] Psi_sz):                     
+@boundscheck(False)
+cpdef double calculateSequenceProb(int[:] theSequence, int theSequenceLen, int true_mem_size, int userId, double[:, ::1] Theta_zh, double[:, ::1] Psi_sz) nogil:                     
     cdef double seqProb = 0.0   
     cdef double seqProbZ = 1.0    
     cdef int targetObjId = -1
     cdef double prior = 0.0
     cdef double candProb = 0.0
     cdef int window = 0   
-    cdef int[:] history = np.zeros(theSequenceLen, dtype='i4')
+    #cdef int[:] history = np.zeros(theSequenceLen, dtype='i4')
+    cdef int[:] history
+    cdef int historyLen = 0
     cdef int targetObjIdx, z, i = 0
+    cdef int wmax = 0
     
     window = min(true_mem_size, theSequenceLen)
     for z in xrange(Psi_sz.shape[1]): #for envs
@@ -31,10 +35,11 @@ def calculateSequenceProb(int[:] theSequence, int theSequenceLen, int true_mem_s
                 prior = Psi_sz[targetObjId, z]
                 seqProbZ *= prior
             else:                                                                            
-                targetObjId = theSequence[targetObjIdx]                 
-                history = theSequence[max(0,targetObjIdx-window): targetObjIdx] # look back 'window' actions.                                                            
-                                              
-                candProb = evaluate(userId, history, len(history), targetObjId, Theta_zh, Psi_sz, z) #(int[:, ::1] HOs, double[:, ::1] Theta_zh, double[:, ::1] Psi_sz, int[::1] count_z, int env):                                
+                targetObjId = theSequence[targetObjIdx]      
+                wmax = max(0,targetObjIdx-window)           
+                history = theSequence[wmax: targetObjIdx] # look back 'window' actions.                                                            
+                historyLen = targetObjIdx-wmax                            
+                candProb = evaluate(userId, history, historyLen, targetObjId, Theta_zh, Psi_sz, z) #(int[:, ::1] HOs, double[:, ::1] Theta_zh, double[:, ::1] Psi_sz, int[::1] count_z, int env):                                
                 seqProbZ *= candProb              
         seqProb += seqProbZ       
     return seqProb   
