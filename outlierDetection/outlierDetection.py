@@ -228,8 +228,7 @@ def distributeOutlierDetection():
         
     
     print('Number of test samples: '+str(testSetCount))   
-    myProcs = []
-    testSetCount = 20    
+    myProcs = []    
     idealCoreQuota = testSetCount // CORES
     userList = testDic.keys()    
     uid = 0
