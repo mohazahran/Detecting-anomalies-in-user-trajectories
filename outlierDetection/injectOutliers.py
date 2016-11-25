@@ -10,7 +10,8 @@ MODEL_PATH = '/home/zahran/Desktop/shareFolder/PARSED_pins_repins_win10_noop_NoL
 TRAINING_FILE = '/home/zahran/Desktop/shareFolder/PARSED_pins_repins_win10_pinterest'
 INJECTED_TRAIN = '/home/zahran/Desktop/shareFolder/PARSED_pins_repins_win10_pinterest_INJECTED'
 
-injectedInstancesCount = 10000
+injectedInstancesCount = 1000000 # 0 for all the training data
+doRandomization = False
 maxInjections = 2
 
 
@@ -21,20 +22,32 @@ def main():
     Dts = store['Dts']
     winSize = Dts.shape[1]    
     w = open(INJECTED_TRAIN, 'w')        
-    r = open(TRAINING_FILE, 'r')   
-    
+    r = open(TRAINING_FILE, 'r')
+    N = 0
+    if(injectedInstancesCount == 0):        
+        for l in r:
+            N += 1
+    else:           
+        N = injectedInstancesCount
+    r.close()
+    r = open(TRAINING_FILE, 'r')
     #Reservoir Sampling Algorithm
-    N = injectedInstancesCount
-    sample = [];     
+    sample = []
     for i,line in enumerate(r):
         if i < N:
             sample.append(line)
-        elif i >= N and random.random() < N/float(i+1):
-            replace = random.randint(0,len(sample)-1)
-            sample[replace] = line
+        else:
+            break
+       
+#     for i,line in enumerate(r):
+#         if i < N:
+#             sample.append(line)
+#         elif i >= N and random.random() < N/float(i+1):
+#             replace = random.randint(0,len(sample)-1)
+#             sample[replace] = line
         #else:
         #    break
-    
+    print('injectedInstancesCount=',injectedInstancesCount)
     
     for line in sample:
         line = line.strip()
