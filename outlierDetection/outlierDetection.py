@@ -5,21 +5,27 @@ Created on Aug 9, 2016
 @author: zahran
 '''
 
-
+#from __future__ import division, print_function
+from scipy.stats import chisquare
+from collections import OrderedDict
 from multiprocessing import Process, Queue
+
 import pandas as pd
+import plac
 import numpy as np
+import math
 import os.path
 import cProfile
 import _eval_outlier
 
-CORES = 4
-MODEL_PATH = '/home/zahran/Desktop/shareFolder/PARSED_pins_repins_win10_noop_NoLeaveOut_pinterest.h5'
-#SEQ_FILE_PATH = '/home/zahran/Desktop/shareFolder/sqlData_likes_full_info_fixed_ONLY_TRUE_friendship' 
-SEQ_FILE_PATH = '/home/zahran/Desktop/shareFolder/PARSED_pins_repins_win10_pinterest_INJECTED'
-UNBIAS_CATS_WITH_FREQ = False
+CORES = 40
+PATH = '/home/mohame11/pins_repins_fixedcat/'
+RESULTS_PATH = PATH+'injections/pvalues/'
+MODEL_PATH = PATH+'pins_repins_win10_noop_NoLeaveOut.h5'
+SEQ_FILE_PATH = PATH+'injections/pins_repins_win10_INJECTED_ALL_2.trace'
+UNBIAS_CATS_WITH_FREQ = True
 smoothingParam = 1.0   #smootihng parameter for unbiasing item counts.
-STAT_FILE = '/home/zahran/Desktop/shareFolder/Stats'
+STAT_FILE = PATH+'catStats'
 
 def evaluate(userId, history, targetObjId, Theta_zh, Psi_sz, env):        
     mem_factor = 1.0    
@@ -76,7 +82,7 @@ def getPvalueWithoutRanking(currentActionRank, keySortedProbs, probabilities):
                
 def outlierDetection(testDic, quota, coreId, q, store, true_mem_size, hyper2id, obj2id, Theta_zh, Psi_sz, smoothedProbs):
     myCnt = 0    
-    writer = open(SEQ_FILE_PATH+'_SCORES_ANOMALY_ANALYSIS_'+str(coreId),'w')
+    writer = open(RESULTS_PATH+'/outlier_analysis_pvalues_'+str(coreId),'w')
     
     for user in testDic:
         for testLine in testDic[user]:
@@ -105,8 +111,7 @@ def outlierDetection(testDic, quota, coreId, q, store, true_mem_size, hyper2id, 
                     #npNewSeq = np.array(newSeq, dtype=str) 
                     newSeqIds = [obj2id[s] for s in newSeq]   
                     newSeqIds_np = np.array(newSeqIds, dtype = 'i4').copy()
-                   
-                    seqScore = _eval_outlier.calculateSequenceProb(newSeqIds_np, len(newSeqIds_np), true_mem_size, userId, Theta_zh, Psi_sz)                                                              
+                    seqScore = _eval_outlier.calculateSequenceProb(newSeqIds_np, len(newSeqIds_np), true_mem_size, userId, Theta_zh, Psi_sz)                                            
                     #seqScore = calculateSequenceProb(newSeq, true_mem_size, userId, obj2id, Theta_zh, Psi_sz)
                     if(UNBIAS_CATS_WITH_FREQ):
                         unbiasingProb = 1.0
@@ -129,9 +134,9 @@ def outlierDetection(testDic, quota, coreId, q, store, true_mem_size, hyper2id, 
                 pValuesWithoutRanks[i] = currentActionPvalueWithoutRanks
                                 
             writer.write('user##'+str(user)+'||seq##'+str(seq)+'||PvaluesWithRanks##'+str(pValuesWithRanks)+'||PvaluesWithoutRanks##'+str(pValuesWithoutRanks)+'||goldMarkers##'+str(goldMarkers)+'\n')        
-            #if(myCnt%100 == 0):            
-            writer.flush()
-            print('>>> proc: '+ str(coreId)+' finished '+ str(myCnt)+'/'+str(quota)+' instances ...')                
+            if(myCnt%100 == 0):
+                writer.flush()
+                print('>>> proc: '+ str(coreId)+' finished '+ str(myCnt)+'/'+str(quota)+' instances ...')                
     writer.close()    
     #ret = [chiSqs, chiSqs_expected]
     #q.put(ret)                                          
@@ -202,6 +207,7 @@ def distributeOutlierDetection():
     trace_fpath = store['trace_fpath'][0][0]
     
     #SEQ_FILE_PATH = createTestingSeqFile(store)
+    print(">>> Preparing testset ...")
     testDic = {}
     testSetCount = 0
     r = open(SEQ_FILE_PATH, 'r')    
@@ -210,7 +216,7 @@ def distributeOutlierDetection():
         tmp = line.split('\t')
         user = tmp[0]      
         if(user not in hyper2id):
-            print("User: "+str(user)+" is not found in training set !")
+            #print("User: "+str(user)+" is not found in training set !")
             continue
         testSetCount += 1
         if(user in testDic):
@@ -228,7 +234,7 @@ def distributeOutlierDetection():
         
     
     print('Number of test samples: '+str(testSetCount))   
-    myProcs = []    
+    myProcs = []
     idealCoreQuota = testSetCount // CORES
     userList = testDic.keys()    
     uid = 0
@@ -249,7 +255,7 @@ def distributeOutlierDetection():
                 if(leftCores >0):
                     idealCoreQuota = testSetCount // leftCores 
                 print('>>> Starting process: '+str(i)+' on '+str(coreShare)+' samples.')
-                p.start()                     
+                p.start()       
                 break
                                     
         myProcs.append(p)        
@@ -276,7 +282,7 @@ def main():
     
 
 if __name__ == "__main__":
-    #main()    
-    cProfile.run('distributeOutlierDetection()')
+    main()    
+    #cProfile.run('distributeOutlierDetection()')
     #plac.call(main)
     print('DONE!')
