@@ -4,319 +4,172 @@ Created on Oct 2, 2016
 
 @author: zahran
 '''
-
-'''
-Created on Aug 9, 2016
-
-@author: zahran
-'''
-
-#from __future__ import division, print_function
-from scipy.stats import chisquare
-from collections import OrderedDict
-from multiprocessing import Process, Queue
-
-import numpy as np
-import math
-from os import listdir
-from os.path import isfile, join
-import outlierDetectionMulticore
-import ast
-import re
+from MyEnums import *
+from Metric import *
+from HypTesting import *
+from TestSample import *
 
 
+#ANALYSIS_FILES_PATH = '/home/mohame11/pins_repins_fixedcat/allLikes/pvalues/'
+ANALYSIS_FILES_PATH = '/home/mohame11/pins_repins_fixedcat/injections/pvalues/'
+FILE_NAME = 'outlier_analysis_pvalues_'
+#FILE_NAME = 'PARSED_pins_repins_win10_pinterest_INJECTED_SCORES_ANOMALY_ANALYSIS_'
+    
 
-ANALYSIS_FILES_PATH = '/home/zahran/Desktop/shareFolder/'
-FILE_NAME = 'PARSED_sqlData_likes_full_info_fixed_withFriendship_SCORES_ANAOMLY_ANALYSIS_'
-
-def parseAnalysisFiles():
-    retList = []
-    pattern = re.compile(FILE_NAME+'\d+')
-    allfiles = listdir(ANALYSIS_FILES_PATH)
-    for file in allfiles:    
-        if isfile(join(ANALYSIS_FILES_PATH, file)):
+class OutlierEvaluation:
+    def __init__(self, allData, techType, hyp, metricType, pvalueTyp, alpha, testSetCountAdjust):
+        self.allData = allData
+        self.techType = techType
+        self.hypType = hyp
+        self.metricType = metricType
+        self.pvalueTyp = pvalueTyp
+        self.alpha = alpha
+        self.testSetCountAdjust = testSetCountAdjust
+        
+        allTestsCount = 0
+        for u in self.allData:
+            allTestsCount += len(self.allData[u])
             
-            if(pattern.match(file)):
-            #if(FILE_NAME in file and '~' not in file):
-                r = open(join(ANALYSIS_FILES_PATH, file), 'r')
-                print(file)                                              
-                for line in r:
-                    if('User' in line):
-                        continue
-                    info = line.split('||')
-                    dataList = []
-                    for piece in info:                                           
-                        data = piece.split('##')[1]
-                        formatedContainer = ast.literal_eval(data)
-                        dataList.append(formatedContainer)
+        self.allTestsCount = allTestsCount
                         
-                    retList.append(dataList)
-                           
-    return retList
-
-
-def bonferroni_hypothesis_testing(alphaRanking, alphaNoRanking, TESTSET_COUNT_ADJUST, keySortedPvalues, pValues, pvalType, testsetlen):
-    if(pvalType == 'RANKING'):
-        ALPHA = alphaRanking
-    else:
-        ALPHA = alphaNoRanking
-    outlierVector = ['N/A']*len(keySortedPvalues)
-    bonferroni_ALPHA = float(ALPHA)/float(len(keySortedPvalues))
-    if(TESTSET_COUNT_ADJUST == True):
-        bonferroni_ALPHA = bonferroni_ALPHA / float(testsetlen)
-    for i in range(len(keySortedPvalues)):
-        if(pValues[keySortedPvalues[i]] <= bonferroni_ALPHA):
-            outlierVector[keySortedPvalues[i]] = 'OUTLIER' # rejecting H0 (i.e rejecting that the action is normal ==> outlier)
-        else:
-            outlierVector[keySortedPvalues[i]] = 'NORMAL'
-    return outlierVector
-
-def holm_hypothesis_testing (alphaRanking, alphaNoRanking, TESTSET_COUNT_ADJUST, keySortedPvalues, pValues, pvalType, testsetlen):
-    if(pvalType == 'RANKING'):
-        ALPHA = alphaRanking
-    else:
-        ALPHA = alphaNoRanking   
-    k = -1
-    outlierVector = ['N/A']*len(keySortedPvalues)  
-    for i in range(len(keySortedPvalues)):
-        if(TESTSET_COUNT_ADJUST == True):
-            val = float(ALPHA)/float(((len(keySortedPvalues)*testsetlen)-i))
-        else:            
-            val = float(ALPHA)/float((len(keySortedPvalues)-i))
-        if(pValues[keySortedPvalues[i]] > val):
-            k = i
-            break
-    for i in range(len(keySortedPvalues)):
-        if(i<k):
-            outlierVector[keySortedPvalues[i]] = 'OUTLIER'
-        else:
-            outlierVector[keySortedPvalues[i]] = 'NORMAL'
-    return outlierVector
-
-def updateChiSq(chiSqs, chiSqs_expected, decisions, friendship, dKey):
-    
-    for i in range(len(decisions)):        
-        if(decisions[i] == 'OUTLIER' and friendship[i] == 'true'):
-            chiSqs[dKey][0] += 1        
-        elif(decisions[i] == 'OUTLIER' and friendship[i] == 'false'):
-            chiSqs[dKey][1] += 1
-        elif(decisions[i] == 'NORMAL' and friendship[i] == 'true'):
-            chiSqs[dKey][2] += 1
-        elif(decisions[i] == 'NORMAL' and friendship[i] == 'false'):
-            chiSqs[dKey][3] += 1
-            
-    row0 = chiSqs[dKey][0] + chiSqs[dKey][1]
-    row1 = chiSqs[dKey][2] + chiSqs[dKey][3]
-    col0 = chiSqs[dKey][0] + chiSqs[dKey][2]
-    col1 = chiSqs[dKey][1] + chiSqs[dKey][3]
-    grandTotal = row0+row1
-    
-    
-    chiSqs_expected[dKey][0] = float(row0*col0)/float(grandTotal)
-    chiSqs_expected[dKey][1] = float(row0*col1)/float(grandTotal)
-    chiSqs_expected[dKey][2] = float(row1*col0)/float(grandTotal)
-    chiSqs_expected[dKey][3] = float(row1*col1)/float(grandTotal)
-    
-    chis = chisquare(chiSqs[dKey], f_exp=chiSqs_expected[dKey], ddof=2)
-    return chis
-
-def doChiSqaure(allData, ALPHA_RANKING, ALPHA_NORANKING, TESTSET_COUNT_ADJUST):
-    
-    wRanking = open(ANALYSIS_FILES_PATH+FILE_NAME+'CHISQ_ALPHA_RANKING', 'w')
-    wNoRanking = open(ANALYSIS_FILES_PATH+FILE_NAME+'CHISQ_ALPHA_NORANKING', 'w')
-    
-    minChiSqPvalue = [1000.0]*4
-    minAlphas = [10000.0]*4
-    
-    wRanking.write('alpha, bon_rank_chiSqaure, bon_rank_chiSqaure\n')
-    wNoRanking.write('alpha, bon_norank_chiSqaure, bon_norank_chiSqaure\n')
-    
-    for i in range(len(ALPHA_NORANKING)):
-        print(i,'/',len(ALPHA_NORANKING))
-        alphaRanking = ALPHA_RANKING[i]
-        alphaNoRanking = ALPHA_NORANKING[i]
-        chiSqs = {'bon_rank':[0]*4, 'bon_noRank':[0]*4, 'holms_rank': [0]*4, 'holms_noRank':[0]*4}
-        chiSqs_expected = {'bon_rank':[0]*4, 'bon_noRank':[0]*4, 'holms_rank': [0]*4, 'holms_noRank':[0]*4}
+        if(hyp == HYP.BONFERRONI):
+            self.hypObj = Bonferroni(self.alpha, self.testSetCountAdjust, self.allTestsCount)
+        elif(hyp == HYP.HOLMS):
+            self.hypObj = Holms(self.alpha, self.testSetCountAdjust, self.allTestsCount)
         
-        chi_bon_rank = None
-        chi_bon_norank = None
-        chi_holms_rank = None
-        chi_holms_norank = None
-        
-        for inst in allData:
+        if(self.metricType == METRIC.CHI_SQUARE):
+            self.metricObj = Chisq()
+        elif(self.metricType == METRIC.REC_PREC_FSCORE):
+            self.metricObj = rpf()
             
-            pValuesWithRanks = inst[0]
-            pValuesWithoutRanks = inst[1]
-            goldMarkers = inst[2]
-            
-            keySortedPvaluesWithRanks = sorted(pValuesWithRanks, key=lambda k: (-pValuesWithRanks[k], k), reverse=True)
-            keySortedPvaluesWithoutRanks = sorted(pValuesWithoutRanks, key=lambda k: (-pValuesWithoutRanks[k], k), reverse=True)
-            
-            #alphaRanking, alphaNoRanking, TESTSET_COUNT_ADJUST, keySortedPvalues, pValues, pvalType, testsetlen
-            
-            outlierVector_bonferroniWithRanks = bonferroni_hypothesis_testing \
-            (alphaRanking, alphaNoRanking, TESTSET_COUNT_ADJUST, keySortedPvaluesWithRanks, pValuesWithRanks, 'RANKING', len(allData))
-            
-            outlierVector_bonferroniWithoutRanks = bonferroni_hypothesis_testing \
-            (alphaRanking, alphaNoRanking, TESTSET_COUNT_ADJUST, keySortedPvaluesWithoutRanks, pValuesWithoutRanks, 'NORANKING', len(allData)) 
-                   
-            outlierVector_holmsWithRanks = holm_hypothesis_testing \
-            (alphaRanking, alphaNoRanking, TESTSET_COUNT_ADJUST, keySortedPvaluesWithRanks, pValuesWithRanks, 'RANKING', len(allData))
-            
-            outlierVector_holmsWithoutRanks = holm_hypothesis_testing \
-            (alphaRanking, alphaNoRanking, TESTSET_COUNT_ADJUST, keySortedPvaluesWithoutRanks, pValuesWithoutRanks, 'NORANKING', len(allData))
-            
-            
-            chi_bon_rank = updateChiSq(chiSqs, chiSqs_expected, outlierVector_bonferroniWithRanks, goldMarkers, 'bon_rank')
-            chi_bon_norank = updateChiSq(chiSqs, chiSqs_expected, outlierVector_bonferroniWithoutRanks, goldMarkers, 'bon_noRank')
-            chi_holms_rank = updateChiSq(chiSqs, chiSqs_expected, outlierVector_holmsWithRanks, goldMarkers, 'holms_rank')
-            chi_holms_norank = updateChiSq(chiSqs, chiSqs_expected, outlierVector_holmsWithoutRanks, goldMarkers, 'holms_noRank')
-    
-        chi_bon_rankVal = float(str(chi_bon_rank).split('=')[-1].replace(')',''))
-        chi_holms_rankVal = float(str(chi_holms_rank).split('=')[-1].replace(')',''))
-        chi_bon_norankVal = float(str(chi_bon_norank).split('=')[-1].replace(')',''))
-        chi_holms_norankVal = float(str(chi_holms_norank).split('=')[-1].replace(')',''))
-        
-        wRanking.write(str(alphaRanking)+','+str(chi_bon_rankVal)+','+str(chi_holms_rankVal)+'\n')
-        wNoRanking.write(str(alphaNoRanking)+','+str(chi_bon_norankVal)+','+str(chi_holms_norankVal)+'\n')
-        
-        if(minChiSqPvalue[0]>chi_bon_rankVal):
-            minChiSqPvalue[0] = chi_bon_rankVal
-            minAlphas[0] = alphaRanking
-            
-        if(minChiSqPvalue[1]>chi_bon_norankVal):
-            minChiSqPvalue[1] = chi_bon_norankVal
-            minAlphas[1] = alphaNoRanking
-        
-        if(minChiSqPvalue[2]>chi_holms_rankVal):
-            minChiSqPvalue[2] = chi_holms_rankVal
-            minAlphas[2] = alphaRanking
-        
-        if(minChiSqPvalue[3]>chi_holms_norankVal):
-            minChiSqPvalue[3] = chi_holms_norankVal
-            minAlphas[3] = alphaNoRanking
-    
-    wRanking.write('Min pvalue res_bon_rank  ='+str(minChiSqPvalue[0])+' alphaRank='+str(minAlphas[0])+'\n')
-    wRanking.write('Min pvalue res_holms_rank='+str(minChiSqPvalue[2])+' alphaRank='+str(minAlphas[2])+'\n')
-    
-    wNoRanking.write('Min pvalue res_bon_noRank  ='+str(minChiSqPvalue[1])+' alphanoRank='+str(minAlphas[1])+'\n')
-    wNoRanking.write('Min pvalue res_holms_noRank='+str(minChiSqPvalue[3])+' alphanoRank='+str(minAlphas[3])+'\n')
-      
-    wRanking.close()
-    wNoRanking.close
-
-def updateResultStats(resStats, decisions, injectionMarkers, dKey):
-    #tp,fp,fn,tn
-    for i in range(len(decisions)):   
-        if(decisions[i] == 'OUTLIER' and injectionMarkers[i] == 'true'):
-            resStats[dKey][0] += 1        
-        elif(decisions[i] == 'OUTLIER' and injectionMarkers[i] == 'false'):
-            resStats[dKey][1] += 1
-        elif(decisions[i] == 'NORMAL' and injectionMarkers[i] == 'true'):
-            resStats[dKey][2] += 1
-        elif(decisions[i] == 'NORMAL' and injectionMarkers[i] == 'false'):
-            resStats[dKey][3] += 1
-    
-    try:         
-        rec  = float(resStats[dKey][0])/float(resStats[dKey][0] + resStats[dKey][2])
-        prec = float(resStats[dKey][0])/float(resStats[dKey][0] + resStats[dKey][1])
-        fscore= (2*prec*rec) / (prec+rec)
-        return [rec, prec, fscore]
-    except:
-        return [0,0,0]
-
-def doRecallPrecFscore(allData, ALPHA_RANKING, ALPHA_NORANKING, TESTSET_COUNT_ADJUST):
-    wRanking = open(ANALYSIS_FILES_PATH+FILE_NAME+'RecPrecFscore_ALPHA_RANKING', 'w')
-    wNoRanking = open(ANALYSIS_FILES_PATH+FILE_NAME+'RecPrecFscore_ALPHA_NORANKING', 'w')
-    
-    wRanking.write('alpha,bon_rank[rec, prec, fscore], holms_rank[rec, prec, fscore]\n')
-    wNoRanking.write('alpha,bon_norank[rec, prec, fscore], holms_norank[rec, prec, fscore]\n')
                
-    maxFscores = [0.0]*4
-    maxAlphas = [0.0]*4
+        
+        
+                                
+    def formOriginalSeq(self, tests):
+        origSeq = list(tests[0].actions)  
+        origGoldMarkers = list(tests[0].goldMarkers)
+        for i in range(1,len(tests)):
+            a = tests[i].actions[-1]
+            g = tests[i].goldMarkers[-1]
+            origSeq.append(a)
+            origGoldMarkers.append(g)            
+        return origSeq, origGoldMarkers
     
-    for i in range(len(ALPHA_NORANKING)):
-        print(i,'/',len(ALPHA_NORANKING))
-        alphaRanking = ALPHA_RANKING[i]
-        alphaNoRanking = ALPHA_NORANKING[i]
-        
-        resStats = {'bon_rank':[0]*4, 'bon_noRank':[0]*4, 'holms_rank': [0]*4, 'holms_noRank':[0]*4}
-        
-        for inst in allData:
+    
+    
+    def aggregateDecisions(self, actionDecisions):
+        if(self.techType == TECHNIQUE.ALL_OR_NOTHING):
+            for d in actionDecisions:
+                if(d == DECISION.NORMAL):
+                    return DECISION.NORMAL
+            return DECISION.OUTLIER
             
-            pValuesWithRanks = inst[0]
-            pValuesWithoutRanks = inst[1]
-            goldMarkers = inst[2]
+        elif(self.techType == TECHNIQUE.ONE_IS_ENOUGH):
+            for d in actionDecisions:
+                if(d == DECISION.OUTLIER):
+                    return DECISION.OUTLIER
+            return DECISION.NORMAL
             
-            keySortedPvaluesWithRanks = sorted(pValuesWithRanks, key=lambda k: (-pValuesWithRanks[k], k), reverse=True)
-            keySortedPvaluesWithoutRanks = sorted(pValuesWithoutRanks, key=lambda k: (-pValuesWithoutRanks[k], k), reverse=True)
+        elif(self.techType == TECHNIQUE.MAJORITY_VOTING):
+            counts = {}
+            mySet = set(actionDecisions)
+            if(len(mySet) == 1):
+                return actionDecisions[0]
+            counts[DECISION.NORMAL] = actionDecisions.count(DECISION.NORMAL)
+            counts[DECISION.OUTLIER] = actionDecisions.count(DECISION.OUTLIER)
             
-            #alphaRanking, alphaNoRanking, TESTSET_COUNT_ADJUST, keySortedPvalues, pValues, pvalType, testsetlen
+            if(counts[DECISION.NORMAL] >= counts[DECISION.OUTLIER]):
+                return DECISION.NORMAL
+            return DECISION.OUTLIER
+                        
             
-            outlierVector_bonferroniWithRanks = bonferroni_hypothesis_testing \
-            (alphaRanking, alphaNoRanking, TESTSET_COUNT_ADJUST, keySortedPvaluesWithRanks, pValuesWithRanks, 'RANKING', len(allData))
+    
+    def evaluate(self):            
+        for u in self.allData:
+            tests = self.allData[u]
+            originalSeq, originalGoldMarkers = self.formOriginalSeq(tests)
+            winSize = len(tests[0].PvaluesWithRanks)
+            decisionsForOriginalSeq = []
             
-            outlierVector_bonferroniWithoutRanks = bonferroni_hypothesis_testing \
-            (alphaRanking, alphaNoRanking, TESTSET_COUNT_ADJUST, keySortedPvaluesWithoutRanks, pValuesWithoutRanks, 'NORANKING', len(allData)) 
-                   
-            outlierVector_holmsWithRanks = holm_hypothesis_testing \
-            (alphaRanking, alphaNoRanking, TESTSET_COUNT_ADJUST, keySortedPvaluesWithRanks, pValuesWithRanks, 'RANKING', len(allData))
-            
-            outlierVector_holmsWithoutRanks = holm_hypothesis_testing \
-            (alphaRanking, alphaNoRanking, TESTSET_COUNT_ADJUST, keySortedPvaluesWithoutRanks, pValuesWithoutRanks, 'NORANKING', len(allData))
-            
-            
-            res_bon_rank = updateResultStats(resStats, outlierVector_bonferroniWithRanks, goldMarkers, 'bon_rank')
-            res_bon_noRank = updateResultStats(resStats, outlierVector_bonferroniWithoutRanks, goldMarkers, 'bon_noRank')
-            res_holms_rank = updateResultStats(resStats, outlierVector_holmsWithRanks, goldMarkers, 'holms_rank')
-            res_holms_noRank = updateResultStats(resStats, outlierVector_holmsWithoutRanks, goldMarkers, 'holms_noRank')
-            
-        if(maxFscores[0]<res_bon_rank[-1]):
-            maxFscores[0] = res_bon_rank[-1]
-            maxAlphas[0] = alphaRanking
-            
-        if(maxFscores[1]<res_bon_noRank[-1]):
-            maxFscores[1] = res_bon_noRank[-1]
-            maxAlphas[1] = alphaNoRanking
-        
-        if(maxFscores[2]<res_holms_rank[-1]):
-            maxFscores[2] = res_holms_rank[-1]
-            maxAlphas[2] = alphaRanking
-        
-        if(maxFscores[3]<res_holms_noRank[-1]):
-            maxFscores[3] = res_holms_noRank[-1]
-            maxAlphas[3] = alphaNoRanking
+            for origIdx in range(len(originalSeq)):
+                firstSeqIdxAppear = origIdx // winSize  #the index of first seq this current action appeared in                   
+                firstIdxInFirstSeq = origIdx % winSize  #the index of current action in that seq
                 
+                idxInSeq = firstIdxInFirstSeq   
+                actionDecisions = []
                 
-                
-           
-    
+                for seqIdx in range(firstSeqIdxAppear, len(tests)):                                                
+                    if(idxInSeq < 0):
+                        break
+                    t = tests[seqIdx]
+                    goldMarkers = t.goldMarkers                
+                    if(self.pvalueTyp == PVALUE.WITH_RANKING):
+                        pValues = t.PvaluesWithRanks
+                    elif(self.pvalueTyp == PVALUE.WITHOUT_RANKING):
+                        pValues = t.PvaluesWithoutRanks
+                        
+                    keySortedPvalues = sorted(pValues, key=lambda k: (-pValues[k], k), reverse=True)                                            
+                    decisionVec = self.hypObj.classify(keySortedPvalues, pValues)                    
+                    actionDecisions.append(decisionVec[idxInSeq])
+                    
+                    idxInSeq -= 1
+                    
+                # now we have a list of decisions for the action at index=origIdx
+                # depending on the classification technique we pick only one decision out of the actionDecisions
+                finalDecision = self.aggregateDecisions(actionDecisions)
+                decisionsForOriginalSeq.append(finalDecision)
+                           
+            self.metricObj.update(decisionsForOriginalSeq, originalGoldMarkers)
+                        
         
-        wRanking.write(str(alphaRanking)+','+str(res_bon_rank)+','+str(res_holms_rank)+'\n')
-        wNoRanking.write(str(alphaNoRanking)+','+str(res_bon_noRank)+','+str(res_holms_noRank)+'\n')
+        
     
-    wRanking.write('Max recall res_bon_rank  ='+str(maxFscores[0])+' alphaRank='+str(maxAlphas[0])+'\n')
-    wRanking.write('Max recall res_holms_rank='+str(maxFscores[2])+' alphaRank='+str(maxAlphas[2])+'\n')
     
-    wNoRanking.write('Max recall res_bon_noRank  ='+str(maxFscores[1])+' alphanoRank='+str(maxAlphas[1])+'\n')
-    wNoRanking.write('Max recall res_holms_noRank='+str(maxFscores[3])+' alphanoRank='+str(maxAlphas[3])+'\n')
     
-    wNoRanking.write('\n')
-    
-    wRanking.close()
-    wNoRanking.close()
-    
+
 def main():
        
-    ALPHA_NORANKING = np.arange(0.000005,0.1,0.005) # start=0, step=0.1, end=1 (exlusive)
-    ALPHA_RANKING = np.arange(0.000005,0.1,0.005)    
-    TESTSET_COUNT_ADJUST = True
+    #ALPHA_NORANKING = np.arange(0.000005,0.1,0.005) # start=0, step=0.1, end=1 (exlusive)
+    #ALPHA_RANKING = np.arange(0.000005,0.1,0.005)    
+    
+    
+    ANALYSIS_FILES_PATH = '/home/zahran/Desktop/shareFolder/allLikes/'
+    FILE_NAME = 'outlier_analysis_pvalues_'
     
     print('>>> Reading Data ...')
-    allData = parseAnalysisFiles()
+    allData = TestSample.parseAnalysisFiles(FILE_NAME, ANALYSIS_FILES_PATH)    
     print('>>> Evaluating ...')
-    #doChiSqaure(allData, ALPHA_RANKING, ALPHA_NORANKING, TESTSET_COUNT_ADJUST)
-    doRecallPrecFscore(allData, ALPHA_RANKING, ALPHA_NORANKING, TESTSET_COUNT_ADJUST)
+    
+    metricList = [METRIC.REC_PREC_FSCORE]
+    techList = [TECHNIQUE.ALL_OR_NOTHING, TECHNIQUE.MAJORITY_VOTING, TECHNIQUE.ONE_IS_ENOUGH]    
+    alphaList = [0.0000000000005, 0.000000000005, 0.00000000005, 0.0000000005, 0.000000005, 0.0000005, 0.0000005, 0.000005, 0.00005, 0.0005, 0.005, 0.05, 0.5]
+    hypList = [HYP.BONFERRONI, HYP.HOLMS]
+    pvalueList = [PVALUE.WITHOUT_RANKING, PVALUE.WITH_RANKING]
+    testSetCountAdjustList = [False, True]    
+    
+    for pv in pvalueList:
+        logger = open(ANALYSIS_FILES_PATH+str(METRIC.CHI_SQUARE)+'_'+str(pv),'w')
+        for alpha in alphaList:            
+            for tech in techList:                
+                for hyp in hypList:                    
+                    for metric in metricList:
+                        for tadj in testSetCountAdjustList:
+                            
+                            print(pv,alpha,tech,hyp,metric,tadj)
+                            
+                            ev = OutlierEvaluation(allData, tech, hyp, metric, pv, alpha, tadj)
+                            ev.evaluate()   
+                            
+                            logger.write('alpha='+str(alpha))
+                            logger.write(', '+str(tech))       
+                            logger.write(', '+str(hyp))                                
+                            logger.write(', TScountAdj='+str(tadj))
+                            logger.write(': '+ev.metricObj.getSummary()+'\n')
+                            logger.flush()
+        logger.close()
+        
+        
   
     
 main()    
