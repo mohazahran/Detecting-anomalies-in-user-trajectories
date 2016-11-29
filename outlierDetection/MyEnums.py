@@ -8,6 +8,7 @@ from enum import Enum
 class METRIC (Enum):
     CHI_SQUARE = 1
     REC_PREC_FSCORE = 2
+    FISHER = 3
 
 class TECHNIQUE(Enum):
     ALL_OR_NOTHING = 1
