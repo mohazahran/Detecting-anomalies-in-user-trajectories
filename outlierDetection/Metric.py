@@ -4,7 +4,9 @@ Created on Nov 23, 2016
 @author: zahran
 '''
 from MyEnums import *
-from scipy.stats import chisquare
+from scipy.stats import chisquare, fisher_exact
+from scipy.stats.contingency import expected_freq, chi2_contingency
+import numpy as np
 
 class Metric:
     def __init__(self):
@@ -55,6 +57,48 @@ class Chisq(Metric):
         self.expectedNF = float(row1*col1)/float(grandTotal)
         
         self.stats = chisquare([self.OT, self.OF, self.NT, self.NF], f_exp=[self.expectedOT, self.expectedOF, self.expectedNT, self.expectedNF], ddof=2)
+        #ci = chi2_contingency([self.OT, self.OF, self.NT, self.NF])
+        
+        #print(self.stats, oddsratio, pvalue)
+        #print('myExpected:'+str([self.expectedOT, self.expectedOF, self.expectedNT, self.expectedNF]))
+        #ep = expected_freq([self.OT, self.OF, self.NT, self.NF])
+        #cm = np.array_equal(ep, np.array([self.expectedOT, self.expectedOF, self.expectedNT, self.expectedNF]))
+        #print(cm)
+        #if(not cm):       
+        #    print('\nERROR in exp cnt\n')
+        #print('\n')
+        
+        
+        
+        
+
+class Fisher(Metric):    
+    def __init__(self):  
+        self.type = METRIC.FISHER          
+        self.OT = 0 #OT: Decision=outlier and friendship=True.
+        self.OF = 0 
+        self.NT = 0
+        self.NF = 0 #NF: Decision=Normal  and friendship=False             
+        self.stats = None
+    
+    def getSummary(self):
+        myStr = 'OT='+str(self.OT)+', OF='+str(self.OF)+', NT='+str(self.NT)+', NF='+str(self.NF)+', stats='+str(self.stats)
+        return myStr
+        
+    def update(self, decisions, goldMarkers):
+        for i in range(len(decisions)):        
+            if(decisions[i] == DECISION.OUTLIER and goldMarkers[i] == GOLDMARKER.TRUE):
+                self.OT += 1        
+            elif(decisions[i] == DECISION.OUTLIER and goldMarkers[i] == GOLDMARKER.FALSE):
+                self.OF += 1
+            elif(decisions[i] == DECISION.NORMAL and goldMarkers[i] == GOLDMARKER.TRUE):
+                self.NT += 1
+            elif(decisions[i] == DECISION.NORMAL and goldMarkers[i] == GOLDMARKER.FALSE):
+                self.NF += 1
+            
+        
+        
+        self.stats = [fisher_exact([[self.OT, self.OF], [self.NT, self.NF]])]
         
         
         
