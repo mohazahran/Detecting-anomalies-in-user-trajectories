@@ -41,6 +41,8 @@ class OutlierEvaluation:
             self.metricObj = Chisq()
         elif(self.metricType == METRIC.REC_PREC_FSCORE):
             self.metricObj = rpf()
+        elif(self.metricType == METRIC.FISHER):
+            self.metricObj = Fisher()
             
                
         
@@ -134,29 +136,29 @@ def main():
     #ALPHA_RANKING = np.arange(0.000005,0.1,0.005)    
     
     
-    ANALYSIS_FILES_PATH = '/home/zahran/Desktop/shareFolder/allLikes/'
+    ANALYSIS_FILES_PATH = '/home/zahran/Desktop/shareFolder/allLikes/pvalues'
     FILE_NAME = 'outlier_analysis_pvalues_'
     
     print('>>> Reading Data ...')
     allData = TestSample.parseAnalysisFiles(FILE_NAME, ANALYSIS_FILES_PATH)    
     print('>>> Evaluating ...')
     
-    metricList = [METRIC.REC_PREC_FSCORE]
+    metricList = [METRIC.FISHER, METRIC.CHI_SQUARE]
     techList = [TECHNIQUE.ALL_OR_NOTHING, TECHNIQUE.MAJORITY_VOTING, TECHNIQUE.ONE_IS_ENOUGH]    
-    alphaList = [0.0000000000005, 0.000000000005, 0.00000000005, 0.0000000005, 0.000000005, 0.0000005, 0.0000005, 0.000005, 0.00005, 0.0005, 0.005, 0.05, 0.5]
+    alphaList = [5e-100, 5e-70, 5e-50, 5e-40, 5e-30, 5e-20, 5e-15, 5e-10, 5e-9, 5e-8, 5e-7, 5e-6, 5e-5, 5e-4, 5e-3, 5e-2, 5e-1]
     hypList = [HYP.BONFERRONI, HYP.HOLMS]
     pvalueList = [PVALUE.WITHOUT_RANKING, PVALUE.WITH_RANKING]
     testSetCountAdjustList = [False, True]    
     
-    for pv in pvalueList:
-        logger = open(ANALYSIS_FILES_PATH+str(METRIC.CHI_SQUARE)+'_'+str(pv),'w')
-        for alpha in alphaList:            
-            for tech in techList:                
-                for hyp in hypList:                    
-                    for metric in metricList:
+    for metric in metricList:
+        for pv in pvalueList:
+            logger = open(ANALYSIS_FILES_PATH+str(metric)+'_'+str(pv),'w')
+            for alpha in alphaList:            
+                for tech in techList:                
+                    for hyp in hypList:                                       
                         for tadj in testSetCountAdjustList:
                             
-                            print(pv,alpha,tech,hyp,metric,tadj)
+                            print(metric, pv,alpha,tech,hyp,tadj)
                             
                             ev = OutlierEvaluation(allData, tech, hyp, metric, pv, alpha, tadj)
                             ev.evaluate()   
