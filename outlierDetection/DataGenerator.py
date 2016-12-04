@@ -75,13 +75,14 @@ class DataGenerator(object):
         return seq
             
         
-                
+               
         
     def generate(self):                    
         w = open(self.DATA_GEN, 'w')
         cnt = 1
         for userName in self.hyper2id:
-            print(cnt)
+            if(cnt % 1000 == 0):
+                print(str(cnt)+' users are finished ...')
             cnt+=1
             h = self.hyper2id[userName]
             
@@ -93,9 +94,6 @@ class DataGenerator(object):
                 w.write('\n')               
         w.close()
                 
-                                    
-            
-            
             
         
     
@@ -108,8 +106,8 @@ class DataGenerator(object):
 
 
 def main():
-    MODEL_PATH = '/home/zahran/Desktop/shareFolder/PARSED_pins_repins_win10_noop_NoLeaveOut_pinterest.h5'
-    DATA_GEN = '/home/zahran/Desktop/shareFolder/generated_data'
+    MODEL_PATH = '/home/mohame11/pins_repins_fixedcat/pins_repins_win10_noop_NoLeaveOut.h5'
+    DATA_GEN = '/home/mohame11/pins_repins_fixedcat/simulatedData/simData_perUser5'
     perUserSequences = 5
        
     dg = DataGenerator(MODEL_PATH, DATA_GEN, perUserSequences)
@@ -130,5 +128,5 @@ if __name__ == "__main__":
 #         print(k,d[k]/tot)
         
         
-    #main()       
+    main()       
     print('DONE!')
