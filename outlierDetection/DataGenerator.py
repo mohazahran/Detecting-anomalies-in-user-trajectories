@@ -29,15 +29,21 @@ class DataGenerator(object):
         #axis 0 is summing the cols. i.e. normalizing by the col sum. (i.e for each env)
         self.Psi_oz = self.Psi_oz / self.Psi_oz.sum(axis=0)
         self.Theta_zh = self.Theta_zh / self.Theta_zh.sum(axis=0)
+        
+        #for optimization, save the transitions for each environment
+        self.envTransitions = {}
                     
         
         store.close()
     
     def getTransitionMatrixForEnv(self, z):                                    
-        #Compute transitions for a given env              
+        #Compute transitions for a given env  
+        if(z in self.envTransitions):
+            return self.envTransitions[z]            
         T = np.outer(self.Psi_oz[:, z], self.Psi_oz[:, z]) #the P[ dest | source, z ] matrix
         np.fill_diagonal(T, 0)
         T = T / T.sum(axis=0) #Re-normalize
+        self.envTransitions[z] = T
         return T #(o x o)
     
     def sample(self, srcs, probs):
@@ -81,7 +87,7 @@ class DataGenerator(object):
         w = open(self.DATA_GEN, 'w')
         cnt = 1
         for userName in self.hyper2id:
-            if(cnt % 1000 == 0):
+            if(cnt % 10 == 0):
                 print(str(cnt)+' users are finished ...')
             cnt+=1
             h = self.hyper2id[userName]
@@ -106,8 +112,9 @@ class DataGenerator(object):
 
 
 def main():
-    MODEL_PATH = '/home/mohame11/pins_repins_fixedcat/pins_repins_win10_noop_NoLeaveOut.h5'
-    DATA_GEN = '/home/mohame11/pins_repins_fixedcat/simulatedData/simData_perUser5'
+    MODEL_PATH = '/Users/mohame11/Documents/myFiles/Career/Work/New_Linux/lastfm_win10.trace_noob.h5'
+    #MODEL_PATH = '/Users/mohame11/Documents/myFiles/Career/Work/New_Linux/PARSED_pins_repins_win10_noop_NoLeaveOut_pinterest.h5'
+    DATA_GEN = '/Users/mohame11/Documents/myFiles/Career/Work/New_Linux/lastfmDataGen'
     perUserSequences = 5
        
     dg = DataGenerator(MODEL_PATH, DATA_GEN, perUserSequences)
