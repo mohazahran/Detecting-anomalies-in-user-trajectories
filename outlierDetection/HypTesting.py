@@ -16,6 +16,8 @@ class HypTesting:
         pass
     def classify(self, keySortedPvalues, pValues):
         pass
+    def classifyOne(self, rank, keySortedPvalues, pValues):
+        pass
 
 
 class Bonferroni(HypTesting):
@@ -42,12 +44,21 @@ class Bonferroni(HypTesting):
                 outlierVector[keySortedPvalues[i]] = DECISION.NORMAL
         return outlierVector
     
+    def classifyOne(self, rank, keySortedPvalues, pValues):
+        adjustedSigLevel = float(self.sigLevel) / float(len(pValues))
+        if(pValues[keySortedPvalues[rank]] <= adjustedSigLevel):
+            return DECISION.OUTLIER# rejecting H0 (i.e rejecting that the action is normal ==> outlier)
+        else:
+            return DECISION.NORMAL
+        
+    
     
 class Holms(HypTesting):
     def __init__(self, alpha, testsetCountAdjust, testsetCount):
         HypTesting.__init__(self, alpha, testsetCountAdjust, testsetCount)
         self.adjustedSigLevel = None
         self.type = HYP.HOLMS
+        self.k = -1 #used when testsetCountAdjust = true
     
     def adjustSigLevel(self, actionsCount, currentAction): 
         if(self.testsetCountAdjust == True):
@@ -70,6 +81,22 @@ class Holms(HypTesting):
             else:
                 outlierVector[keySortedPvalues[i]] = DECISION.NORMAL
         return outlierVector
+    
+    def classifyOne(self, rank, keySortedPvalues, pValues):
+        if(self.k == -1):
+            self.k = sys.maxint
+            for i in range(len(keySortedPvalues)):  
+                adjustedSigLevel = self.sigLevel / float( len(keySortedPvalues) - i)
+                if(pValues[keySortedPvalues[i]] > adjustedSigLevel):
+                    self.k = i
+                    break
+        
+        
+        if(rank < self.k):
+            return DECISION.OUTLIER
+        else:
+            return DECISION.NORMAL
+        
             
         
             
