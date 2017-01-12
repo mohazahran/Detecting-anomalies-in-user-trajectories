@@ -11,8 +11,8 @@ from TestSample import *
 
 
 #ANALYSIS_FILES_PATH = '/home/mohame11/pins_repins_fixedcat/allLikes/pvalues/'
-ANALYSIS_FILES_PATH = '/home/mohame11/pins_repins_fixedcat/injections/pvalues/'
-FILE_NAME = 'outlier_analysis_pvalues_'
+#ANALYSIS_FILES_PATH = '/home/mohame11/pins_repins_fixedcat/injections/pvalues/'
+#FILE_NAME = 'outlier_analysis_pvalues_'
 #FILE_NAME = 'PARSED_pins_repins_win10_pinterest_INJECTED_SCORES_ANOMALY_ANALYSIS_'
     
 
@@ -30,7 +30,7 @@ class OutlierEvaluation:
         for u in self.allData:
             allTestsCount += len(self.allData[u])
             
-        self.allTestsCount = allTestsCount
+        self.allTestsCount = allTestsCount #this is the count of "B+1" actions sequences we have.
                         
         if(hyp == HYP.BONFERRONI):
             self.hypObj = Bonferroni(self.alpha, self.testSetCountAdjust, self.allTestsCount)
@@ -87,43 +87,103 @@ class OutlierEvaluation:
                         
             
     
-    def evaluate(self):            
-        for u in self.allData:
-            tests = self.allData[u]
-            originalSeq, originalGoldMarkers = self.formOriginalSeq(tests)
-            winSize = len(tests[0].PvaluesWithRanks)
-            decisionsForOriginalSeq = []
-            
-            for origIdx in range(len(originalSeq)):
-                firstSeqIdxAppear = origIdx // winSize  #the index of first seq this current action appeared in                   
-                firstIdxInFirstSeq = origIdx % winSize  #the index of current action in that seq
+    def evaluate(self):         
+        if(self.testSetCountAdjust == False):   
+            for u in self.allData:
+                tests = self.allData[u]
+                originalSeq, originalGoldMarkers = self.formOriginalSeq(tests)
+                winSize = len(tests[0].PvaluesWithRanks)
+                decisionsForOriginalSeq = []
                 
-                idxInSeq = firstIdxInFirstSeq   
-                actionDecisions = []
-                
-                for seqIdx in range(firstSeqIdxAppear, len(tests)):                                                
-                    if(idxInSeq < 0):
-                        break
-                    t = tests[seqIdx]
-                    goldMarkers = t.goldMarkers                
+                for origIdx in range(len(originalSeq)):
+                    firstSeqIdxAppear = origIdx // winSize  #the index of first seq this current action appeared in                   
+                    firstIdxInFirstSeq = origIdx % winSize  #the index of current action in that seq
+                    
+                    idxInSeq = firstIdxInFirstSeq   
+                    actionDecisions = []
+                    
+                    for seqIdx in range(firstSeqIdxAppear, len(tests)):                                                
+                        if(idxInSeq < 0):
+                            break
+                        t = tests[seqIdx]
+                        goldMarkers = t.goldMarkers                
+                        if(self.pvalueTyp == PVALUE.WITH_RANKING):
+                            pValues = t.PvaluesWithRanks
+                        elif(self.pvalueTyp == PVALUE.WITHOUT_RANKING):
+                            pValues = t.PvaluesWithoutRanks
+                            
+                        keySortedPvalues = sorted(pValues, key=lambda k: (-pValues[k], k), reverse=True)                                            
+                        decisionVec = self.hypObj.classify(keySortedPvalues, pValues)                    
+                        actionDecisions.append(decisionVec[idxInSeq])
+                        
+                        idxInSeq -= 1
+                        
+                    # now we have a list of decisions for the action at index=origIdx
+                    # depending on the classification technique we pick only one decision out of the actionDecisions
+                    finalDecision = self.aggregateDecisions(actionDecisions)
+                    decisionsForOriginalSeq.append(finalDecision)
+                               
+                self.metricObj.update(decisionsForOriginalSeq, originalGoldMarkers)
+        #----------------------------------------------------------------------------------------------------------------------  
+        #when self.testSetCountAdjust == True   
+        else:
+            allPvalues = {}
+            for u in self.allData:
+                tests = self.allData[u]
+                for ti, t in enumerate(tests):
                     if(self.pvalueTyp == PVALUE.WITH_RANKING):
                         pValues = t.PvaluesWithRanks
                     elif(self.pvalueTyp == PVALUE.WITHOUT_RANKING):
                         pValues = t.PvaluesWithoutRanks
-                        
-                    keySortedPvalues = sorted(pValues, key=lambda k: (-pValues[k], k), reverse=True)                                            
-                    decisionVec = self.hypObj.classify(keySortedPvalues, pValues)                    
-                    actionDecisions.append(decisionVec[idxInSeq])
+                    for p in pValues:
+                        theKey = '_'.join([str(u),str(ti),str(p)])
+                        allPvalues[theKey] = pValues[p]
+            
+            keySortedAllPvalues = sorted(allPvalues, key=lambda k: (-allPvalues[k], k), reverse=True)  #sort ascendingly
+            
+            for u in self.allData:
+                tests = self.allData[u]
+                originalSeq, originalGoldMarkers = self.formOriginalSeq(tests)
+                winSize = len(tests[0].PvaluesWithRanks)
+                decisionsForOriginalSeq = []
+                
+                for origIdx in range(len(originalSeq)):
+                    firstSeqIdxAppear = origIdx // winSize  #the index of first seq this current action appeared in                   
+                    firstIdxInFirstSeq = origIdx % winSize  #the index of current action in that seq
                     
-                    idxInSeq -= 1
+                    idxInSeq = firstIdxInFirstSeq   
+                    actionDecisions = []
                     
-                # now we have a list of decisions for the action at index=origIdx
-                # depending on the classification technique we pick only one decision out of the actionDecisions
-                finalDecision = self.aggregateDecisions(actionDecisions)
-                decisionsForOriginalSeq.append(finalDecision)
-                           
-            self.metricObj.update(decisionsForOriginalSeq, originalGoldMarkers)
+                    for seqIdx in range(firstSeqIdxAppear, len(tests)):                                                
+                        if(idxInSeq < 0):
+                            break
+                        t = tests[seqIdx]
+                        goldMarkers = t.goldMarkers                
+                        if(self.pvalueTyp == PVALUE.WITH_RANKING):
+                            pValues = t.PvaluesWithRanks
+                        elif(self.pvalueTyp == PVALUE.WITHOUT_RANKING):
+                            pValues = t.PvaluesWithoutRanks
                         
+                        theKey = '_'.join([str(u), str(seqIdx), str(idxInSeq)])
+                        rank = keySortedAllPvalues.index(theKey)
+                        #keySortedPvalues = sorted(pValues, key=lambda k: (-pValues[k], k), reverse=True)                                            
+                        #decisionVec = self.hypObj.classify(keySortedPvalues, pValues)                   
+                        dec = self.hypObj.classifyOne(rank, keySortedAllPvalues, allPvalues)
+                        actionDecisions.append(dec)
+                        
+                        idxInSeq -= 1
+                        
+                    # now we have a list of decisions for the action at index=origIdx
+                    # depending on the classification technique we pick only one decision out of the actionDecisions
+                    finalDecision = self.aggregateDecisions(actionDecisions)
+                    decisionsForOriginalSeq.append(finalDecision)
+                               
+                self.metricObj.update(decisionsForOriginalSeq, originalGoldMarkers)
+                
+                
+                
+                
+                            
         
         
     
@@ -136,19 +196,19 @@ def main():
     #ALPHA_RANKING = np.arange(0.000005,0.1,0.005)    
     
     
-    ANALYSIS_FILES_PATH = '/home/zahran/Desktop/shareFolder/allLikes/pvalues'
+    ANALYSIS_FILES_PATH = '/Users/mohame11/Documents/pins_repins_fixedcat/sim_Pvalues_small/'
     FILE_NAME = 'outlier_analysis_pvalues_'
     
     print('>>> Reading Data ...')
-    allData = TestSample.parseAnalysisFiles(FILE_NAME, ANALYSIS_FILES_PATH)    
+    allData = TestSample.parseAnalysisFiles(FILE_NAME, ANALYSIS_FILES_PATH)
     print('>>> Evaluating ...')
     
-    metricList = [METRIC.FISHER, METRIC.CHI_SQUARE]
-    techList = [TECHNIQUE.ALL_OR_NOTHING, TECHNIQUE.MAJORITY_VOTING, TECHNIQUE.ONE_IS_ENOUGH]    
-    alphaList = [5e-100, 5e-70, 5e-50, 5e-40, 5e-30, 5e-20, 5e-15, 5e-10, 5e-9, 5e-8, 5e-7, 5e-6, 5e-5, 5e-4, 5e-3, 5e-2, 5e-1]
+    metricList = [METRIC.REC_PREC_FSCORE]
+    techList = [TECHNIQUE.ALL_OR_NOTHING, TECHNIQUE.MAJORITY_VOTING, TECHNIQUE.ONE_IS_ENOUGH]
+    alphaList = [5e-50, 5e-40, 5e-30, 5e-20, 5e-15, 5e-10, 5e-9, 5e-8, 5e-7, 5e-6, 5e-5, 5e-4, 5e-3, 5e-2, 5e-1]
     hypList = [HYP.BONFERRONI, HYP.HOLMS]
-    pvalueList = [PVALUE.WITHOUT_RANKING, PVALUE.WITH_RANKING]
-    testSetCountAdjustList = [False, True]    
+    pvalueList = [PVALUE.WITHOUT_RANKING]
+    testSetCountAdjustList = [False,True]
     
     for metric in metricList:
         for pv in pvalueList:
