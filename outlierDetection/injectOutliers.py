@@ -6,13 +6,14 @@ Created on Oct 3, 2016
 import pandas as pd
 import random
 
-MODEL_PATH = '/home/zahran/Desktop/shareFolder/PARSED_pins_repins_win10_noop_NoLeaveOut_pinterest.h5'
-TRAINING_FILE = '/home/zahran/Desktop/shareFolder/PARSED_pins_repins_win10_pinterest'
-INJECTED_TRAIN = '/home/zahran/Desktop/shareFolder/PARSED_pins_repins_win10_pinterest_INJECTED'
+MODEL_PATH = '/Users/mohame11/Documents/pins_repins_win10_noop_NoLeaveOut.h5'
+SRC_FILE = '/Users/mohame11/Documents/simData_perUser5'
+INJECTED_TRAIN = '/Users/mohame11/Documents/simData_perUser5_new_injected'
 
-injectedInstancesCount = 1000000 # 0 for all the training data
+injectedInstancesCount = 0 # 0 for all the training data
 doRandomization = False
 maxInjections = 2
+isTraceFile = False #tracefile has the same format as tribeflow's training data
 
 
 def main():
@@ -22,7 +23,7 @@ def main():
     Dts = store['Dts']
     winSize = Dts.shape[1]    
     w = open(INJECTED_TRAIN, 'w')        
-    r = open(TRAINING_FILE, 'r')
+    r = open(SRC_FILE, 'r')
     N = 0
     if(injectedInstancesCount == 0):        
         for l in r:
@@ -30,7 +31,7 @@ def main():
     else:           
         N = injectedInstancesCount
     r.close()
-    r = open(TRAINING_FILE, 'r')
+    r = open(SRC_FILE, 'r')
     #Reservoir Sampling Algorithm
     sample = []
     for i,line in enumerate(r):
@@ -48,13 +49,20 @@ def main():
         #else:
         #    break
     print('injectedInstancesCount=',injectedInstancesCount)
-    
+    allCategories = set(allCats)
     for line in sample:
+        allCats = set(allCategories)
         line = line.strip()
         parts = line.split('\t')
-        times = parts[:winSize]
-        user = parts[winSize]
-        cats = parts[winSize+1:]
+        if isTraceFile == True:
+            times = parts[:winSize]
+            user = parts[winSize]
+            cats = parts[winSize+1:]
+        else:
+            user = parts[0]
+            cats = parts[1:winSize+2]
+        for c in cats:
+            allCats.discard(c)
         markers = ['false']*(winSize+1)
         injectedIdx = random.sample(list(range(len(cats))), maxInjections)
         for idx in injectedIdx:
