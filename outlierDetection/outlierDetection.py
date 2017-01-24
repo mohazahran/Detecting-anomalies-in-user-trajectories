@@ -11,62 +11,43 @@ from collections import OrderedDict
 from multiprocessing import Process, Queue
 
 import pandas as pd
-import plac
+#import plac
 import numpy as np
 import math
 import os.path
-import cProfile
-import _eval_outlier
+from MyEnums import *
+from TestSample import *
+from bokeh.colors import gold
+from DetectionTechnique import *
 
-CORES = 40
-PATH = '/home/mohame11/pins_repins_fixedcat/'
-RESULTS_PATH = PATH+'injections/pvalues/'
+'''
+CORES = 1
+PATH = '/Users/mohame11/Documents/myFiles/Career/Work/Purdue/PhD_courses/projects/tribeflow_outlierDetection/pins_repins_fixedcat/'
+RESULTS_PATH = PATH+'sim_Pvalues/'
 MODEL_PATH = PATH+'pins_repins_win10_noop_NoLeaveOut.h5'
-SEQ_FILE_PATH = PATH+'injections/pins_repins_win10_INJECTED_ALL_2.trace'
-UNBIAS_CATS_WITH_FREQ = True
-smoothingParam = 1.0   #smootihng parameter for unbiasing item counts.
+TRACE_PATH = PATH + 'pins_repins_win10.trace'
+SEQ_FILE_PATH = PATH+'simData_perUser5'
 STAT_FILE = PATH+'catStats'
+UNBIAS_CATS_WITH_FREQ = False
+HISTORY_SIZE = 4
+smoothingParam = 1.0   #smootihng parameter for unbiasing item counts.
+seq_prob = SEQ_PROB.NGRAM
+useWindow = USE_WINDOW.FALSE
+'''
 
-def evaluate(userId, history, targetObjId, Theta_zh, Psi_sz, env):        
-    mem_factor = 1.0    
-    candidateProb = 0.0                    
-    for j in xrange(len(history)):#for all B
-        #i.e. multiply all psi[objid1,z]*psi[objid2,z]*..psi[objidB,z]
-        mem_factor *= Psi_sz[history[j], env] # Psi[objId, env z]            
-    #mem_factor *= 1.0 / (1 - Psi_sz[history[len(history)-1], env])# 1-Psi_sz[mem[B-1],z] == 1-psi_sz[objIdB,z]       
-    candidateProb += mem_factor * Psi_sz[targetObjId, env] * Theta_zh[env, userId]                                              
-    return candidateProb
- 
-def calculateSequenceProb(theSequence, true_mem_size, userId, obj2id, Theta_zh, Psi_sz):                     
-    seqProb = 0.0
-    window = min(true_mem_size, len(theSequence))
-    for z in xrange(Psi_sz.shape[1]): #for envs
-        seqProbZ = 1.0        
-        for targetObjIdx in range(0,len(theSequence)): #targetObjIdx=0 cannot be predicted we have to skip it
-            if(targetObjIdx == 0):                
-                d = theSequence[targetObjIdx]
-                #all_in = h in hyper2id and d in obj2id
-                #if(all_in):
-                targetObjId = obj2id[d]
-                prior = Psi_sz[targetObjId, z]
-                seqProbZ *= prior
-            else:                                                                            
-                d = theSequence[targetObjIdx]                 
-                sources = theSequence[max(0,targetObjIdx-window): targetObjIdx] # look back 'window' actions.                             
-                #all_in = h in hyper2id and d in obj2id
-                #for s in sources:
-                #    all_in = all_in and s in obj2id                
-                #if all_in:
-                targetObjId = obj2id[d]
-                #userId = hyper2id[h]
-                history = [obj2id[s] for s in sources]                                
-                candProb = evaluate(userId, history, targetObjId, Theta_zh, Psi_sz, z) #(int[:, ::1] HOs, double[:, ::1] Theta_zh, double[:, ::1] Psi_sz, int[::1] count_z, int env):
-                #candProb = 0.001                    
-                seqProbZ *= candProb
-                #seqProb += math.log(predTargetProb)
-        seqProb += seqProbZ
-        #print(seqProb, math.log(seqProb))
-    return seqProb   
+CORES = 1
+PATH = '/Users/mohame11/Documents/myFiles/Career/Work/Purdue/PhD_courses/projects/tribeflow_outlierDetection/pins_repins_fixedcat/'
+RESULTS_PATH = PATH+'sim_Pvalues/'
+MODEL_PATH = PATH+'pins_repins_forLM_4gram.arpa'
+TRACE_PATH = PATH + 'pins_repins_win10.trace'
+SEQ_FILE_PATH = PATH+'simData_perUser5'
+STAT_FILE = PATH+'catStats'
+UNBIAS_CATS_WITH_FREQ = False
+HISTORY_SIZE = 4
+smoothingParam = 1.0   #smootihng parameter for unbiasing item counts.
+seq_prob = SEQ_PROB.NGRAM
+useWindow = USE_WINDOW.FALSE
+
                            
 def getPvalueWithoutRanking(currentActionRank, keySortedProbs, probabilities):
     #normConst = 0.0
@@ -79,20 +60,20 @@ def getPvalueWithoutRanking(currentActionRank, keySortedProbs, probabilities):
     
     #prob = cdf/normConst
     return cdf
-               
-def outlierDetection(testDic, quota, coreId, q, store, true_mem_size, hyper2id, obj2id, Theta_zh, Psi_sz, smoothedProbs):
+  
+#testDic, quota, coreId, q, store, true_mem_size, hyper2id, obj2id, Theta_zh, Psi_sz, smoothedProbs             
+
+def outlierDetection(coreTestDic, quota, coreId, q, myModel):
     myCnt = 0    
     writer = open(RESULTS_PATH+'/outlier_analysis_pvalues_'+str(coreId),'w')
     
-    for user in testDic:
-        for testLine in testDic[user]:
+    for user in coreTestDic:
+        for testSample in coreTestDic[user]:
             myCnt += 1
-            tmp = testLine.strip().split('\t')        
-            seq = tmp[1:true_mem_size+2]
-            goldMarkers = tmp[true_mem_size+2:]            
-            
-             
-            actions = obj2id.keys()                  
+            seq = testSample.actions
+            goldMarkers = testSample.goldMarkers
+            #actions = myModel.obj2id.keys()    
+            actions = myModel.getAllPossibleActions()              
             pValuesWithRanks = {}
             pValuesWithoutRanks = {}
             for i in range(len(seq)): #for all actions in the sequence.
@@ -100,26 +81,15 @@ def outlierDetection(testDic, quota, coreId, q, store, true_mem_size, hyper2id, 
                 probabilities = {}
                 scores = {}        
                 newSeq = list(seq)                        
-                currentActionId = obj2id[newSeq[i]] #current action id
+                #currentActionId = myModel.obj2id[newSeq[i]] #current action id
                 currentActionIndex = actions.index(newSeq[i])# the current action index in the action list.
                 #cal scores (an un-normalized sequence prob in tribeflow)
                 normalizingConst = 0
                 for j in range(len(actions)): #for all possible actions that can replace the current action
                     del newSeq[i]                
                     newSeq.insert(i, actions[j])    
-                    userId = hyper2id[user]     
-                    #npNewSeq = np.array(newSeq, dtype=str) 
-                    newSeqIds = [obj2id[s] for s in newSeq]   
-                    newSeqIds_np = np.array(newSeqIds, dtype = 'i4').copy()
-                    seqScore = _eval_outlier.calculateSequenceProb(newSeqIds_np, len(newSeqIds_np), true_mem_size, userId, Theta_zh, Psi_sz)                                            
-                    #seqScore = calculateSequenceProb(newSeq, true_mem_size, userId, obj2id, Theta_zh, Psi_sz)
-                    if(UNBIAS_CATS_WITH_FREQ):
-                        unbiasingProb = 1.0
-                        for ac in newSeq:
-                            if(ac in smoothedProbs):
-                                unbiasingProb *= smoothedProbs[ac]                                         
-                        seqScore = float(seqScore)/float(unbiasingProb)
-                        
+                    userId = myModel.getUserId(user)     
+                    seqScore = myModel.getProbability(userId, newSeq)  
                     scores[j] = seqScore
                     normalizingConst += seqScore
                 #cal probabilities
@@ -140,99 +110,39 @@ def outlierDetection(testDic, quota, coreId, q, store, true_mem_size, hyper2id, 
     writer.close()    
     #ret = [chiSqs, chiSqs_expected]
     #q.put(ret)                                          
-                                            
-def calculatingItemsFreq(trace_fpath, true_mem_size):
-    smoothedProbs = {}    
-    if os.path.isfile(STAT_FILE):
-        r = open(STAT_FILE, 'r')
-        for line in r:
-            parts = line.strip().split('\t')                
-            smoothedProbs[parts[0]] = float(parts[1])                    
-        return smoothedProbs
-    
-    freqs = {}            
-    r = open(trace_fpath)
-    counts = 0
-    for line in r:
-        cats = line.strip().split('\t')[true_mem_size+1:]
-        for c in cats:
-            if(c in freqs):
-                freqs[c] += 1
-            else:
-                freqs[c] = 1                
-            counts += 1
-    for k in freqs:
-        prob = float(freqs[k]+ smoothingParam) / float(counts + (len(freqs) * smoothingParam))
-        smoothedProbs[k] = prob
-    
-    w = open(STAT_FILE, 'w')
-    for key in smoothedProbs:
-        w.write(key+'\t'+str(smoothedProbs[key])+'\n')
-    w.close()
-    return smoothedProbs
-                  
-def createTestingSeqFile(store):
-    from_ = store['from_'][0][0]
-    to = store['to'][0][0]
-    trace_fpath = store['trace_fpath']
-    Dts = store['Dts']
-    winSize = Dts.shape[1]
-    tpath = '/home/zahran/Desktop/tribeFlow/zahranData/pinterest/test_traceFile_win5'
-    w = open(tpath,'w')
-    r = open(trace_fpath[0][0],'r')
-    
-    cnt = 0
-    for line in r:
-        if(cnt > to):
-            p = line.strip().split('\t')
-            usr = p[winSize]
-            sq = p[winSize+1:]
-            w.write(str(usr)+'\t')
-            for s in sq:
-                w.write(s+'\t')
-            w.write('\n')
-        cnt += 1
-    w.close()
-    r.close()
-    return tpath                                            
-                                                                                        
+                                                                                                                                    
 def distributeOutlierDetection():
-    store = pd.HDFStore(MODEL_PATH)     
-                    
-    Theta_zh = store['Theta_zh'].values
-    Psi_sz = store['Psi_sz'].values    
-    true_mem_size = store['Dts'].values.shape[1]    
-    hyper2id = dict(store['hyper2id'].values)
-    obj2id = dict(store['source2id'].values)    
-    trace_fpath = store['trace_fpath'][0][0]
+    myModel = None
     
-    #SEQ_FILE_PATH = createTestingSeqFile(store)
-    print(">>> Preparing testset ...")
-    testDic = {}
-    testSetCount = 0
-    r = open(SEQ_FILE_PATH, 'r')    
-    for line in r:
-        line = line.strip() 
-        tmp = line.split('\t')
-        user = tmp[0]      
-        if(user not in hyper2id):
-            #print("User: "+str(user)+" is not found in training set !")
-            continue
-        testSetCount += 1
-        if(user in testDic):
-            testDic[user].append(line)                                                    
-        else:
-            testDic[user]=[line]
-                        
-    r.close()
+    if(seq_prob == SEQ_PROB.NGRAM):
+        myModel = NgramLM()
+        myModel.useWindow = useWindow
+        myModel.model_path = MODEL_PATH
+        myModel.true_mem_size = HISTORY_SIZE
+        myModel.SEQ_FILE_PATH = SEQ_FILE_PATH
+        myModel.loadModel()
         
-   
-    smoothedProbs = {}
-    if(UNBIAS_CATS_WITH_FREQ):
-        print('>>> calculating statistics for unbiasing categories ...')
-        smoothedProbs = calculatingItemsFreq(trace_fpath, true_mem_size)
+    if(seq_prob == SEQ_PROB.TRIBEFLOW):        
+        myModel = TribeFlow()
+        myModel.useWindow = useWindow
         
+        myModel.model_path = MODEL_PATH
+        myModel.store = pd.HDFStore(MODEL_PATH)
+        myModel.Theta_zh = myModel.store['Theta_zh'].values
+        myModel.Psi_sz = myModel.store['Psi_sz'].values    
+        myModel.true_mem_size = myModel.store['Dts'].values.shape[1]    
+        myModel.hyper2id = dict(myModel.store['hyper2id'].values)
+        myModel.obj2id = dict(myModel.store['source2id'].values)    
+        #myModel.trace_fpath = myModel.store['trace_fpath'][0][0]
+        myModel.trace_fpath = TRACE_PATH
+        myModel.UNBIAS_CATS_WITH_FREQ = UNBIAS_CATS_WITH_FREQ
+        myModel.STAT_FILE = STAT_FILE
+ 
+        if(UNBIAS_CATS_WITH_FREQ):
+            print('>>> calculating statistics for unbiasing categories ...')
+            myModel.calculatingItemsFreq(smoothingParam)
     
+    testDic,testSetCount = myModel.prepareTestSet()
     print('Number of test samples: '+str(testSetCount))   
     myProcs = []
     idealCoreQuota = testSetCount // CORES
@@ -247,18 +157,18 @@ def distributeOutlierDetection():
             coreTestDic[userList[uid]] = testDic[userList[uid]]
             uid += 1
             if(coreShare >= idealCoreQuota):
-                p = Process(target=outlierDetection, args=(coreTestDic, coreShare, i, q , store, true_mem_size, hyper2id, obj2id, Theta_zh, Psi_sz, smoothedProbs))
-                #outlierDetection(coreTestDic, coreShare, i, q , store, true_mem_size, hyper2id, obj2id, Theta_zh, Psi_sz, smoothedProbs)
-                myProcs.append(p)         
+                #p = Process(target=outlierDetection, args=(myModel))
+                outlierDetection(coreTestDic, coreShare, i, q, myModel)
+                #myProcs.append(p)         
                 testSetCount -= coreShare
                 leftCores = (CORES-(i+1))
                 if(leftCores >0):
                     idealCoreQuota = testSetCount // leftCores 
                 print('>>> Starting process: '+str(i)+' on '+str(coreShare)+' samples.')
-                p.start()       
+                #p.start()       
                 break
                                     
-        myProcs.append(p)        
+        #myProcs.append(p)        
         
         
         
@@ -273,7 +183,7 @@ def distributeOutlierDetection():
             
                             
     print('\n>>> All DONE!')
-    store.close()
+    #store.close()
 
                                        
 def main():   
