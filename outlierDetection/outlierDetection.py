@@ -157,18 +157,18 @@ def distributeOutlierDetection():
             coreTestDic[userList[uid]] = testDic[userList[uid]]
             uid += 1
             if(coreShare >= idealCoreQuota):
-                #p = Process(target=outlierDetection, args=(myModel))
-                outlierDetection(coreTestDic, coreShare, i, q, myModel)
-                #myProcs.append(p)         
+                p = Process(target=outlierDetection, args=(myModel))
+                #outlierDetection(coreTestDic, coreShare, i, q, myModel)
+                myProcs.append(p)         
                 testSetCount -= coreShare
                 leftCores = (CORES-(i+1))
                 if(leftCores >0):
                     idealCoreQuota = testSetCount // leftCores 
                 print('>>> Starting process: '+str(i)+' on '+str(coreShare)+' samples.')
-                #p.start()       
+                p.start()       
                 break
                                     
-        #myProcs.append(p)        
+        myProcs.append(p)        
         
         
         
