@@ -32,3 +32,16 @@ class DECISION (Enum):
 class GOLDMARKER (Enum):
     TRUE = 1
     FALSE = 0
+    
+class SEQ_PROB(Enum):
+    TRIBEFLOW = 1
+    NGRAM = 2
+    RNN = 3
+
+class USE_WINDOW (Enum):
+    TRUE = 1
+    FALSE = 2
+    
+class BOUNDARY (Enum):
+    IGNORE = 1
+    INCLUDE = 2 
