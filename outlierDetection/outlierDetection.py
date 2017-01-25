@@ -93,7 +93,7 @@ def outlierDetection(coreTestDic, quota, coreId, q, myModel):
                     scores[j] = seqScore
                     normalizingConst += seqScore
                 #cal probabilities
-                if(normalizingConst < 1e-10000):
+                if(normalizingConst <= 1e-10000):
                     break
                 for j in range(len(actions)): #for all possible actions that can replace the current action
                     probabilities[j] = float(scores[j])/float(normalizingConst)
