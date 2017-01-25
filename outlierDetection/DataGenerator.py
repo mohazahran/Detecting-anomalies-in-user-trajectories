@@ -97,6 +97,8 @@ class DataGenerator(object):
                 seq = self.generateSequenceByUser(h)                
                 for s in seq:
                     w.write(s + '\t')
+                for g in range(self.true_mem_size+1):
+                    w.write('false\t')
                 w.write('\n')               
         w.close()
                 
