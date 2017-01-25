@@ -37,10 +37,10 @@ useWindow = USE_WINDOW.FALSE
 
 CORES = 1
 PATH = '/Users/mohame11/Documents/myFiles/Career/Work/Purdue/PhD_courses/projects/tribeflow_outlierDetection/pins_repins_fixedcat/'
-RESULTS_PATH = PATH+'sim_Pvalues/'
+RESULTS_PATH = PATH+'pvalues_alllikes_win4_ngram/'
 MODEL_PATH = PATH+'pins_repins_forLM_4gram.arpa'
 TRACE_PATH = PATH + 'pins_repins_win10.trace'
-SEQ_FILE_PATH = PATH+'simData_perUser5'
+SEQ_FILE_PATH = '/Users/mohame11/Documents/myFiles/Career/Work/Purdue/PhD_courses/projects/tribeflow_outlierDetection/Data/sql_saved_data/likes_withFriendship_win4.trace'
 STAT_FILE = PATH+'catStats'
 UNBIAS_CATS_WITH_FREQ = False
 HISTORY_SIZE = 3
@@ -93,6 +93,8 @@ def outlierDetection(coreTestDic, quota, coreId, q, myModel):
                     scores[j] = seqScore
                     normalizingConst += seqScore
                 #cal probabilities
+                if(normalizingConst < 1e-10000):
+                    break
                 for j in range(len(actions)): #for all possible actions that can replace the current action
                     probabilities[j] = float(scores[j])/float(normalizingConst)
                 #sorting ascendingly
@@ -102,8 +104,8 @@ def outlierDetection(coreTestDic, quota, coreId, q, myModel):
                 currentActionPvalueWithRanks = float(currentActionRank+1)/float(len(actions))
                 pValuesWithRanks[i] = currentActionPvalueWithRanks
                 pValuesWithoutRanks[i] = currentActionPvalueWithoutRanks
-                                
-            writer.write('user##'+str(user)+'||seq##'+str(seq)+'||PvaluesWithRanks##'+str(pValuesWithRanks)+'||PvaluesWithoutRanks##'+str(pValuesWithoutRanks)+'||goldMarkers##'+str(goldMarkers)+'\n')        
+            if(len(seq) == len(pValuesWithoutRanks)):                    
+                writer.write('user##'+str(user)+'||seq##'+str(seq)+'||PvaluesWithRanks##'+str(pValuesWithRanks)+'||PvaluesWithoutRanks##'+str(pValuesWithoutRanks)+'||goldMarkers##'+str(goldMarkers)+'\n')        
             if(myCnt%100 == 0):
                 writer.flush()
                 print('>>> proc: '+ str(coreId)+' finished '+ str(myCnt)+'/'+str(quota)+' instances ...')                
@@ -157,18 +159,18 @@ def distributeOutlierDetection():
             coreTestDic[userList[uid]] = testDic[userList[uid]]
             uid += 1
             if(coreShare >= idealCoreQuota):
-                p = Process(target=outlierDetection, args=(coreTestDic, coreShare, i, q, myModel))
-                #outlierDetection(coreTestDic, coreShare, i, q, myModel)
+                #p = Process(target=outlierDetection, args=(myModel))
+                outlierDetection(coreTestDic, coreShare, i, q, myModel)
                 myProcs.append(p)         
                 testSetCount -= coreShare
                 leftCores = (CORES-(i+1))
                 if(leftCores >0):
                     idealCoreQuota = testSetCount // leftCores 
                 print('>>> Starting process: '+str(i)+' on '+str(coreShare)+' samples.')
-                p.start()       
+                #p.start()       
                 break
                                     
-        myProcs.append(p)        
+        #myProcs.append(p)        
         
         
         
