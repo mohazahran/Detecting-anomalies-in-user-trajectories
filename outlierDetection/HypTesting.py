@@ -32,8 +32,7 @@ class Bonferroni(HypTesting):
             self.adjustedSigLevel = self.adjustedSigLevel / float(self.testsetCount)
     
     def classify(self, keySortedPvalues, pValues):
-        if(self.adjustedSigLevel == None):
-            self.adjustSigLevel(len(keySortedPvalues))
+        self.adjustSigLevel(len(keySortedPvalues))
         
         outlierVector = [DECISION.UNDECIDED]*len(keySortedPvalues)
         
