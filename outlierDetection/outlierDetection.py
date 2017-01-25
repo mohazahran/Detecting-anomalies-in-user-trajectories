@@ -43,7 +43,7 @@ TRACE_PATH = PATH + 'pins_repins_win10.trace'
 SEQ_FILE_PATH = PATH+'simData_perUser5'
 STAT_FILE = PATH+'catStats'
 UNBIAS_CATS_WITH_FREQ = False
-HISTORY_SIZE = 4
+HISTORY_SIZE = 3
 smoothingParam = 1.0   #smootihng parameter for unbiasing item counts.
 seq_prob = SEQ_PROB.NGRAM
 useWindow = USE_WINDOW.FALSE
@@ -157,7 +157,7 @@ def distributeOutlierDetection():
             coreTestDic[userList[uid]] = testDic[userList[uid]]
             uid += 1
             if(coreShare >= idealCoreQuota):
-                p = Process(target=outlierDetection, args=(myModel))
+                p = Process(target=outlierDetection, args=(coreTestDic, coreShare, i, q, myModel))
                 #outlierDetection(coreTestDic, coreShare, i, q, myModel)
                 myProcs.append(p)         
                 testSetCount -= coreShare
