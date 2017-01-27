@@ -139,6 +139,7 @@ def distributeOutlierDetection():
         myModel.trace_fpath = TRACE_PATH
         myModel.UNBIAS_CATS_WITH_FREQ = UNBIAS_CATS_WITH_FREQ
         myModel.STAT_FILE = STAT_FILE
+        myModel.SEQ_FILE_PATH = SEQ_FILE_PATH
  
         if(UNBIAS_CATS_WITH_FREQ):
             print('>>> calculating statistics for unbiasing categories ...')
