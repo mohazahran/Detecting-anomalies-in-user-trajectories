@@ -80,14 +80,18 @@ class NgramLM (DetectionTechnique):
             if (self.DATA_HAS_USER_INFO == True):
                 user = tmp[0]   
                 actionStartIndex = 1
-           
-            seq = tmp[actionStartIndex:self.true_mem_size+2]
+            
+            if(self.VARIABLE_SIZED_DATA == True):
+                seq = tmp[actionStartIndex:]
+                goldMarkers = ['false']*len(seq)
+            else:
+                seq = tmp[actionStartIndex:self.true_mem_size+2]
+                goldMarkers = tmp[self.true_mem_size+2:]
+                if(len(goldMarkers) != len(seq)):
+                    goldMarkers = ['false']*len(seq)
             for act in seq:
                 if(act not in self.allActions):
                     self.allActions.append(act)
-            goldMarkers = tmp[self.true_mem_size+2:]
-            if(len(goldMarkers) != len(seq)):
-                goldMarkers = ['false']*len(seq)
             t = TestSample()  
             t.user = user
             t.actions = list(seq)
