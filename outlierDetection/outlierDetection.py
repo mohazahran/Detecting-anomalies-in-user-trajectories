@@ -36,17 +36,19 @@ useWindow = USE_WINDOW.FALSE
 '''
 
 CORES = 1
-PATH = '/Users/mohame11/Documents/myFiles/Career/Work/Purdue/PhD_courses/projects/tribeflow_outlierDetection/pins_repins_fixedcat/'
-RESULTS_PATH = PATH+'pvalues_alllikes_win4_ngram/'
+PATH = '/Users/mohame11/Documents/myFiles/Career/Work/Purdue/PhD_courses/projects/outlierDetection/pins_repins_fixedcat/win4/'
+RESULTS_PATH = PATH+'temp_pvalues/'
 MODEL_PATH = PATH+'pins_repins_forLM_4gram.arpa'
 TRACE_PATH = PATH + 'pins_repins_win10.trace'
-SEQ_FILE_PATH = '/Users/mohame11/Documents/myFiles/Career/Work/Purdue/PhD_courses/projects/tribeflow_outlierDetection/Data/sql_saved_data/likes_withFriendship_win4.trace'
+SEQ_FILE_PATH = PATH+'simulatedData_4gram'
 STAT_FILE = PATH+'catStats'
 UNBIAS_CATS_WITH_FREQ = False
 HISTORY_SIZE = 3
-smoothingParam = 1.0   #smootihng parameter for unbiasing item counts.
+smoothingParam = 1.0   #smoothing parameter for unbiasing item counts.
 seq_prob = SEQ_PROB.NGRAM
 useWindow = USE_WINDOW.FALSE
+DATA_HAS_USER_INFO = False #has no effect on tribeflow
+VARIABLE_SIZED_DATA = True #has no effect on tribeflow
 
                            
 def getPvalueWithoutRanking(currentActionRank, keySortedProbs, probabilities):
@@ -93,7 +95,7 @@ def outlierDetection(coreTestDic, quota, coreId, q, myModel):
                     scores[j] = seqScore
                     normalizingConst += seqScore
                 #cal probabilities
-                if(normalizingConst <= 1e-10000):
+                if(normalizingConst <= 1e-10000): #very small almost zero probability
                     break
                 for j in range(len(actions)): #for all possible actions that can replace the current action
                     probabilities[j] = float(scores[j])/float(normalizingConst)
@@ -122,6 +124,8 @@ def distributeOutlierDetection():
         myModel.model_path = MODEL_PATH
         myModel.true_mem_size = HISTORY_SIZE
         myModel.SEQ_FILE_PATH = SEQ_FILE_PATH
+        myModel.DATA_HAS_USER_INFO = DATA_HAS_USER_INFO
+        myModel.VARIABLE_SIZED_DATA = VARIABLE_SIZED_DATA
         myModel.loadModel()
         
     if(seq_prob == SEQ_PROB.TRIBEFLOW):        
@@ -139,7 +143,9 @@ def distributeOutlierDetection():
         myModel.trace_fpath = TRACE_PATH
         myModel.UNBIAS_CATS_WITH_FREQ = UNBIAS_CATS_WITH_FREQ
         myModel.STAT_FILE = STAT_FILE
-        myModel.SEQ_FILE_PATH = SEQ_FILE_PATH
+        myModel.SEQ_FILE_PATH=SEQ_FILE_PATH
+        myModel.DATA_HAS_USER_INFO = DATA_HAS_USER_INFO
+        myModel.VARIABLE_SIZED_DATA = VARIABLE_SIZED_DATA
  
         if(UNBIAS_CATS_WITH_FREQ):
             print('>>> calculating statistics for unbiasing categories ...')
@@ -162,7 +168,7 @@ def distributeOutlierDetection():
             if(coreShare >= idealCoreQuota):
                 #p = Process(target=outlierDetection, args=(coreTestDic, coreShare, i, q, myModel))
                 outlierDetection(coreTestDic, coreShare, i, q, myModel)
-                myProcs.append(p)         
+                #myProcs.append(p)         
                 testSetCount -= coreShare
                 leftCores = (CORES-(i+1))
                 if(leftCores >0):
