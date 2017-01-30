@@ -76,9 +76,12 @@ class NgramLM (DetectionTechnique):
         for line in r:
             line = line.strip() 
             tmp = line.split()  
-            user = tmp[0]      
-            
-            seq = tmp[1:self.true_mem_size+2]
+            actionStartIndex = 0
+            if (self.DATA_HAS_USER_INFO == True):
+                user = tmp[0]   
+                actionStartIndex = 1
+           
+            seq = tmp[actionStartIndex:self.true_mem_size+2]
             for act in seq:
                 if(act not in self.allActions):
                     self.allActions.append(act)
@@ -249,11 +252,12 @@ class TribeFlow (DetectionTechnique):
         for line in r:
             line = line.strip() 
             tmp = line.split()  
-            user = tmp[0]      
+            actionStartIndex = 0
+            user = tmp[0]   
             if(user not in self.hyper2id):
                 #print("User: "+str(user)+" is not found in training set !")
                 continue
-            seq = tmp[1:self.true_mem_size+2]
+            seq = tmp[actionStartIndex:self.true_mem_size+2]
             goldMarkers = tmp[self.true_mem_size+2:]
             if(len(goldMarkers) != len(seq)):
                 goldMarkers = ['false']*len(seq)
