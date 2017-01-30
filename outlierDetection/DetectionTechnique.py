@@ -74,12 +74,13 @@ class NgramLM (DetectionTechnique):
         testDic = {}
         print(">>> Preparing testset ...")
         testSetCount = 0
-        r = open(self.SEQ_FILE_PATH, 'r')    
+        r = open(self.SEQ_FILE_PATH, 'r')  
+        user = -1  
         for line in r:
             line = line.strip() 
             tmp = line.split()  
             actionStartIndex = 0
-            user = None
+            user += 1
             if (self.DATA_HAS_USER_INFO == True):
                 user = tmp[0]   
                 actionStartIndex = 1
