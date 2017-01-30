@@ -75,7 +75,7 @@ class NgramLM (DetectionTechnique):
         r = open(self.SEQ_FILE_PATH, 'r')    
         for line in r:
             line = line.strip() 
-            tmp = line.split('\t')  
+            tmp = line.split()  
             user = tmp[0]      
             
             seq = tmp[1:self.true_mem_size+2]
@@ -248,7 +248,7 @@ class TribeFlow (DetectionTechnique):
         r = open(self.SEQ_FILE_PATH, 'r')    
         for line in r:
             line = line.strip() 
-            tmp = line.split('\t')  
+            tmp = line.split()  
             user = tmp[0]      
             if(user not in self.hyper2id):
                 #print("User: "+str(user)+" is not found in training set !")
