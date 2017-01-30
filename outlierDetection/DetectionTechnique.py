@@ -35,6 +35,8 @@ class DetectionTechnique():
     def formOriginalSeq(self, tests):
         origSeq = list(tests[0].actions)  
         origGoldMarkers = list(tests[0].goldMarkers)
+        if(len(tests) <= 1):
+            return origSeq, origGoldMarkers
         for i in range(1,len(tests)):
             a = tests[i].actions[-1]
             g = tests[i].goldMarkers[-1]
