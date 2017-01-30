@@ -77,6 +77,7 @@ class NgramLM (DetectionTechnique):
             line = line.strip() 
             tmp = line.split()  
             actionStartIndex = 0
+            user = None
             if (self.DATA_HAS_USER_INFO == True):
                 user = tmp[0]   
                 actionStartIndex = 1
