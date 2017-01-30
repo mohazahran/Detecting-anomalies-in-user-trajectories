@@ -83,6 +83,8 @@ class NgramLM (DetectionTechnique):
                 if(act not in self.allActions):
                     self.allActions.append(act)
             goldMarkers = tmp[self.true_mem_size+2:]
+            if(len(goldMarkers) != len(seq)):
+                goldMarkers = ['false']*len(seq)
             t = TestSample()  
             t.user = user
             t.actions = list(seq)
@@ -253,6 +255,8 @@ class TribeFlow (DetectionTechnique):
                 continue
             seq = tmp[1:self.true_mem_size+2]
             goldMarkers = tmp[self.true_mem_size+2:]
+            if(len(goldMarkers) != len(seq)):
+                goldMarkers = ['false']*len(seq)
             t = TestSample()  
             t.user = user
             t.actions = list(seq)
