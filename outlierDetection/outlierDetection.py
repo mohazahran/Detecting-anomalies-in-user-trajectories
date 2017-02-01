@@ -34,21 +34,28 @@ smoothingParam = 1.0   #smootihng parameter for unbiasing item counts.
 seq_prob = SEQ_PROB.NGRAM
 useWindow = USE_WINDOW.FALSE
 '''
-
+#COMMON
 CORES = 1
 PATH = '/Users/mohame11/Documents/myFiles/Career/Work/Purdue/PhD_courses/projects/outlierDetection/pins_repins_fixedcat/win4/'
 RESULTS_PATH = PATH+'temp_pvalues/'
-MODEL_PATH = PATH+'pins_repins_forLM_4gram.arpa'
+MODEL_PATH = '/Users/mohame11/Documents/myFiles/Career/Work/Purdue/PhD_courses/projects/outlierDetection/pins_repins_fixedcat/win4/pins_repins_forLM_4gram.arpa'
 TRACE_PATH = PATH + 'pins_repins_win10.trace'
-SEQ_FILE_PATH = PATH+'simulatedData_4gram'
+SEQ_FILE_PATH = PATH+'sample'
 STAT_FILE = PATH+'catStats'
-UNBIAS_CATS_WITH_FREQ = False
-HISTORY_SIZE = 3
-smoothingParam = 1.0   #smoothing parameter for unbiasing item counts.
 seq_prob = SEQ_PROB.NGRAM
 useWindow = USE_WINDOW.FALSE
+
+#TRIBEFLOW
+UNBIAS_CATS_WITH_FREQ = False
+smoothingParam = 1.0   #smoothing parameter for unbiasing item counts.
+
+#NGRM/RNNLM
+HISTORY_SIZE = 3
 DATA_HAS_USER_INFO = False #has no effect on tribeflow
 VARIABLE_SIZED_DATA = True #has no effect on tribeflow
+
+#RNNLM
+RNNLM_PYTHON_PATH = '/Users/mohame11/Documents/myFiles/Career/Work/Purdue/PhD_courses/projects/rnnlm-python-master/scripts/'
 
                            
 def getPvalueWithoutRanking(currentActionRank, keySortedProbs, probabilities):
@@ -64,6 +71,12 @@ def getPvalueWithoutRanking(currentActionRank, keySortedProbs, probabilities):
     return cdf
   
 #testDic, quota, coreId, q, store, true_mem_size, hyper2id, obj2id, Theta_zh, Psi_sz, smoothedProbs             
+def get_norm_from_logScores(logScores):
+    if(len(logScores) == 1):
+        return logScores[0]
+    pw = (-1)*logScores[0] + get_norm_from_logScores(logScores[1:])
+    return logScores[0]+math.log10(1+math.pow(10,pw))
+
 
 def outlierDetection(coreTestDic, quota, coreId, q, myModel):
     myCnt = 0    
@@ -72,6 +85,7 @@ def outlierDetection(coreTestDic, quota, coreId, q, myModel):
     for user in coreTestDic:
         for testSample in coreTestDic[user]:
             myCnt += 1
+            print(myCnt)
             seq = testSample.actions
             goldMarkers = testSample.goldMarkers
             #actions = myModel.obj2id.keys()    
@@ -86,19 +100,25 @@ def outlierDetection(coreTestDic, quota, coreId, q, myModel):
                 #currentActionId = myModel.obj2id[newSeq[i]] #current action id
                 currentActionIndex = actions.index(newSeq[i])# the current action index in the action list.
                 #cal scores (an un-normalized sequence prob in tribeflow)
-                normalizingConst = 0
+                #normalizingConst = 0
                 for j in range(len(actions)): #for all possible actions that can replace the current action
                     del newSeq[i]                
                     newSeq.insert(i, actions[j])    
                     userId = myModel.getUserId(user)     
-                    seqScore = myModel.getProbability(userId, newSeq)  
+                    if(myModel.type == SEQ_PROB.RNNLM):
+                        seqScore = myModel.getProbability(userId, newSeq, coreId)
+                    else:
+                        seqScore = myModel.getProbability(userId, newSeq)  
                     scores[j] = seqScore
-                    normalizingConst += seqScore
-                #cal probabilities
-                if(normalizingConst <= 1e-10000): #very small almost zero probability
-                    break
+                    #normalizingConst += seqScore
+                #cal probabilities                                                                                                                             
+                #if(normalizingConst <= 1e-10000): #very small almost zero probability
+                #    break
+                logNormalizingConst = get_norm_from_logScores(scores.values())
                 for j in range(len(actions)): #for all possible actions that can replace the current action
-                    probabilities[j] = float(scores[j])/float(normalizingConst)
+                    logProb = float(scores[j]) - float(logNormalizingConst)
+                    probabilities[j] = math.pow(10, logProb)
+                    #probabilities[j] = float(scores[j])/float(normalizingConst)
                 #sorting ascendingly
                 keySortedProbs = sorted(probabilities, key=lambda k: (-probabilities[k], k), reverse=True)
                 currentActionRank = keySortedProbs.index(currentActionIndex)
@@ -127,8 +147,20 @@ def distributeOutlierDetection():
         myModel.DATA_HAS_USER_INFO = DATA_HAS_USER_INFO
         myModel.VARIABLE_SIZED_DATA = VARIABLE_SIZED_DATA
         myModel.loadModel()
-        
-    if(seq_prob == SEQ_PROB.TRIBEFLOW):        
+    
+    elif(seq_prob == SEQ_PROB.RNNLM):
+        myModel = RNNLM()
+        myModel.useWindow = useWindow
+        myModel.model_path = MODEL_PATH
+        myModel.true_mem_size = HISTORY_SIZE
+        myModel.SEQ_FILE_PATH = SEQ_FILE_PATH
+        myModel.DATA_HAS_USER_INFO = DATA_HAS_USER_INFO
+        myModel.VARIABLE_SIZED_DATA = VARIABLE_SIZED_DATA
+        myModel.RNNLM_PYTHON_PATH = RNNLM_PYTHON_PATH
+        myModel.RESULTS_PATH = RESULTS_PATH
+        myModel.loadModel()
+    
+    elif(seq_prob == SEQ_PROB.TRIBEFLOW):        
         myModel = TribeFlow()
         myModel.useWindow = useWindow
         
