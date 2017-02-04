@@ -13,7 +13,7 @@ import numpy as np
 import math
 import os.path
 import cProfile
-import _eval_outlier
+#import _eval_outlier
 from MyEnums import *
 from TestSample import *
 from bokeh.colors import gold
@@ -22,7 +22,7 @@ import sys
 from astropy import log
 sys.path.append('/Users/mohame11/anaconda/lib/python2.7/site-packages/')
 import kenlm
-import rnnlm
+#import rnnlm
 import subprocess
 
 #testDic, quota, coreId, q, store, true_mem_size, hyper2id, obj2id, Theta_zh, Psi_sz, smoothedProbs
@@ -64,6 +64,12 @@ class NgramLM (DetectionTechnique):
         self.allActions = []
         
     def loadModel(self):
+        r = open(self.ALL_ACTIONS_PATH, 'r')
+        for line in r:
+           line = line.strip()
+           if(len(line)>1):
+                self.allActions.append(line)
+        r.close()
         self.model = kenlm.Model(self.model_path)
         
     def getProbability(self, userId, newSeq):
@@ -84,11 +90,12 @@ class NgramLM (DetectionTechnique):
             line = line.strip() 
             tmp = line.split()  
             actionStartIndex = 0
-            user += 1
+            #user += 1
             if (self.DATA_HAS_USER_INFO == True):
                 user = tmp[0]   
                 actionStartIndex = 1
-            
+            else:
+                user += 1
             if(self.VARIABLE_SIZED_DATA == True):
                 seq = tmp[actionStartIndex:]
                 goldMarkers = ['false']*len(seq)
@@ -97,9 +104,7 @@ class NgramLM (DetectionTechnique):
                 goldMarkers = tmp[self.true_mem_size+2:]
                 if(len(goldMarkers) != len(seq)):
                     goldMarkers = ['false']*len(seq)
-            for act in seq:
-                if(act not in self.allActions):
-                    self.allActions.append(act)
+       
             t = TestSample()  
             t.user = user
             t.actions = list(seq)
@@ -154,6 +159,12 @@ class RNNLM (DetectionTechnique):
         self.model.setRnnLMFile(self.model_path)
         self.model.setRandSeed(rand_seed)
         '''
+        r = open(self.ALL_ACTIONS_PATH, 'r')
+        for line in r:
+           line = line.strip()
+           if(len(line)>1):
+                self.allActions.append(line)
+        r.close()
 
         
     def getProbability(self, userId, newSeq, coreId):
@@ -198,9 +209,7 @@ class RNNLM (DetectionTechnique):
                 goldMarkers = tmp[self.true_mem_size+2:]
                 if(len(goldMarkers) != len(seq)):
                     goldMarkers = ['false']*len(seq)
-            for act in seq:
-                if(act not in self.allActions):
-                    self.allActions.append(act)
+
             t = TestSample()  
             t.user = user
             t.actions = list(seq)
@@ -318,8 +327,10 @@ class TribeFlow (DetectionTechnique):
         if os.path.isfile(self.STAT_FILE):
             r = open(self.STAT_FILE, 'r')
             for line in r:
-                parts = line.strip().split('\t')                
-                self.smoothedProbs[parts[0]] = math.log10(float(parts[1]))                    
+                parts = line.strip().split('\t')               
+                #print(parts, parts[1]) 
+                #self.smoothedProbs[parts[0]] = math.log10(float(parts[1]))                    
+                self.smoothedProbs[parts[0]] = float(parts[1]) 
             
         
         freqs = {}            
@@ -348,6 +359,7 @@ class TribeFlow (DetectionTechnique):
         newSeqIds_np = np.array(newSeqIds, dtype = 'i4').copy()
         seqScore = _eval_outlier.calculateSequenceProb(newSeqIds_np, len(newSeqIds_np), self.true_mem_size, userId, self.Theta_zh, self.Psi_sz)                                            
         #seqScore = calculateSequenceProb(newSeq, true_mem_size, userId, obj2id, Theta_zh, Psi_sz)
+        print (seqScore)
         logSeqScore = math.log10(seqScore)
         if(self.UNBIAS_CATS_WITH_FREQ):
             #unbiasingProb = 1.0
@@ -369,7 +381,7 @@ class TribeFlow (DetectionTechnique):
         for line in r:
             line = line.strip() 
             tmp = line.split()  
-            actionStartIndex = 0
+            actionStartIndex = 1
             user = tmp[0]   
             if(user not in self.hyper2id):
                 #print("User: "+str(user)+" is not found in training set !")

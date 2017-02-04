@@ -36,7 +36,7 @@ class GOLDMARKER (Enum):
 class SEQ_PROB(Enum):
     TRIBEFLOW = 1
     NGRAM = 2
-    RNN = 3
+    RNNLM = 3
 
 class USE_WINDOW (Enum):
     TRUE = 1

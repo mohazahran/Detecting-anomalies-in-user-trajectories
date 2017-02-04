@@ -26,7 +26,8 @@ class Bonferroni(HypTesting):
         self.adjustedSigLevel = None
         self.type = HYP.BONFERRONI
         
-    def adjustSigLevel(self, actionsCount):        
+    def adjustSigLevel(self, actionsCount):
+        #print(actionsCount)        
         self.adjustedSigLevel = float(self.sigLevel) / float(actionsCount)
         if(self.testsetCountAdjust):
             self.adjustedSigLevel = self.adjustedSigLevel / float(self.testsetCount)

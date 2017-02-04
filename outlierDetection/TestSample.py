@@ -35,6 +35,8 @@ class TestSample:
                         t.actions = ast.literal_eval(info[1].split('##')[1])
                         t.PvaluesWithRanks = ast.literal_eval(info[2].split('##')[1])
                         t.PvaluesWithoutRanks = ast.literal_eval(info[3].split('##')[1])
+			#if(len(t.PvaluesWithRanks)<2 or len(t.PvaluesWithoutRanks)<2):
+			#	print('>>>Bad line:',file,line)
                         golds = ast.literal_eval(info[4].split('##')[1])
                         for g in golds:
                             if(g == 'false'):

@@ -35,24 +35,25 @@ seq_prob = SEQ_PROB.NGRAM
 useWindow = USE_WINDOW.FALSE
 '''
 #COMMON
-CORES = 1
-PATH = '/Users/mohame11/Documents/myFiles/Career/Work/Purdue/PhD_courses/projects/outlierDetection/pins_repins_fixedcat/win4/'
-RESULTS_PATH = PATH+'temp_pvalues/'
-MODEL_PATH = '/Users/mohame11/Documents/myFiles/Career/Work/Purdue/PhD_courses/projects/outlierDetection/pins_repins_fixedcat/win4/pins_repins_forLM_4gram.arpa'
-TRACE_PATH = PATH + 'pins_repins_win10.trace'
-SEQ_FILE_PATH = PATH+'sample'
-STAT_FILE = PATH+'catStats'
+CORES = 40
+PATH = '/scratch/snyder/m/mohame11/pins_repins_win4_fixedcat/'
+RESULTS_PATH = PATH+'allLikes/pvalues_3gram'
+SEQ_FILE_PATH = PATH+'allLikes/likes_withFriendship_win4.trace'
+MODEL_PATH = PATH + 'pins_repins_forLM_3gram.arpa'
 seq_prob = SEQ_PROB.NGRAM
 useWindow = USE_WINDOW.FALSE
 
 #TRIBEFLOW
-UNBIAS_CATS_WITH_FREQ = False
+TRACE_PATH = PATH + 'pins_repins_win10.trace'
+STAT_FILE = PATH+'catStats'
+UNBIAS_CATS_WITH_FREQ = True
 smoothingParam = 1.0   #smoothing parameter for unbiasing item counts.
 
 #NGRM/RNNLM
 HISTORY_SIZE = 3
-DATA_HAS_USER_INFO = False #has no effect on tribeflow
-VARIABLE_SIZED_DATA = True #has no effect on tribeflow
+DATA_HAS_USER_INFO = True #has no effect on tribeflow
+VARIABLE_SIZED_DATA = False #has no effect on tribeflow
+ALL_ACTIONS_PATH = PATH + 'pins_repins_win4.trace_forLM_ALL_ACTIONS'
 
 #RNNLM
 RNNLM_PYTHON_PATH = '/Users/mohame11/Documents/myFiles/Career/Work/Purdue/PhD_courses/projects/rnnlm-python-master/scripts/'
@@ -85,7 +86,7 @@ def outlierDetection(coreTestDic, quota, coreId, q, myModel):
     for user in coreTestDic:
         for testSample in coreTestDic[user]:
             myCnt += 1
-            print(myCnt)
+            #print(myCnt)
             seq = testSample.actions
             goldMarkers = testSample.goldMarkers
             #actions = myModel.obj2id.keys()    
@@ -96,7 +97,7 @@ def outlierDetection(coreTestDic, quota, coreId, q, myModel):
                 #Take the action with index i and replace it with all possible actions             
                 probabilities = {}
                 scores = {}        
-                newSeq = list(seq)                        
+                newSeq = list(seq)
                 #currentActionId = myModel.obj2id[newSeq[i]] #current action id
                 currentActionIndex = actions.index(newSeq[i])# the current action index in the action list.
                 #cal scores (an un-normalized sequence prob in tribeflow)
@@ -146,6 +147,7 @@ def distributeOutlierDetection():
         myModel.SEQ_FILE_PATH = SEQ_FILE_PATH
         myModel.DATA_HAS_USER_INFO = DATA_HAS_USER_INFO
         myModel.VARIABLE_SIZED_DATA = VARIABLE_SIZED_DATA
+        myModel.ALL_ACTIONS_PATH=ALL_ACTIONS_PATH
         myModel.loadModel()
     
     elif(seq_prob == SEQ_PROB.RNNLM):
@@ -158,6 +160,7 @@ def distributeOutlierDetection():
         myModel.VARIABLE_SIZED_DATA = VARIABLE_SIZED_DATA
         myModel.RNNLM_PYTHON_PATH = RNNLM_PYTHON_PATH
         myModel.RESULTS_PATH = RESULTS_PATH
+        myModel.ALL_ACTIONS_PATH=ALL_ACTIONS_PATH
         myModel.loadModel()
     
     elif(seq_prob == SEQ_PROB.TRIBEFLOW):        
@@ -198,18 +201,18 @@ def distributeOutlierDetection():
             coreTestDic[userList[uid]] = testDic[userList[uid]]
             uid += 1
             if(coreShare >= idealCoreQuota):
-                #p = Process(target=outlierDetection, args=(coreTestDic, coreShare, i, q, myModel))
-                outlierDetection(coreTestDic, coreShare, i, q, myModel)
-                #myProcs.append(p)         
+                p = Process(target=outlierDetection, args=(coreTestDic, coreShare, i, q, myModel))
+                #outlierDetection(coreTestDic, coreShare, i, q, myModel)
+                myProcs.append(p)         
                 testSetCount -= coreShare
                 leftCores = (CORES-(i+1))
                 if(leftCores >0):
                     idealCoreQuota = testSetCount // leftCores 
                 print('>>> Starting process: '+str(i)+' on '+str(coreShare)+' samples.')
-                #p.start()       
+                p.start()       
                 break
                                     
-        #myProcs.append(p)        
+        myProcs.append(p)        
         
         
         

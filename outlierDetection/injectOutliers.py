@@ -6,13 +6,13 @@ Created on Oct 3, 2016
 import pandas as pd
 import random
 
-MODEL_PATH = '/Users/mohame11/Documents/pins_repins_win10_noop_NoLeaveOut.h5'
-SRC_FILE = '/Users/mohame11/Documents/simData_perUser5'
-INJECTED_TRAIN = '/Users/mohame11/Documents/simData_perUser5_new_injected'
+MODEL_PATH = '/home/mohame11/pins_repins_win4_fixedcat/pins_repins_win4_noop.h5'
+SRC_FILE = '/home/mohame11/pins_repins_win4_fixedcat/simulatedData/simData_perUser5'
+INJECTED_TRAIN = '/home/mohame11/pins_repins_win4_fixedcat/simulatedData_injected/simData_perUser5_injected_new_1Burst'
 
 injectedInstancesCount = 0 # 0 for all the training data
 doRandomization = False
-maxInjections = 2
+maxInjections = 1
 isTraceFile = False #tracefile has the same format as tribeflow's training data
 
 
