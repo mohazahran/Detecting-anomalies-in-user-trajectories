@@ -357,6 +357,7 @@ class TribeFlow (DetectionTechnique):
     def getProbability(self, userId, newSeq):
         newSeqIds = [self.obj2id[s] for s in newSeq]       
         newSeqIds_np = np.array(newSeqIds, dtype = 'i4').copy()
+        logSeqProbZ = np.zeros(self.Psi_sz.shape[1], dtype='d')
         seqScore = _eval_outlier.calculateSequenceProb(newSeqIds_np, len(newSeqIds_np), self.true_mem_size, userId, self.Theta_zh, self.Psi_sz)                                            
         #seqScore = calculateSequenceProb(newSeq, true_mem_size, userId, obj2id, Theta_zh, Psi_sz)
         print (seqScore)
