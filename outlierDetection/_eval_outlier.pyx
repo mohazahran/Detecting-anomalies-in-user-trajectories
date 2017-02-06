@@ -1,6 +1,7 @@
 from cython import boundscheck, wraparound
 cdef extern from "<math.h>" nogil:
     double log10(double x)
+    double pow(double x, double y)
 
 
 
@@ -11,7 +12,7 @@ cpdef double getLogProb(double[:] logProbs, int listLen) nogil:
         return logProbs[0]
     
     pw = (-1)*logProbs[0] + getLogProb(logProbs[1:], (listLen-1))
-    return logProbs[0]+log10(1+(10**pw))
+    return logProbs[0]+log10(1+pow(10,pw))
 
 @boundscheck(False)
 cpdef double evaluate(int userId, int[:] history, int historyLen, int targetObjId, double[:, ::1] Theta_zh, double[:, ::1] Psi_sz, int env) nogil:        
@@ -55,5 +56,6 @@ cpdef double calculateSequenceProb(int[:] theSequence, int theSequenceLen, doubl
                 candProb = evaluate(userId, history, historyLen, targetObjId, Theta_zh, Psi_sz, z) #(int[:, ::1] HOs, double[:, ::1] Theta_zh, double[:, ::1] Psi_sz, int[::1] count_z, int env):                                
                 seqProbZ += candProb
         logSeqProbZ[z] = seqProbZ             
-        #seqProb += seqProbZ     
+        #seqProb += seqProbZ
+    #return logSeqProbZ     
     return getLogProb(logSeqProbZ, Psi_sz.shape[1])    

@@ -36,12 +36,12 @@ useWindow = USE_WINDOW.FALSE
 '''
 #COMMON
 CORES = 40
-PATH = '/scratch/snyder/m/mohame11/pins_repins_win4_fixedcat/'
-RESULTS_PATH = PATH+'allLikes/pvalues_3gram'
-SEQ_FILE_PATH = PATH+'allLikes/likes_withFriendship_win4.trace'
-MODEL_PATH = PATH + 'pins_repins_forLM_3gram.arpa'
-seq_prob = SEQ_PROB.NGRAM
-useWindow = USE_WINDOW.FALSE
+PATH = '/home/mohame11/pins_repins_fixedcat/'
+RESULTS_PATH = PATH+'allLikes/pvalues_withWindow_log'
+SEQ_FILE_PATH = PATH+'allLikes/likes.trace'
+MODEL_PATH = PATH + 'pins_repins_win10_noop_NoLeaveOut.h5'
+seq_prob = SEQ_PROB.TRIBEFLOW
+useWindow = USE_WINDOW.TRUE
 
 #TRIBEFLOW
 TRACE_PATH = PATH + 'pins_repins_win10.trace'
@@ -51,8 +51,8 @@ smoothingParam = 1.0   #smoothing parameter for unbiasing item counts.
 
 #NGRM/RNNLM
 HISTORY_SIZE = 3
-DATA_HAS_USER_INFO = True #has no effect on tribeflow
-VARIABLE_SIZED_DATA = False #has no effect on tribeflow
+DATA_HAS_USER_INFO = False #has no effect on tribeflow
+VARIABLE_SIZED_DATA = True #has no effect on tribeflow
 ALL_ACTIONS_PATH = PATH + 'pins_repins_win4.trace_forLM_ALL_ACTIONS'
 
 #RNNLM

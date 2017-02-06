@@ -28,7 +28,7 @@ if sys.version_info[:2] < (2, 7):
 def get_packages():
     '''Appends all packages (based on recursive sub dirs)'''
 
-    packages  = ['tribeflow', 'outlierDetection']
+    packages  = ['tribeflow','outlierDetection']
 
     for package in packages:
         base = os.path.join(package, '**/')
@@ -72,7 +72,7 @@ def get_extensions():
                     include_dirs=include_dirs,
                     extra_compile_args=['-msse', '-msse2', '-mfpmath=sse', \
                             '-fopenmp', '-Wno-unused-function'], #cython warnings supress
-                    extra_link_args=['-fopenmp'])
+                    extra_link_args=['-fopenmp','-lirc'])
 
             extensions.append(extension)
 

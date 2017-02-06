@@ -28,7 +28,10 @@ class TestSample:
                 #if(FILE_NAME in file and '~' not in file):
                     r = open(join(ANALYSIS_FILES_PATH, file), 'r')
                     print(file)                                              
-                    for line in r:                                     
+                    for line in r:
+                        if('nan' in line):
+                            #print('nan found !')
+                            line = line.replace('nan', '1.0')                                     
                         info = line.split('||')
                         t = TestSample()                    
                         t.user = info[0].split('##')[1]

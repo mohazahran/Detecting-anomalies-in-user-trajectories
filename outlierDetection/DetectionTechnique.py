@@ -13,7 +13,7 @@ import numpy as np
 import math
 import os.path
 import cProfile
-#import _eval_outlier
+import _eval_outlier
 from MyEnums import *
 from TestSample import *
 from bokeh.colors import gold
@@ -357,12 +357,17 @@ class TribeFlow (DetectionTechnique):
     def getProbability(self, userId, newSeq):
         newSeqIds = [self.obj2id[s] for s in newSeq]       
         newSeqIds_np = np.array(newSeqIds, dtype = 'i4').copy()
-        logSeqProbZ = np.zeros(self.Psi_sz.shape[1], dtype='d')
-        seqScore = _eval_outlier.calculateSequenceProb(newSeqIds_np, len(newSeqIds_np), logSeqProbZ, self.true_mem_size, userId, self.Theta_zh, self.Psi_sz) 
+        logSeqProbZ = np.zeros(self.Psi_sz.shape[1], dtype='d').copy()
+        #print(logSeqProbZ)
+        logSeqScore = _eval_outlier.calculateSequenceProb(newSeqIds_np, len(newSeqIds_np), logSeqProbZ, self.true_mem_size, userId, self.Theta_zh, self.Psi_sz) 
         #seqScore = _eval_outlier.calculateSequenceProb(newSeqIds_np, len(newSeqIds_np), self.true_mem_size, userId, self.Theta_zh, self.Psi_sz)                                            
         #seqScore = calculateSequenceProb(newSeq, true_mem_size, userId, obj2id, Theta_zh, Psi_sz)
-        print (seqScore)
-        logSeqScore = math.log10(seqScore)
+        #asd = open('logprob','w')
+        #for x in seqScore:
+        #    asd.write(str(x)+',')
+        #asd.close()
+        #print(seqScore)
+        #logSeqScore = math.log10(seqScore)
         if(self.UNBIAS_CATS_WITH_FREQ):
             #unbiasingProb = 1.0
             logUnbiasingProb = 0 

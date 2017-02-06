@@ -234,8 +234,9 @@ static CYTHON_INLINE float __PYX_NAN() {
   #endif
 #endif
 
-#define __PYX_HAVE__tribeflow___eval_outlier
-#define __PYX_HAVE_API__tribeflow___eval_outlier
+#define __PYX_HAVE__outlierDetection___eval_outlier
+#define __PYX_HAVE_API__outlierDetection___eval_outlier
+#include <math.h>
 #include "pythread.h"
 #include "string.h"
 #include "stdlib.h"
@@ -449,7 +450,7 @@ static const char *__pyx_filename;
 
 
 static const char *__pyx_f[] = {
-  "tribeflow/_eval_outlier.pyx",
+  "outlierDetection/_eval_outlier.pyx",
   "stringsource",
 };
 struct __pyx_memoryview_obj;
@@ -741,17 +742,6 @@ static CYTHON_INLINE PyObject* __Pyx_PyObject_GetAttrStr(PyObject* obj, PyObject
 
 static PyObject *__Pyx_GetBuiltinName(PyObject *name);
 
-static void __Pyx_RaiseArgtupleInvalid(const char* func_name, int exact,
-    Py_ssize_t num_min, Py_ssize_t num_max, Py_ssize_t num_found);
-
-static void __Pyx_RaiseDoubleKeywordsError(const char* func_name, PyObject* kw_name);
-
-static int __Pyx_ParseOptionalKeywords(PyObject *kwds, PyObject **argnames[],\
-    PyObject *kwds2, PyObject *values[], Py_ssize_t num_pos_args,\
-    const char* function_name);
-
-static CYTHON_INLINE void __Pyx_RaiseUnboundLocalError(const char *varname);
-
 static CYTHON_INLINE int  __Pyx_GetBufferAndValidate(Py_buffer* buf, PyObject* obj,
     __Pyx_TypeInfo* dtype, int flags, int nd, int cast, __Pyx_BufFmt_StackElem* stack);
 static CYTHON_INLINE void __Pyx_SafeReleaseBuffer(Py_buffer* info);
@@ -787,6 +777,17 @@ static CYTHON_INLINE void __Pyx_ErrFetch(PyObject **type, PyObject **value, PyOb
 static void __Pyx_WriteUnraisable(const char *name, int clineno,
                                   int lineno, const char *filename,
                                   int full_traceback, int nogil);
+
+static void __Pyx_RaiseArgtupleInvalid(const char* func_name, int exact,
+    Py_ssize_t num_min, Py_ssize_t num_max, Py_ssize_t num_found);
+
+static void __Pyx_RaiseDoubleKeywordsError(const char* func_name, PyObject* kw_name);
+
+static int __Pyx_ParseOptionalKeywords(PyObject *kwds, PyObject **argnames[],\
+    PyObject *kwds2, PyObject *values[], Py_ssize_t num_pos_args,\
+    const char* function_name);
+
+static CYTHON_INLINE void __Pyx_RaiseUnboundLocalError(const char *varname);
 
 static CYTHON_INLINE int __Pyx_ArgTypeTest(PyObject *obj, PyTypeObject *type, int none_allowed,
     const char *name, int exact);
@@ -981,8 +982,6 @@ typedef struct {
 static Py_ssize_t __Pyx_zeros[] = {0, 0, 0, 0, 0, 0, 0, 0};
 static Py_ssize_t __Pyx_minusones[] = {-1, -1, -1, -1, -1, -1, -1, -1};
 
-static CYTHON_INLINE int __Pyx_PyInt_As_int(PyObject *);
-
 static int __pyx_typeinfo_cmp(__Pyx_TypeInfo *a, __Pyx_TypeInfo *b);
 
 static int __Pyx_ValidateAndInit_memviewslice(
@@ -994,6 +993,10 @@ static int __Pyx_ValidateAndInit_memviewslice(
                 __Pyx_BufFmt_StackElem stack[],
                 __Pyx_memviewslice *memviewslice,
                 PyObject *original_obj);
+
+static CYTHON_INLINE __Pyx_memviewslice __Pyx_PyObject_to_MemoryviewSlice_ds_double(PyObject *);
+
+static CYTHON_INLINE int __Pyx_PyInt_As_int(PyObject *);
 
 static CYTHON_INLINE __Pyx_memviewslice __Pyx_PyObject_to_MemoryviewSlice_ds_int(PyObject *);
 
@@ -1036,7 +1039,7 @@ static PyObject *__pyx_memoryview_assign_item_from_object(struct __pyx_memoryvie
 static PyObject *__pyx_memoryviewslice_convert_item_to_object(struct __pyx_memoryviewslice_obj *__pyx_v_self, char *__pyx_v_itemp); /* proto*/
 static PyObject *__pyx_memoryviewslice_assign_item_from_object(struct __pyx_memoryviewslice_obj *__pyx_v_self, char *__pyx_v_itemp, PyObject *__pyx_v_value); /* proto*/
 
-/* Module declarations from 'tribeflow._eval_outlier' */
+/* Module declarations from 'outlierDetection._eval_outlier' */
 static PyTypeObject *__pyx_array_type = 0;
 static PyTypeObject *__pyx_MemviewEnum_type = 0;
 static PyTypeObject *__pyx_memoryview_type = 0;
@@ -1046,8 +1049,9 @@ static PyObject *strided = 0;
 static PyObject *indirect = 0;
 static PyObject *contiguous = 0;
 static PyObject *indirect_contiguous = 0;
-static double __pyx_f_9tribeflow_13_eval_outlier_evaluate(int, __Pyx_memviewslice, int, int, __Pyx_memviewslice, __Pyx_memviewslice, int, int __pyx_skip_dispatch); /*proto*/
-static double __pyx_f_9tribeflow_13_eval_outlier_calculateSequenceProb(__Pyx_memviewslice, int, int, int, __Pyx_memviewslice, __Pyx_memviewslice, int __pyx_skip_dispatch); /*proto*/
+static double __pyx_f_16outlierDetection_13_eval_outlier_getLogProb(__Pyx_memviewslice, int, int __pyx_skip_dispatch); /*proto*/
+static double __pyx_f_16outlierDetection_13_eval_outlier_evaluate(int, __Pyx_memviewslice, int, int, __Pyx_memviewslice, __Pyx_memviewslice, int, int __pyx_skip_dispatch); /*proto*/
+static double __pyx_f_16outlierDetection_13_eval_outlier_calculateSequenceProb(__Pyx_memviewslice, int, __Pyx_memviewslice, int, int, __Pyx_memviewslice, __Pyx_memviewslice, int __pyx_skip_dispatch); /*proto*/
 static struct __pyx_array_obj *__pyx_array_new(PyObject *, Py_ssize_t, char *, char *, char *); /*proto*/
 static void *__pyx_align_pointer(void *, size_t); /*proto*/
 static PyObject *__pyx_memoryview_new(PyObject *, int, int, __Pyx_TypeInfo *); /*proto*/
@@ -1080,12 +1084,12 @@ static void __pyx_memoryview_refcount_objects_in_slice_with_gil(char *, Py_ssize
 static void __pyx_memoryview_refcount_objects_in_slice(char *, Py_ssize_t *, Py_ssize_t *, int, int); /*proto*/
 static void __pyx_memoryview_slice_assign_scalar(__Pyx_memviewslice *, int, size_t, void *, int); /*proto*/
 static void __pyx_memoryview__slice_assign_scalar(char *, Py_ssize_t *, Py_ssize_t *, int, size_t, void *); /*proto*/
-static __Pyx_TypeInfo __Pyx_TypeInfo_int = { "int", NULL, sizeof(int), { 0 }, 0, IS_UNSIGNED(int) ? 'U' : 'I', IS_UNSIGNED(int), 0 };
 static __Pyx_TypeInfo __Pyx_TypeInfo_double = { "double", NULL, sizeof(double), { 0 }, 0, 'R', 0, 0 };
-#define __Pyx_MODULE_NAME "tribeflow._eval_outlier"
-int __pyx_module_is_main_tribeflow___eval_outlier = 0;
+static __Pyx_TypeInfo __Pyx_TypeInfo_int = { "int", NULL, sizeof(int), { 0 }, 0, IS_UNSIGNED(int) ? 'U' : 'I', IS_UNSIGNED(int), 0 };
+#define __Pyx_MODULE_NAME "outlierDetection._eval_outlier"
+int __pyx_module_is_main_outlierDetection___eval_outlier = 0;
 
-/* Implementation of 'tribeflow._eval_outlier' */
+/* Implementation of 'outlierDetection._eval_outlier' */
 static PyObject *__pyx_builtin_xrange;
 static PyObject *__pyx_builtin_range;
 static PyObject *__pyx_builtin_ValueError;
@@ -1128,10 +1132,12 @@ static char __pyx_k_userId[] = "userId";
 static char __pyx_k_xrange[] = "xrange";
 static char __pyx_k_fortran[] = "fortran";
 static char __pyx_k_history[] = "history";
+static char __pyx_k_listLen[] = "listLen";
 static char __pyx_k_memview[] = "memview";
 static char __pyx_k_Ellipsis[] = "Ellipsis";
 static char __pyx_k_Theta_zh[] = "Theta_zh";
 static char __pyx_k_itemsize[] = "itemsize";
+static char __pyx_k_logProbs[] = "logProbs";
 static char __pyx_k_TypeError[] = "TypeError";
 static char __pyx_k_enumerate[] = "enumerate";
 static char __pyx_k_IndexError[] = "IndexError";
@@ -1139,6 +1145,7 @@ static char __pyx_k_ValueError[] = "ValueError";
 static char __pyx_k_historyLen[] = "historyLen";
 static char __pyx_k_pyx_vtable[] = "__pyx_vtable__";
 static char __pyx_k_MemoryError[] = "MemoryError";
+static char __pyx_k_logSeqProbZ[] = "logSeqProbZ";
 static char __pyx_k_targetObjId[] = "targetObjId";
 static char __pyx_k_theSequence[] = "theSequence";
 static char __pyx_k_pyx_getbuffer[] = "__pyx_getbuffer";
@@ -1215,6 +1222,9 @@ static PyObject *__pyx_n_s_id;
 static PyObject *__pyx_n_s_import;
 static PyObject *__pyx_n_s_itemsize;
 static PyObject *__pyx_kp_s_itemsize_0_for_cython_array;
+static PyObject *__pyx_n_s_listLen;
+static PyObject *__pyx_n_s_logProbs;
+static PyObject *__pyx_n_s_logSeqProbZ;
 static PyObject *__pyx_n_s_main;
 static PyObject *__pyx_n_s_memview;
 static PyObject *__pyx_n_s_mode;
@@ -1245,8 +1255,9 @@ static PyObject *__pyx_kp_s_unable_to_allocate_shape_and_str;
 static PyObject *__pyx_n_s_unpack;
 static PyObject *__pyx_n_s_userId;
 static PyObject *__pyx_n_s_xrange;
-static PyObject *__pyx_pf_9tribeflow_13_eval_outlier_evaluate(CYTHON_UNUSED PyObject *__pyx_self, int __pyx_v_userId, __Pyx_memviewslice __pyx_v_history, int __pyx_v_historyLen, int __pyx_v_targetObjId, __Pyx_memviewslice __pyx_v_Theta_zh, __Pyx_memviewslice __pyx_v_Psi_sz, int __pyx_v_env); /* proto */
-static PyObject *__pyx_pf_9tribeflow_13_eval_outlier_2calculateSequenceProb(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_theSequence, int __pyx_v_theSequenceLen, int __pyx_v_true_mem_size, int __pyx_v_userId, __Pyx_memviewslice __pyx_v_Theta_zh, __Pyx_memviewslice __pyx_v_Psi_sz); /* proto */
+static PyObject *__pyx_pf_16outlierDetection_13_eval_outlier_getLogProb(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_logProbs, int __pyx_v_listLen); /* proto */
+static PyObject *__pyx_pf_16outlierDetection_13_eval_outlier_2evaluate(CYTHON_UNUSED PyObject *__pyx_self, int __pyx_v_userId, __Pyx_memviewslice __pyx_v_history, int __pyx_v_historyLen, int __pyx_v_targetObjId, __Pyx_memviewslice __pyx_v_Theta_zh, __Pyx_memviewslice __pyx_v_Psi_sz, int __pyx_v_env); /* proto */
+static PyObject *__pyx_pf_16outlierDetection_13_eval_outlier_4calculateSequenceProb(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_theSequence, int __pyx_v_theSequenceLen, __Pyx_memviewslice __pyx_v_logSeqProbZ, int __pyx_v_true_mem_size, int __pyx_v_userId, __Pyx_memviewslice __pyx_v_Theta_zh, __Pyx_memviewslice __pyx_v_Psi_sz); /* proto */
 static int __pyx_array___pyx_pf_15View_dot_MemoryView_5array___cinit__(struct __pyx_array_obj *__pyx_v_self, PyObject *__pyx_v_shape, Py_ssize_t __pyx_v_itemsize, PyObject *__pyx_v_format, PyObject *__pyx_v_mode, int __pyx_v_allocate_buffer); /* proto */
 static int __pyx_array___pyx_pf_15View_dot_MemoryView_5array_2__getbuffer__(struct __pyx_array_obj *__pyx_v_self, Py_buffer *__pyx_v_info, int __pyx_v_flags); /* proto */
 static void __pyx_array___pyx_pf_15View_dot_MemoryView_5array_4__dealloc__(struct __pyx_array_obj *__pyx_v_self); /* proto */
@@ -1305,7 +1316,220 @@ static PyObject *__pyx_tuple__16;
 static PyObject *__pyx_tuple__17;
 static PyObject *__pyx_tuple__18;
 
-/* "tribeflow/_eval_outlier.pyx":4
+/* "outlierDetection/_eval_outlier.pyx":9
+ * 
+ * @boundscheck(False)
+ * cpdef double getLogProb(double[:] logProbs, int listLen) nogil:             # <<<<<<<<<<<<<<
+ *     cdef double pw = 0.0
+ *     if(listLen == 1):
+ */
+
+static PyObject *__pyx_pw_16outlierDetection_13_eval_outlier_1getLogProb(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static double __pyx_f_16outlierDetection_13_eval_outlier_getLogProb(__Pyx_memviewslice __pyx_v_logProbs, int __pyx_v_listLen, CYTHON_UNUSED int __pyx_skip_dispatch) {
+  double __pyx_v_pw;
+  double __pyx_r;
+  int __pyx_t_1;
+  Py_ssize_t __pyx_t_2;
+  Py_ssize_t __pyx_t_3;
+  __Pyx_memviewslice __pyx_t_4 = { 0, 0, { 0 }, { 0 }, { 0 } };
+  int __pyx_t_5;
+  Py_ssize_t __pyx_t_6;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+
+  /* "outlierDetection/_eval_outlier.pyx":10
+ * @boundscheck(False)
+ * cpdef double getLogProb(double[:] logProbs, int listLen) nogil:
+ *     cdef double pw = 0.0             # <<<<<<<<<<<<<<
+ *     if(listLen == 1):
+ *         return logProbs[0]
+ */
+  __pyx_v_pw = 0.0;
+
+  /* "outlierDetection/_eval_outlier.pyx":11
+ * cpdef double getLogProb(double[:] logProbs, int listLen) nogil:
+ *     cdef double pw = 0.0
+ *     if(listLen == 1):             # <<<<<<<<<<<<<<
+ *         return logProbs[0]
+ * 
+ */
+  __pyx_t_1 = ((__pyx_v_listLen == 1) != 0);
+  if (__pyx_t_1) {
+
+    /* "outlierDetection/_eval_outlier.pyx":12
+ *     cdef double pw = 0.0
+ *     if(listLen == 1):
+ *         return logProbs[0]             # <<<<<<<<<<<<<<
+ * 
+ *     pw = (-1)*logProbs[0] + getLogProb(logProbs[1:], (listLen-1))
+ */
+    __pyx_t_2 = 0;
+    if (__pyx_t_2 < 0) __pyx_t_2 += __pyx_v_logProbs.shape[0];
+    __pyx_r = (*((double *) ( /* dim=0 */ (__pyx_v_logProbs.data + __pyx_t_2 * __pyx_v_logProbs.strides[0]) )));
+    goto __pyx_L0;
+
+    /* "outlierDetection/_eval_outlier.pyx":11
+ * cpdef double getLogProb(double[:] logProbs, int listLen) nogil:
+ *     cdef double pw = 0.0
+ *     if(listLen == 1):             # <<<<<<<<<<<<<<
+ *         return logProbs[0]
+ * 
+ */
+  }
+
+  /* "outlierDetection/_eval_outlier.pyx":14
+ *         return logProbs[0]
+ * 
+ *     pw = (-1)*logProbs[0] + getLogProb(logProbs[1:], (listLen-1))             # <<<<<<<<<<<<<<
+ *     return logProbs[0]+log10(1+pow(10,pw))
+ * 
+ */
+  __pyx_t_3 = 0;
+  if (__pyx_t_3 < 0) __pyx_t_3 += __pyx_v_logProbs.shape[0];
+  __pyx_t_4.data = __pyx_v_logProbs.data;
+  __pyx_t_4.memview = __pyx_v_logProbs.memview;
+  __PYX_INC_MEMVIEW(&__pyx_t_4, 0);
+  __pyx_t_5 = -1;
+  if (unlikely(__pyx_memoryview_slice_memviewslice(
+    &__pyx_t_4,
+    __pyx_v_logProbs.shape[0], __pyx_v_logProbs.strides[0], __pyx_v_logProbs.suboffsets[0],
+    0,
+    0,
+    &__pyx_t_5,
+    1,
+    0,
+    0,
+    1,
+    0,
+    0,
+    1) < 0))
+{
+    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 14; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+}
+
+__pyx_v_pw = ((-1.0 * (*((double *) ( /* dim=0 */ (__pyx_v_logProbs.data + __pyx_t_3 * __pyx_v_logProbs.strides[0]) )))) + __pyx_f_16outlierDetection_13_eval_outlier_getLogProb(__pyx_t_4, (__pyx_v_listLen - 1), 0));
+  __PYX_XDEC_MEMVIEW(&__pyx_t_4, 0);
+
+  /* "outlierDetection/_eval_outlier.pyx":15
+ * 
+ *     pw = (-1)*logProbs[0] + getLogProb(logProbs[1:], (listLen-1))
+ *     return logProbs[0]+log10(1+pow(10,pw))             # <<<<<<<<<<<<<<
+ * 
+ * @boundscheck(False)
+ */
+  __pyx_t_6 = 0;
+  if (__pyx_t_6 < 0) __pyx_t_6 += __pyx_v_logProbs.shape[0];
+  __pyx_r = ((*((double *) ( /* dim=0 */ (__pyx_v_logProbs.data + __pyx_t_6 * __pyx_v_logProbs.strides[0]) ))) + log10((1.0 + pow(10.0, __pyx_v_pw))));
+  goto __pyx_L0;
+
+  /* "outlierDetection/_eval_outlier.pyx":9
+ * 
+ * @boundscheck(False)
+ * cpdef double getLogProb(double[:] logProbs, int listLen) nogil:             # <<<<<<<<<<<<<<
+ *     cdef double pw = 0.0
+ *     if(listLen == 1):
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __PYX_XDEC_MEMVIEW(&__pyx_t_4, 0);
+  __Pyx_WriteUnraisable("outlierDetection._eval_outlier.getLogProb", __pyx_clineno, __pyx_lineno, __pyx_filename, 0, 1);
+  __pyx_r = 0;
+  __pyx_L0:;
+  return __pyx_r;
+}
+
+/* Python wrapper */
+static PyObject *__pyx_pw_16outlierDetection_13_eval_outlier_1getLogProb(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static PyObject *__pyx_pw_16outlierDetection_13_eval_outlier_1getLogProb(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+  __Pyx_memviewslice __pyx_v_logProbs = { 0, 0, { 0 }, { 0 }, { 0 } };
+  int __pyx_v_listLen;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("getLogProb (wrapper)", 0);
+  {
+    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_logProbs,&__pyx_n_s_listLen,0};
+    PyObject* values[2] = {0,0};
+    if (unlikely(__pyx_kwds)) {
+      Py_ssize_t kw_args;
+      const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
+      switch (pos_args) {
+        case  2: values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
+        case  1: values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
+        case  0: break;
+        default: goto __pyx_L5_argtuple_error;
+      }
+      kw_args = PyDict_Size(__pyx_kwds);
+      switch (pos_args) {
+        case  0:
+        if (likely((values[0] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_logProbs)) != 0)) kw_args--;
+        else goto __pyx_L5_argtuple_error;
+        case  1:
+        if (likely((values[1] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_listLen)) != 0)) kw_args--;
+        else {
+          __Pyx_RaiseArgtupleInvalid("getLogProb", 1, 2, 2, 1); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 9; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+        }
+      }
+      if (unlikely(kw_args > 0)) {
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "getLogProb") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 9; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+      }
+    } else if (PyTuple_GET_SIZE(__pyx_args) != 2) {
+      goto __pyx_L5_argtuple_error;
+    } else {
+      values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
+      values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
+    }
+    __pyx_v_logProbs = __Pyx_PyObject_to_MemoryviewSlice_ds_double(values[0]); if (unlikely(!__pyx_v_logProbs.memview)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 9; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+    __pyx_v_listLen = __Pyx_PyInt_As_int(values[1]); if (unlikely((__pyx_v_listLen == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 9; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+  }
+  goto __pyx_L4_argument_unpacking_done;
+  __pyx_L5_argtuple_error:;
+  __Pyx_RaiseArgtupleInvalid("getLogProb", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 9; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+  __pyx_L3_error:;
+  __Pyx_AddTraceback("outlierDetection._eval_outlier.getLogProb", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_RefNannyFinishContext();
+  return NULL;
+  __pyx_L4_argument_unpacking_done:;
+  __pyx_r = __pyx_pf_16outlierDetection_13_eval_outlier_getLogProb(__pyx_self, __pyx_v_logProbs, __pyx_v_listLen);
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_16outlierDetection_13_eval_outlier_getLogProb(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_logProbs, int __pyx_v_listLen) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("getLogProb", 0);
+  __Pyx_XDECREF(__pyx_r);
+  if (unlikely(!__pyx_v_logProbs.memview)) { __Pyx_RaiseUnboundLocalError("logProbs"); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 9; __pyx_clineno = __LINE__; goto __pyx_L1_error;} }
+  __pyx_t_1 = PyFloat_FromDouble(__pyx_f_16outlierDetection_13_eval_outlier_getLogProb(__pyx_v_logProbs, __pyx_v_listLen, 0)); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 9; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
+  goto __pyx_L0;
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_AddTraceback("outlierDetection._eval_outlier.getLogProb", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __PYX_XDEC_MEMVIEW(&__pyx_v_logProbs, 1);
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "outlierDetection/_eval_outlier.pyx":18
  * 
  * @boundscheck(False)
  * cpdef double evaluate(int userId, int[:] history, int historyLen, int targetObjId, double[:, ::1] Theta_zh, double[:, ::1] Psi_sz, int env) nogil:             # <<<<<<<<<<<<<<
@@ -1313,8 +1537,8 @@ static PyObject *__pyx_tuple__18;
  *     cdef double candidateProb = 0.0
  */
 
-static PyObject *__pyx_pw_9tribeflow_13_eval_outlier_1evaluate(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static double __pyx_f_9tribeflow_13_eval_outlier_evaluate(int __pyx_v_userId, __Pyx_memviewslice __pyx_v_history, int __pyx_v_historyLen, int __pyx_v_targetObjId, __Pyx_memviewslice __pyx_v_Theta_zh, __Pyx_memviewslice __pyx_v_Psi_sz, int __pyx_v_env, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_pw_16outlierDetection_13_eval_outlier_3evaluate(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static double __pyx_f_16outlierDetection_13_eval_outlier_evaluate(int __pyx_v_userId, __Pyx_memviewslice __pyx_v_history, int __pyx_v_historyLen, int __pyx_v_targetObjId, __Pyx_memviewslice __pyx_v_Theta_zh, __Pyx_memviewslice __pyx_v_Psi_sz, int __pyx_v_env, CYTHON_UNUSED int __pyx_skip_dispatch) {
   double __pyx_v_mem_factor;
   double __pyx_v_candidateProb;
   int __pyx_v_j;
@@ -1329,7 +1553,7 @@ static double __pyx_f_9tribeflow_13_eval_outlier_evaluate(int __pyx_v_userId, __
   Py_ssize_t __pyx_t_8;
   Py_ssize_t __pyx_t_9;
 
-  /* "tribeflow/_eval_outlier.pyx":5
+  /* "outlierDetection/_eval_outlier.pyx":19
  * @boundscheck(False)
  * cpdef double evaluate(int userId, int[:] history, int historyLen, int targetObjId, double[:, ::1] Theta_zh, double[:, ::1] Psi_sz, int env) nogil:
  *     cdef double mem_factor = 1.0             # <<<<<<<<<<<<<<
@@ -1338,7 +1562,7 @@ static double __pyx_f_9tribeflow_13_eval_outlier_evaluate(int __pyx_v_userId, __
  */
   __pyx_v_mem_factor = 1.0;
 
-  /* "tribeflow/_eval_outlier.pyx":6
+  /* "outlierDetection/_eval_outlier.pyx":20
  * cpdef double evaluate(int userId, int[:] history, int historyLen, int targetObjId, double[:, ::1] Theta_zh, double[:, ::1] Psi_sz, int env) nogil:
  *     cdef double mem_factor = 1.0
  *     cdef double candidateProb = 0.0             # <<<<<<<<<<<<<<
@@ -1347,7 +1571,7 @@ static double __pyx_f_9tribeflow_13_eval_outlier_evaluate(int __pyx_v_userId, __
  */
   __pyx_v_candidateProb = 0.0;
 
-  /* "tribeflow/_eval_outlier.pyx":7
+  /* "outlierDetection/_eval_outlier.pyx":21
  *     cdef double mem_factor = 1.0
  *     cdef double candidateProb = 0.0
  *     cdef int j = 0             # <<<<<<<<<<<<<<
@@ -1356,7 +1580,7 @@ static double __pyx_f_9tribeflow_13_eval_outlier_evaluate(int __pyx_v_userId, __
  */
   __pyx_v_j = 0;
 
-  /* "tribeflow/_eval_outlier.pyx":8
+  /* "outlierDetection/_eval_outlier.pyx":22
  *     cdef double candidateProb = 0.0
  *     cdef int j = 0
  *     for j in xrange(historyLen):#for all B             # <<<<<<<<<<<<<<
@@ -1367,7 +1591,7 @@ static double __pyx_f_9tribeflow_13_eval_outlier_evaluate(int __pyx_v_userId, __
   for (__pyx_t_2 = 0; __pyx_t_2 < __pyx_t_1; __pyx_t_2+=1) {
     __pyx_v_j = __pyx_t_2;
 
-    /* "tribeflow/_eval_outlier.pyx":10
+    /* "outlierDetection/_eval_outlier.pyx":24
  *     for j in xrange(historyLen):#for all B
  *         #i.e. multiply all psi[objid1,z]*psi[objid2,z]*..psi[objidB,z]
  *         mem_factor *= Psi_sz[history[j], env] # Psi[objId, env z]             # <<<<<<<<<<<<<<
@@ -1383,11 +1607,11 @@ static double __pyx_f_9tribeflow_13_eval_outlier_evaluate(int __pyx_v_userId, __
     __pyx_v_mem_factor = (__pyx_v_mem_factor * (*((double *) ( /* dim=1 */ ((char *) (((double *) ( /* dim=0 */ (__pyx_v_Psi_sz.data + __pyx_t_4 * __pyx_v_Psi_sz.strides[0]) )) + __pyx_t_5)) ))));
   }
 
-  /* "tribeflow/_eval_outlier.pyx":12
+  /* "outlierDetection/_eval_outlier.pyx":26
  *         mem_factor *= Psi_sz[history[j], env] # Psi[objId, env z]
  *     #mem_factor *= 1.0 / (1 - Psi_sz[history[len(history)-1], env])# 1-Psi_sz[mem[B-1],z] == 1-psi_sz[objIdB,z]
  *     candidateProb += mem_factor * Psi_sz[targetObjId, env] * Theta_zh[env, userId]             # <<<<<<<<<<<<<<
- *     return candidateProb
+ *     return log10(candidateProb)
  * 
  */
   __pyx_t_6 = __pyx_v_targetObjId;
@@ -1400,17 +1624,17 @@ static double __pyx_f_9tribeflow_13_eval_outlier_evaluate(int __pyx_v_userId, __
   if (__pyx_t_9 < 0) __pyx_t_9 += __pyx_v_Theta_zh.shape[1];
   __pyx_v_candidateProb = (__pyx_v_candidateProb + ((__pyx_v_mem_factor * (*((double *) ( /* dim=1 */ ((char *) (((double *) ( /* dim=0 */ (__pyx_v_Psi_sz.data + __pyx_t_6 * __pyx_v_Psi_sz.strides[0]) )) + __pyx_t_7)) )))) * (*((double *) ( /* dim=1 */ ((char *) (((double *) ( /* dim=0 */ (__pyx_v_Theta_zh.data + __pyx_t_8 * __pyx_v_Theta_zh.strides[0]) )) + __pyx_t_9)) )))));
 
-  /* "tribeflow/_eval_outlier.pyx":13
+  /* "outlierDetection/_eval_outlier.pyx":27
  *     #mem_factor *= 1.0 / (1 - Psi_sz[history[len(history)-1], env])# 1-Psi_sz[mem[B-1],z] == 1-psi_sz[objIdB,z]
  *     candidateProb += mem_factor * Psi_sz[targetObjId, env] * Theta_zh[env, userId]
- *     return candidateProb             # <<<<<<<<<<<<<<
+ *     return log10(candidateProb)             # <<<<<<<<<<<<<<
  * 
  * @boundscheck(False)
  */
-  __pyx_r = __pyx_v_candidateProb;
+  __pyx_r = log10(__pyx_v_candidateProb);
   goto __pyx_L0;
 
-  /* "tribeflow/_eval_outlier.pyx":4
+  /* "outlierDetection/_eval_outlier.pyx":18
  * 
  * @boundscheck(False)
  * cpdef double evaluate(int userId, int[:] history, int historyLen, int targetObjId, double[:, ::1] Theta_zh, double[:, ::1] Psi_sz, int env) nogil:             # <<<<<<<<<<<<<<
@@ -1424,8 +1648,8 @@ static double __pyx_f_9tribeflow_13_eval_outlier_evaluate(int __pyx_v_userId, __
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_9tribeflow_13_eval_outlier_1evaluate(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static PyObject *__pyx_pw_9tribeflow_13_eval_outlier_1evaluate(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+static PyObject *__pyx_pw_16outlierDetection_13_eval_outlier_3evaluate(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static PyObject *__pyx_pw_16outlierDetection_13_eval_outlier_3evaluate(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   int __pyx_v_userId;
   __Pyx_memviewslice __pyx_v_history = { 0, 0, { 0 }, { 0 }, { 0 } };
   int __pyx_v_historyLen;
@@ -1464,36 +1688,36 @@ static PyObject *__pyx_pw_9tribeflow_13_eval_outlier_1evaluate(PyObject *__pyx_s
         case  1:
         if (likely((values[1] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_history)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("evaluate", 1, 7, 7, 1); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 4; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+          __Pyx_RaiseArgtupleInvalid("evaluate", 1, 7, 7, 1); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 18; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
         }
         case  2:
         if (likely((values[2] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_historyLen)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("evaluate", 1, 7, 7, 2); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 4; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+          __Pyx_RaiseArgtupleInvalid("evaluate", 1, 7, 7, 2); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 18; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
         }
         case  3:
         if (likely((values[3] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_targetObjId)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("evaluate", 1, 7, 7, 3); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 4; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+          __Pyx_RaiseArgtupleInvalid("evaluate", 1, 7, 7, 3); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 18; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
         }
         case  4:
         if (likely((values[4] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_Theta_zh)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("evaluate", 1, 7, 7, 4); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 4; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+          __Pyx_RaiseArgtupleInvalid("evaluate", 1, 7, 7, 4); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 18; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
         }
         case  5:
         if (likely((values[5] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_Psi_sz)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("evaluate", 1, 7, 7, 5); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 4; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+          __Pyx_RaiseArgtupleInvalid("evaluate", 1, 7, 7, 5); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 18; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
         }
         case  6:
         if (likely((values[6] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_env)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("evaluate", 1, 7, 7, 6); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 4; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+          __Pyx_RaiseArgtupleInvalid("evaluate", 1, 7, 7, 6); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 18; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "evaluate") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 4; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "evaluate") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 18; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) != 7) {
       goto __pyx_L5_argtuple_error;
@@ -1506,30 +1730,30 @@ static PyObject *__pyx_pw_9tribeflow_13_eval_outlier_1evaluate(PyObject *__pyx_s
       values[5] = PyTuple_GET_ITEM(__pyx_args, 5);
       values[6] = PyTuple_GET_ITEM(__pyx_args, 6);
     }
-    __pyx_v_userId = __Pyx_PyInt_As_int(values[0]); if (unlikely((__pyx_v_userId == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 4; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
-    __pyx_v_history = __Pyx_PyObject_to_MemoryviewSlice_ds_int(values[1]); if (unlikely(!__pyx_v_history.memview)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 4; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
-    __pyx_v_historyLen = __Pyx_PyInt_As_int(values[2]); if (unlikely((__pyx_v_historyLen == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 4; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
-    __pyx_v_targetObjId = __Pyx_PyInt_As_int(values[3]); if (unlikely((__pyx_v_targetObjId == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 4; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
-    __pyx_v_Theta_zh = __Pyx_PyObject_to_MemoryviewSlice_d_dc_double(values[4]); if (unlikely(!__pyx_v_Theta_zh.memview)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 4; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
-    __pyx_v_Psi_sz = __Pyx_PyObject_to_MemoryviewSlice_d_dc_double(values[5]); if (unlikely(!__pyx_v_Psi_sz.memview)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 4; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
-    __pyx_v_env = __Pyx_PyInt_As_int(values[6]); if (unlikely((__pyx_v_env == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 4; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+    __pyx_v_userId = __Pyx_PyInt_As_int(values[0]); if (unlikely((__pyx_v_userId == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 18; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+    __pyx_v_history = __Pyx_PyObject_to_MemoryviewSlice_ds_int(values[1]); if (unlikely(!__pyx_v_history.memview)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 18; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+    __pyx_v_historyLen = __Pyx_PyInt_As_int(values[2]); if (unlikely((__pyx_v_historyLen == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 18; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+    __pyx_v_targetObjId = __Pyx_PyInt_As_int(values[3]); if (unlikely((__pyx_v_targetObjId == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 18; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+    __pyx_v_Theta_zh = __Pyx_PyObject_to_MemoryviewSlice_d_dc_double(values[4]); if (unlikely(!__pyx_v_Theta_zh.memview)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 18; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+    __pyx_v_Psi_sz = __Pyx_PyObject_to_MemoryviewSlice_d_dc_double(values[5]); if (unlikely(!__pyx_v_Psi_sz.memview)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 18; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+    __pyx_v_env = __Pyx_PyInt_As_int(values[6]); if (unlikely((__pyx_v_env == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 18; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("evaluate", 1, 7, 7, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 4; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+  __Pyx_RaiseArgtupleInvalid("evaluate", 1, 7, 7, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 18; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
   __pyx_L3_error:;
-  __Pyx_AddTraceback("tribeflow._eval_outlier.evaluate", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("outlierDetection._eval_outlier.evaluate", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_9tribeflow_13_eval_outlier_evaluate(__pyx_self, __pyx_v_userId, __pyx_v_history, __pyx_v_historyLen, __pyx_v_targetObjId, __pyx_v_Theta_zh, __pyx_v_Psi_sz, __pyx_v_env);
+  __pyx_r = __pyx_pf_16outlierDetection_13_eval_outlier_2evaluate(__pyx_self, __pyx_v_userId, __pyx_v_history, __pyx_v_historyLen, __pyx_v_targetObjId, __pyx_v_Theta_zh, __pyx_v_Psi_sz, __pyx_v_env);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_9tribeflow_13_eval_outlier_evaluate(CYTHON_UNUSED PyObject *__pyx_self, int __pyx_v_userId, __Pyx_memviewslice __pyx_v_history, int __pyx_v_historyLen, int __pyx_v_targetObjId, __Pyx_memviewslice __pyx_v_Theta_zh, __Pyx_memviewslice __pyx_v_Psi_sz, int __pyx_v_env) {
+static PyObject *__pyx_pf_16outlierDetection_13_eval_outlier_2evaluate(CYTHON_UNUSED PyObject *__pyx_self, int __pyx_v_userId, __Pyx_memviewslice __pyx_v_history, int __pyx_v_historyLen, int __pyx_v_targetObjId, __Pyx_memviewslice __pyx_v_Theta_zh, __Pyx_memviewslice __pyx_v_Psi_sz, int __pyx_v_env) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -1538,10 +1762,10 @@ static PyObject *__pyx_pf_9tribeflow_13_eval_outlier_evaluate(CYTHON_UNUSED PyOb
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("evaluate", 0);
   __Pyx_XDECREF(__pyx_r);
-  if (unlikely(!__pyx_v_history.memview)) { __Pyx_RaiseUnboundLocalError("history"); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 4; __pyx_clineno = __LINE__; goto __pyx_L1_error;} }
-  if (unlikely(!__pyx_v_Theta_zh.memview)) { __Pyx_RaiseUnboundLocalError("Theta_zh"); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 4; __pyx_clineno = __LINE__; goto __pyx_L1_error;} }
-  if (unlikely(!__pyx_v_Psi_sz.memview)) { __Pyx_RaiseUnboundLocalError("Psi_sz"); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 4; __pyx_clineno = __LINE__; goto __pyx_L1_error;} }
-  __pyx_t_1 = PyFloat_FromDouble(__pyx_f_9tribeflow_13_eval_outlier_evaluate(__pyx_v_userId, __pyx_v_history, __pyx_v_historyLen, __pyx_v_targetObjId, __pyx_v_Theta_zh, __pyx_v_Psi_sz, __pyx_v_env, 0)); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 4; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (unlikely(!__pyx_v_history.memview)) { __Pyx_RaiseUnboundLocalError("history"); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 18; __pyx_clineno = __LINE__; goto __pyx_L1_error;} }
+  if (unlikely(!__pyx_v_Theta_zh.memview)) { __Pyx_RaiseUnboundLocalError("Theta_zh"); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 18; __pyx_clineno = __LINE__; goto __pyx_L1_error;} }
+  if (unlikely(!__pyx_v_Psi_sz.memview)) { __Pyx_RaiseUnboundLocalError("Psi_sz"); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 18; __pyx_clineno = __LINE__; goto __pyx_L1_error;} }
+  __pyx_t_1 = PyFloat_FromDouble(__pyx_f_16outlierDetection_13_eval_outlier_evaluate(__pyx_v_userId, __pyx_v_history, __pyx_v_historyLen, __pyx_v_targetObjId, __pyx_v_Theta_zh, __pyx_v_Psi_sz, __pyx_v_env, 0)); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 18; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -1550,7 +1774,7 @@ static PyObject *__pyx_pf_9tribeflow_13_eval_outlier_evaluate(CYTHON_UNUSED PyOb
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("tribeflow._eval_outlier.evaluate", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("outlierDetection._eval_outlier.evaluate", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __PYX_XDEC_MEMVIEW(&__pyx_v_history, 1);
@@ -1561,17 +1785,17 @@ static PyObject *__pyx_pf_9tribeflow_13_eval_outlier_evaluate(CYTHON_UNUSED PyOb
   return __pyx_r;
 }
 
-/* "tribeflow/_eval_outlier.pyx":16
+/* "outlierDetection/_eval_outlier.pyx":30
  * 
  * @boundscheck(False)
- * cpdef double calculateSequenceProb(int[:] theSequence, int theSequenceLen, int true_mem_size, int userId, double[:, ::1] Theta_zh, double[:, ::1] Psi_sz) nogil:             # <<<<<<<<<<<<<<
+ * cpdef double calculateSequenceProb(int[:] theSequence, int theSequenceLen, double[:] logSeqProbZ, int true_mem_size, int userId, double[:, ::1] Theta_zh, double[:, ::1] Psi_sz) nogil:             # <<<<<<<<<<<<<<
  *     cdef double seqProb = 0.0
  *     cdef double seqProbZ = 1.0
  */
 
-static PyObject *__pyx_pw_9tribeflow_13_eval_outlier_3calculateSequenceProb(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static double __pyx_f_9tribeflow_13_eval_outlier_calculateSequenceProb(__Pyx_memviewslice __pyx_v_theSequence, int __pyx_v_theSequenceLen, int __pyx_v_true_mem_size, int __pyx_v_userId, __Pyx_memviewslice __pyx_v_Theta_zh, __Pyx_memviewslice __pyx_v_Psi_sz, CYTHON_UNUSED int __pyx_skip_dispatch) {
-  double __pyx_v_seqProb;
+static PyObject *__pyx_pw_16outlierDetection_13_eval_outlier_5calculateSequenceProb(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static double __pyx_f_16outlierDetection_13_eval_outlier_calculateSequenceProb(__Pyx_memviewslice __pyx_v_theSequence, int __pyx_v_theSequenceLen, __Pyx_memviewslice __pyx_v_logSeqProbZ, int __pyx_v_true_mem_size, int __pyx_v_userId, __Pyx_memviewslice __pyx_v_Theta_zh, __Pyx_memviewslice __pyx_v_Psi_sz, CYTHON_UNUSED int __pyx_skip_dispatch) {
+  CYTHON_UNUSED double __pyx_v_seqProb;
   double __pyx_v_seqProbZ;
   int __pyx_v_targetObjId;
   double __pyx_v_prior;
@@ -1597,21 +1821,22 @@ static double __pyx_f_9tribeflow_13_eval_outlier_calculateSequenceProb(__Pyx_mem
   long __pyx_t_11;
   long __pyx_t_12;
   __Pyx_memviewslice __pyx_t_13 = { 0, 0, { 0 }, { 0 }, { 0 } };
+  Py_ssize_t __pyx_t_14;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
 
-  /* "tribeflow/_eval_outlier.pyx":17
+  /* "outlierDetection/_eval_outlier.pyx":31
  * @boundscheck(False)
- * cpdef double calculateSequenceProb(int[:] theSequence, int theSequenceLen, int true_mem_size, int userId, double[:, ::1] Theta_zh, double[:, ::1] Psi_sz) nogil:
+ * cpdef double calculateSequenceProb(int[:] theSequence, int theSequenceLen, double[:] logSeqProbZ, int true_mem_size, int userId, double[:, ::1] Theta_zh, double[:, ::1] Psi_sz) nogil:
  *     cdef double seqProb = 0.0             # <<<<<<<<<<<<<<
  *     cdef double seqProbZ = 1.0
  *     cdef int targetObjId = -1
  */
   __pyx_v_seqProb = 0.0;
 
-  /* "tribeflow/_eval_outlier.pyx":18
- * cpdef double calculateSequenceProb(int[:] theSequence, int theSequenceLen, int true_mem_size, int userId, double[:, ::1] Theta_zh, double[:, ::1] Psi_sz) nogil:
+  /* "outlierDetection/_eval_outlier.pyx":32
+ * cpdef double calculateSequenceProb(int[:] theSequence, int theSequenceLen, double[:] logSeqProbZ, int true_mem_size, int userId, double[:, ::1] Theta_zh, double[:, ::1] Psi_sz) nogil:
  *     cdef double seqProb = 0.0
  *     cdef double seqProbZ = 1.0             # <<<<<<<<<<<<<<
  *     cdef int targetObjId = -1
@@ -1619,7 +1844,7 @@ static double __pyx_f_9tribeflow_13_eval_outlier_calculateSequenceProb(__Pyx_mem
  */
   __pyx_v_seqProbZ = 1.0;
 
-  /* "tribeflow/_eval_outlier.pyx":19
+  /* "outlierDetection/_eval_outlier.pyx":33
  *     cdef double seqProb = 0.0
  *     cdef double seqProbZ = 1.0
  *     cdef int targetObjId = -1             # <<<<<<<<<<<<<<
@@ -1628,7 +1853,7 @@ static double __pyx_f_9tribeflow_13_eval_outlier_calculateSequenceProb(__Pyx_mem
  */
   __pyx_v_targetObjId = -1;
 
-  /* "tribeflow/_eval_outlier.pyx":20
+  /* "outlierDetection/_eval_outlier.pyx":34
  *     cdef double seqProbZ = 1.0
  *     cdef int targetObjId = -1
  *     cdef double prior = 0.0             # <<<<<<<<<<<<<<
@@ -1637,7 +1862,7 @@ static double __pyx_f_9tribeflow_13_eval_outlier_calculateSequenceProb(__Pyx_mem
  */
   __pyx_v_prior = 0.0;
 
-  /* "tribeflow/_eval_outlier.pyx":21
+  /* "outlierDetection/_eval_outlier.pyx":35
  *     cdef int targetObjId = -1
  *     cdef double prior = 0.0
  *     cdef double candProb = 0.0             # <<<<<<<<<<<<<<
@@ -1646,7 +1871,7 @@ static double __pyx_f_9tribeflow_13_eval_outlier_calculateSequenceProb(__Pyx_mem
  */
   __pyx_v_candProb = 0.0;
 
-  /* "tribeflow/_eval_outlier.pyx":22
+  /* "outlierDetection/_eval_outlier.pyx":36
  *     cdef double prior = 0.0
  *     cdef double candProb = 0.0
  *     cdef int window = 0             # <<<<<<<<<<<<<<
@@ -1655,7 +1880,7 @@ static double __pyx_f_9tribeflow_13_eval_outlier_calculateSequenceProb(__Pyx_mem
  */
   __pyx_v_window = 0;
 
-  /* "tribeflow/_eval_outlier.pyx":25
+  /* "outlierDetection/_eval_outlier.pyx":39
  *     #cdef int[:] history = np.zeros(theSequenceLen, dtype='i4')
  *     cdef int[:] history
  *     cdef int historyLen = 0             # <<<<<<<<<<<<<<
@@ -1664,7 +1889,7 @@ static double __pyx_f_9tribeflow_13_eval_outlier_calculateSequenceProb(__Pyx_mem
  */
   __pyx_v_historyLen = 0;
 
-  /* "tribeflow/_eval_outlier.pyx":26
+  /* "outlierDetection/_eval_outlier.pyx":40
  *     cdef int[:] history
  *     cdef int historyLen = 0
  *     cdef int targetObjIdx, z, i = 0             # <<<<<<<<<<<<<<
@@ -1673,7 +1898,7 @@ static double __pyx_f_9tribeflow_13_eval_outlier_calculateSequenceProb(__Pyx_mem
  */
   __pyx_v_i = 0;
 
-  /* "tribeflow/_eval_outlier.pyx":27
+  /* "outlierDetection/_eval_outlier.pyx":41
  *     cdef int historyLen = 0
  *     cdef int targetObjIdx, z, i = 0
  *     cdef int wmax = 0             # <<<<<<<<<<<<<<
@@ -1682,12 +1907,12 @@ static double __pyx_f_9tribeflow_13_eval_outlier_calculateSequenceProb(__Pyx_mem
  */
   __pyx_v_wmax = 0;
 
-  /* "tribeflow/_eval_outlier.pyx":29
+  /* "outlierDetection/_eval_outlier.pyx":43
  *     cdef int wmax = 0
  * 
  *     window = min(true_mem_size, theSequenceLen)             # <<<<<<<<<<<<<<
  *     for z in xrange(Psi_sz.shape[1]): #for envs
- *         seqProbZ = 1.0
+ *         seqProbZ = 0.0
  */
   __pyx_t_1 = __pyx_v_theSequenceLen;
   __pyx_t_2 = __pyx_v_true_mem_size;
@@ -1698,29 +1923,29 @@ static double __pyx_f_9tribeflow_13_eval_outlier_calculateSequenceProb(__Pyx_mem
   }
   __pyx_v_window = __pyx_t_3;
 
-  /* "tribeflow/_eval_outlier.pyx":30
+  /* "outlierDetection/_eval_outlier.pyx":44
  * 
  *     window = min(true_mem_size, theSequenceLen)
  *     for z in xrange(Psi_sz.shape[1]): #for envs             # <<<<<<<<<<<<<<
- *         seqProbZ = 1.0
+ *         seqProbZ = 0.0
  *         for targetObjIdx in range(0,theSequenceLen): #targetObjIdx=0 cannot be predicted we have to skip it
  */
   __pyx_t_4 = (__pyx_v_Psi_sz.shape[1]);
   for (__pyx_t_3 = 0; __pyx_t_3 < __pyx_t_4; __pyx_t_3+=1) {
     __pyx_v_z = __pyx_t_3;
 
-    /* "tribeflow/_eval_outlier.pyx":31
+    /* "outlierDetection/_eval_outlier.pyx":45
  *     window = min(true_mem_size, theSequenceLen)
  *     for z in xrange(Psi_sz.shape[1]): #for envs
- *         seqProbZ = 1.0             # <<<<<<<<<<<<<<
+ *         seqProbZ = 0.0             # <<<<<<<<<<<<<<
  *         for targetObjIdx in range(0,theSequenceLen): #targetObjIdx=0 cannot be predicted we have to skip it
  *             if(targetObjIdx == 0):
  */
-    __pyx_v_seqProbZ = 1.0;
+    __pyx_v_seqProbZ = 0.0;
 
-    /* "tribeflow/_eval_outlier.pyx":32
+    /* "outlierDetection/_eval_outlier.pyx":46
  *     for z in xrange(Psi_sz.shape[1]): #for envs
- *         seqProbZ = 1.0
+ *         seqProbZ = 0.0
  *         for targetObjIdx in range(0,theSequenceLen): #targetObjIdx=0 cannot be predicted we have to skip it             # <<<<<<<<<<<<<<
  *             if(targetObjIdx == 0):
  *                 targetObjId = theSequence[targetObjIdx]
@@ -1729,8 +1954,8 @@ static double __pyx_f_9tribeflow_13_eval_outlier_calculateSequenceProb(__Pyx_mem
     for (__pyx_t_2 = 0; __pyx_t_2 < __pyx_t_1; __pyx_t_2+=1) {
       __pyx_v_targetObjIdx = __pyx_t_2;
 
-      /* "tribeflow/_eval_outlier.pyx":33
- *         seqProbZ = 1.0
+      /* "outlierDetection/_eval_outlier.pyx":47
+ *         seqProbZ = 0.0
  *         for targetObjIdx in range(0,theSequenceLen): #targetObjIdx=0 cannot be predicted we have to skip it
  *             if(targetObjIdx == 0):             # <<<<<<<<<<<<<<
  *                 targetObjId = theSequence[targetObjIdx]
@@ -1739,22 +1964,22 @@ static double __pyx_f_9tribeflow_13_eval_outlier_calculateSequenceProb(__Pyx_mem
       __pyx_t_5 = ((__pyx_v_targetObjIdx == 0) != 0);
       if (__pyx_t_5) {
 
-        /* "tribeflow/_eval_outlier.pyx":34
+        /* "outlierDetection/_eval_outlier.pyx":48
  *         for targetObjIdx in range(0,theSequenceLen): #targetObjIdx=0 cannot be predicted we have to skip it
  *             if(targetObjIdx == 0):
  *                 targetObjId = theSequence[targetObjIdx]             # <<<<<<<<<<<<<<
  *                 prior = Psi_sz[targetObjId, z]
- *                 seqProbZ *= prior
+ *                 seqProbZ += log10(prior)
  */
         __pyx_t_6 = __pyx_v_targetObjIdx;
         if (__pyx_t_6 < 0) __pyx_t_6 += __pyx_v_theSequence.shape[0];
         __pyx_v_targetObjId = (*((int *) ( /* dim=0 */ (__pyx_v_theSequence.data + __pyx_t_6 * __pyx_v_theSequence.strides[0]) )));
 
-        /* "tribeflow/_eval_outlier.pyx":35
+        /* "outlierDetection/_eval_outlier.pyx":49
  *             if(targetObjIdx == 0):
  *                 targetObjId = theSequence[targetObjIdx]
  *                 prior = Psi_sz[targetObjId, z]             # <<<<<<<<<<<<<<
- *                 seqProbZ *= prior
+ *                 seqProbZ += log10(prior)
  *             else:
  */
         __pyx_t_7 = __pyx_v_targetObjId;
@@ -1763,17 +1988,17 @@ static double __pyx_f_9tribeflow_13_eval_outlier_calculateSequenceProb(__Pyx_mem
         if (__pyx_t_8 < 0) __pyx_t_8 += __pyx_v_Psi_sz.shape[1];
         __pyx_v_prior = (*((double *) ( /* dim=1 */ ((char *) (((double *) ( /* dim=0 */ (__pyx_v_Psi_sz.data + __pyx_t_7 * __pyx_v_Psi_sz.strides[0]) )) + __pyx_t_8)) )));
 
-        /* "tribeflow/_eval_outlier.pyx":36
+        /* "outlierDetection/_eval_outlier.pyx":50
  *                 targetObjId = theSequence[targetObjIdx]
  *                 prior = Psi_sz[targetObjId, z]
- *                 seqProbZ *= prior             # <<<<<<<<<<<<<<
+ *                 seqProbZ += log10(prior)             # <<<<<<<<<<<<<<
  *             else:
  *                 targetObjId = theSequence[targetObjIdx]
  */
-        __pyx_v_seqProbZ = (__pyx_v_seqProbZ * __pyx_v_prior);
+        __pyx_v_seqProbZ = (__pyx_v_seqProbZ + log10(__pyx_v_prior));
 
-        /* "tribeflow/_eval_outlier.pyx":33
- *         seqProbZ = 1.0
+        /* "outlierDetection/_eval_outlier.pyx":47
+ *         seqProbZ = 0.0
  *         for targetObjIdx in range(0,theSequenceLen): #targetObjIdx=0 cannot be predicted we have to skip it
  *             if(targetObjIdx == 0):             # <<<<<<<<<<<<<<
  *                 targetObjId = theSequence[targetObjIdx]
@@ -1782,8 +2007,8 @@ static double __pyx_f_9tribeflow_13_eval_outlier_calculateSequenceProb(__Pyx_mem
         goto __pyx_L7;
       }
 
-      /* "tribeflow/_eval_outlier.pyx":38
- *                 seqProbZ *= prior
+      /* "outlierDetection/_eval_outlier.pyx":52
+ *                 seqProbZ += log10(prior)
  *             else:
  *                 targetObjId = theSequence[targetObjIdx]             # <<<<<<<<<<<<<<
  *                 wmax = max(0,targetObjIdx-window)
@@ -1794,7 +2019,7 @@ static double __pyx_f_9tribeflow_13_eval_outlier_calculateSequenceProb(__Pyx_mem
         if (__pyx_t_9 < 0) __pyx_t_9 += __pyx_v_theSequence.shape[0];
         __pyx_v_targetObjId = (*((int *) ( /* dim=0 */ (__pyx_v_theSequence.data + __pyx_t_9 * __pyx_v_theSequence.strides[0]) )));
 
-        /* "tribeflow/_eval_outlier.pyx":39
+        /* "outlierDetection/_eval_outlier.pyx":53
  *             else:
  *                 targetObjId = theSequence[targetObjIdx]
  *                 wmax = max(0,targetObjIdx-window)             # <<<<<<<<<<<<<<
@@ -1810,7 +2035,7 @@ static double __pyx_f_9tribeflow_13_eval_outlier_calculateSequenceProb(__Pyx_mem
         }
         __pyx_v_wmax = __pyx_t_12;
 
-        /* "tribeflow/_eval_outlier.pyx":40
+        /* "outlierDetection/_eval_outlier.pyx":54
  *                 targetObjId = theSequence[targetObjIdx]
  *                 wmax = max(0,targetObjIdx-window)
  *                 history = theSequence[wmax: targetObjIdx] # look back 'window' actions.             # <<<<<<<<<<<<<<
@@ -1835,7 +2060,7 @@ static double __pyx_f_9tribeflow_13_eval_outlier_calculateSequenceProb(__Pyx_mem
     0,
     1) < 0))
 {
-    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 40; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 54; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 }
 
 __PYX_XDEC_MEMVIEW(&__pyx_v_history, 0);
@@ -1843,57 +2068,60 @@ __PYX_XDEC_MEMVIEW(&__pyx_v_history, 0);
         __pyx_t_13.memview = NULL;
         __pyx_t_13.data = NULL;
 
-        /* "tribeflow/_eval_outlier.pyx":41
+        /* "outlierDetection/_eval_outlier.pyx":55
  *                 wmax = max(0,targetObjIdx-window)
  *                 history = theSequence[wmax: targetObjIdx] # look back 'window' actions.
  *                 historyLen = targetObjIdx-wmax             # <<<<<<<<<<<<<<
  *                 candProb = evaluate(userId, history, historyLen, targetObjId, Theta_zh, Psi_sz, z) #(int[:, ::1] HOs, double[:, ::1] Theta_zh, double[:, ::1] Psi_sz, int[::1] count_z, int env):
- *                 seqProbZ *= candProb
+ *                 seqProbZ += candProb
  */
         __pyx_v_historyLen = (__pyx_v_targetObjIdx - __pyx_v_wmax);
 
-        /* "tribeflow/_eval_outlier.pyx":42
+        /* "outlierDetection/_eval_outlier.pyx":56
  *                 history = theSequence[wmax: targetObjIdx] # look back 'window' actions.
  *                 historyLen = targetObjIdx-wmax
  *                 candProb = evaluate(userId, history, historyLen, targetObjId, Theta_zh, Psi_sz, z) #(int[:, ::1] HOs, double[:, ::1] Theta_zh, double[:, ::1] Psi_sz, int[::1] count_z, int env):             # <<<<<<<<<<<<<<
- *                 seqProbZ *= candProb
- *         seqProb += seqProbZ
+ *                 seqProbZ += candProb
+ *         logSeqProbZ[z] = seqProbZ
  */
-        __pyx_v_candProb = __pyx_f_9tribeflow_13_eval_outlier_evaluate(__pyx_v_userId, __pyx_v_history, __pyx_v_historyLen, __pyx_v_targetObjId, __pyx_v_Theta_zh, __pyx_v_Psi_sz, __pyx_v_z, 0);
+        __pyx_v_candProb = __pyx_f_16outlierDetection_13_eval_outlier_evaluate(__pyx_v_userId, __pyx_v_history, __pyx_v_historyLen, __pyx_v_targetObjId, __pyx_v_Theta_zh, __pyx_v_Psi_sz, __pyx_v_z, 0);
 
-        /* "tribeflow/_eval_outlier.pyx":43
+        /* "outlierDetection/_eval_outlier.pyx":57
  *                 historyLen = targetObjIdx-wmax
  *                 candProb = evaluate(userId, history, historyLen, targetObjId, Theta_zh, Psi_sz, z) #(int[:, ::1] HOs, double[:, ::1] Theta_zh, double[:, ::1] Psi_sz, int[::1] count_z, int env):
- *                 seqProbZ *= candProb             # <<<<<<<<<<<<<<
- *         seqProb += seqProbZ
- *     return seqProb
+ *                 seqProbZ += candProb             # <<<<<<<<<<<<<<
+ *         logSeqProbZ[z] = seqProbZ
+ *         #seqProb += seqProbZ
  */
-        __pyx_v_seqProbZ = (__pyx_v_seqProbZ * __pyx_v_candProb);
+        __pyx_v_seqProbZ = (__pyx_v_seqProbZ + __pyx_v_candProb);
       }
       __pyx_L7:;
     }
 
-    /* "tribeflow/_eval_outlier.pyx":44
+    /* "outlierDetection/_eval_outlier.pyx":58
  *                 candProb = evaluate(userId, history, historyLen, targetObjId, Theta_zh, Psi_sz, z) #(int[:, ::1] HOs, double[:, ::1] Theta_zh, double[:, ::1] Psi_sz, int[::1] count_z, int env):
- *                 seqProbZ *= candProb
- *         seqProb += seqProbZ             # <<<<<<<<<<<<<<
- *     return seqProb
+ *                 seqProbZ += candProb
+ *         logSeqProbZ[z] = seqProbZ             # <<<<<<<<<<<<<<
+ *         #seqProb += seqProbZ
+ *     #return logSeqProbZ
  */
-    __pyx_v_seqProb = (__pyx_v_seqProb + __pyx_v_seqProbZ);
+    __pyx_t_14 = __pyx_v_z;
+    if (__pyx_t_14 < 0) __pyx_t_14 += __pyx_v_logSeqProbZ.shape[0];
+    *((double *) ( /* dim=0 */ (__pyx_v_logSeqProbZ.data + __pyx_t_14 * __pyx_v_logSeqProbZ.strides[0]) )) = __pyx_v_seqProbZ;
   }
 
-  /* "tribeflow/_eval_outlier.pyx":45
- *                 seqProbZ *= candProb
- *         seqProb += seqProbZ
- *     return seqProb             # <<<<<<<<<<<<<<
+  /* "outlierDetection/_eval_outlier.pyx":61
+ *         #seqProb += seqProbZ
+ *     #return logSeqProbZ
+ *     return getLogProb(logSeqProbZ, Psi_sz.shape[1])             # <<<<<<<<<<<<<<
  */
-  __pyx_r = __pyx_v_seqProb;
+  __pyx_r = __pyx_f_16outlierDetection_13_eval_outlier_getLogProb(__pyx_v_logSeqProbZ, (__pyx_v_Psi_sz.shape[1]), 0);
   goto __pyx_L0;
 
-  /* "tribeflow/_eval_outlier.pyx":16
+  /* "outlierDetection/_eval_outlier.pyx":30
  * 
  * @boundscheck(False)
- * cpdef double calculateSequenceProb(int[:] theSequence, int theSequenceLen, int true_mem_size, int userId, double[:, ::1] Theta_zh, double[:, ::1] Psi_sz) nogil:             # <<<<<<<<<<<<<<
+ * cpdef double calculateSequenceProb(int[:] theSequence, int theSequenceLen, double[:] logSeqProbZ, int true_mem_size, int userId, double[:, ::1] Theta_zh, double[:, ::1] Psi_sz) nogil:             # <<<<<<<<<<<<<<
  *     cdef double seqProb = 0.0
  *     cdef double seqProbZ = 1.0
  */
@@ -1901,7 +2129,7 @@ __PYX_XDEC_MEMVIEW(&__pyx_v_history, 0);
   /* function exit code */
   __pyx_L1_error:;
   __PYX_XDEC_MEMVIEW(&__pyx_t_13, 0);
-  __Pyx_WriteUnraisable("tribeflow._eval_outlier.calculateSequenceProb", __pyx_clineno, __pyx_lineno, __pyx_filename, 0, 1);
+  __Pyx_WriteUnraisable("outlierDetection._eval_outlier.calculateSequenceProb", __pyx_clineno, __pyx_lineno, __pyx_filename, 0, 1);
   __pyx_r = 0;
   __pyx_L0:;
   __PYX_XDEC_MEMVIEW(&__pyx_v_history, 0);
@@ -1909,10 +2137,11 @@ __PYX_XDEC_MEMVIEW(&__pyx_v_history, 0);
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_9tribeflow_13_eval_outlier_3calculateSequenceProb(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static PyObject *__pyx_pw_9tribeflow_13_eval_outlier_3calculateSequenceProb(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+static PyObject *__pyx_pw_16outlierDetection_13_eval_outlier_5calculateSequenceProb(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static PyObject *__pyx_pw_16outlierDetection_13_eval_outlier_5calculateSequenceProb(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   __Pyx_memviewslice __pyx_v_theSequence = { 0, 0, { 0 }, { 0 }, { 0 } };
   int __pyx_v_theSequenceLen;
+  __Pyx_memviewslice __pyx_v_logSeqProbZ = { 0, 0, { 0 }, { 0 }, { 0 } };
   int __pyx_v_true_mem_size;
   int __pyx_v_userId;
   __Pyx_memviewslice __pyx_v_Theta_zh = { 0, 0, { 0 }, { 0 }, { 0 } };
@@ -1924,12 +2153,13 @@ static PyObject *__pyx_pw_9tribeflow_13_eval_outlier_3calculateSequenceProb(PyOb
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("calculateSequenceProb (wrapper)", 0);
   {
-    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_theSequence,&__pyx_n_s_theSequenceLen,&__pyx_n_s_true_mem_size,&__pyx_n_s_userId,&__pyx_n_s_Theta_zh,&__pyx_n_s_Psi_sz,0};
-    PyObject* values[6] = {0,0,0,0,0,0};
+    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_theSequence,&__pyx_n_s_theSequenceLen,&__pyx_n_s_logSeqProbZ,&__pyx_n_s_true_mem_size,&__pyx_n_s_userId,&__pyx_n_s_Theta_zh,&__pyx_n_s_Psi_sz,0};
+    PyObject* values[7] = {0,0,0,0,0,0,0};
     if (unlikely(__pyx_kwds)) {
       Py_ssize_t kw_args;
       const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
       switch (pos_args) {
+        case  7: values[6] = PyTuple_GET_ITEM(__pyx_args, 6);
         case  6: values[5] = PyTuple_GET_ITEM(__pyx_args, 5);
         case  5: values[4] = PyTuple_GET_ITEM(__pyx_args, 4);
         case  4: values[3] = PyTuple_GET_ITEM(__pyx_args, 3);
@@ -1947,33 +2177,38 @@ static PyObject *__pyx_pw_9tribeflow_13_eval_outlier_3calculateSequenceProb(PyOb
         case  1:
         if (likely((values[1] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_theSequenceLen)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("calculateSequenceProb", 1, 6, 6, 1); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 16; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+          __Pyx_RaiseArgtupleInvalid("calculateSequenceProb", 1, 7, 7, 1); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 30; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
         }
         case  2:
-        if (likely((values[2] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_true_mem_size)) != 0)) kw_args--;
+        if (likely((values[2] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_logSeqProbZ)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("calculateSequenceProb", 1, 6, 6, 2); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 16; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+          __Pyx_RaiseArgtupleInvalid("calculateSequenceProb", 1, 7, 7, 2); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 30; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
         }
         case  3:
-        if (likely((values[3] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_userId)) != 0)) kw_args--;
+        if (likely((values[3] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_true_mem_size)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("calculateSequenceProb", 1, 6, 6, 3); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 16; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+          __Pyx_RaiseArgtupleInvalid("calculateSequenceProb", 1, 7, 7, 3); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 30; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
         }
         case  4:
-        if (likely((values[4] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_Theta_zh)) != 0)) kw_args--;
+        if (likely((values[4] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_userId)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("calculateSequenceProb", 1, 6, 6, 4); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 16; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+          __Pyx_RaiseArgtupleInvalid("calculateSequenceProb", 1, 7, 7, 4); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 30; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
         }
         case  5:
-        if (likely((values[5] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_Psi_sz)) != 0)) kw_args--;
+        if (likely((values[5] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_Theta_zh)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("calculateSequenceProb", 1, 6, 6, 5); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 16; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+          __Pyx_RaiseArgtupleInvalid("calculateSequenceProb", 1, 7, 7, 5); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 30; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+        }
+        case  6:
+        if (likely((values[6] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_Psi_sz)) != 0)) kw_args--;
+        else {
+          __Pyx_RaiseArgtupleInvalid("calculateSequenceProb", 1, 7, 7, 6); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 30; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "calculateSequenceProb") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 16; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "calculateSequenceProb") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 30; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
       }
-    } else if (PyTuple_GET_SIZE(__pyx_args) != 6) {
+    } else if (PyTuple_GET_SIZE(__pyx_args) != 7) {
       goto __pyx_L5_argtuple_error;
     } else {
       values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
@@ -1982,30 +2217,32 @@ static PyObject *__pyx_pw_9tribeflow_13_eval_outlier_3calculateSequenceProb(PyOb
       values[3] = PyTuple_GET_ITEM(__pyx_args, 3);
       values[4] = PyTuple_GET_ITEM(__pyx_args, 4);
       values[5] = PyTuple_GET_ITEM(__pyx_args, 5);
+      values[6] = PyTuple_GET_ITEM(__pyx_args, 6);
     }
-    __pyx_v_theSequence = __Pyx_PyObject_to_MemoryviewSlice_ds_int(values[0]); if (unlikely(!__pyx_v_theSequence.memview)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 16; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
-    __pyx_v_theSequenceLen = __Pyx_PyInt_As_int(values[1]); if (unlikely((__pyx_v_theSequenceLen == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 16; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
-    __pyx_v_true_mem_size = __Pyx_PyInt_As_int(values[2]); if (unlikely((__pyx_v_true_mem_size == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 16; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
-    __pyx_v_userId = __Pyx_PyInt_As_int(values[3]); if (unlikely((__pyx_v_userId == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 16; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
-    __pyx_v_Theta_zh = __Pyx_PyObject_to_MemoryviewSlice_d_dc_double(values[4]); if (unlikely(!__pyx_v_Theta_zh.memview)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 16; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
-    __pyx_v_Psi_sz = __Pyx_PyObject_to_MemoryviewSlice_d_dc_double(values[5]); if (unlikely(!__pyx_v_Psi_sz.memview)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 16; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+    __pyx_v_theSequence = __Pyx_PyObject_to_MemoryviewSlice_ds_int(values[0]); if (unlikely(!__pyx_v_theSequence.memview)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 30; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+    __pyx_v_theSequenceLen = __Pyx_PyInt_As_int(values[1]); if (unlikely((__pyx_v_theSequenceLen == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 30; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+    __pyx_v_logSeqProbZ = __Pyx_PyObject_to_MemoryviewSlice_ds_double(values[2]); if (unlikely(!__pyx_v_logSeqProbZ.memview)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 30; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+    __pyx_v_true_mem_size = __Pyx_PyInt_As_int(values[3]); if (unlikely((__pyx_v_true_mem_size == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 30; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+    __pyx_v_userId = __Pyx_PyInt_As_int(values[4]); if (unlikely((__pyx_v_userId == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 30; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+    __pyx_v_Theta_zh = __Pyx_PyObject_to_MemoryviewSlice_d_dc_double(values[5]); if (unlikely(!__pyx_v_Theta_zh.memview)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 30; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+    __pyx_v_Psi_sz = __Pyx_PyObject_to_MemoryviewSlice_d_dc_double(values[6]); if (unlikely(!__pyx_v_Psi_sz.memview)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 30; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("calculateSequenceProb", 1, 6, 6, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 16; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+  __Pyx_RaiseArgtupleInvalid("calculateSequenceProb", 1, 7, 7, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 30; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
   __pyx_L3_error:;
-  __Pyx_AddTraceback("tribeflow._eval_outlier.calculateSequenceProb", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("outlierDetection._eval_outlier.calculateSequenceProb", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_9tribeflow_13_eval_outlier_2calculateSequenceProb(__pyx_self, __pyx_v_theSequence, __pyx_v_theSequenceLen, __pyx_v_true_mem_size, __pyx_v_userId, __pyx_v_Theta_zh, __pyx_v_Psi_sz);
+  __pyx_r = __pyx_pf_16outlierDetection_13_eval_outlier_4calculateSequenceProb(__pyx_self, __pyx_v_theSequence, __pyx_v_theSequenceLen, __pyx_v_logSeqProbZ, __pyx_v_true_mem_size, __pyx_v_userId, __pyx_v_Theta_zh, __pyx_v_Psi_sz);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_9tribeflow_13_eval_outlier_2calculateSequenceProb(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_theSequence, int __pyx_v_theSequenceLen, int __pyx_v_true_mem_size, int __pyx_v_userId, __Pyx_memviewslice __pyx_v_Theta_zh, __Pyx_memviewslice __pyx_v_Psi_sz) {
+static PyObject *__pyx_pf_16outlierDetection_13_eval_outlier_4calculateSequenceProb(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_theSequence, int __pyx_v_theSequenceLen, __Pyx_memviewslice __pyx_v_logSeqProbZ, int __pyx_v_true_mem_size, int __pyx_v_userId, __Pyx_memviewslice __pyx_v_Theta_zh, __Pyx_memviewslice __pyx_v_Psi_sz) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -2014,10 +2251,11 @@ static PyObject *__pyx_pf_9tribeflow_13_eval_outlier_2calculateSequenceProb(CYTH
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("calculateSequenceProb", 0);
   __Pyx_XDECREF(__pyx_r);
-  if (unlikely(!__pyx_v_theSequence.memview)) { __Pyx_RaiseUnboundLocalError("theSequence"); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 16; __pyx_clineno = __LINE__; goto __pyx_L1_error;} }
-  if (unlikely(!__pyx_v_Theta_zh.memview)) { __Pyx_RaiseUnboundLocalError("Theta_zh"); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 16; __pyx_clineno = __LINE__; goto __pyx_L1_error;} }
-  if (unlikely(!__pyx_v_Psi_sz.memview)) { __Pyx_RaiseUnboundLocalError("Psi_sz"); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 16; __pyx_clineno = __LINE__; goto __pyx_L1_error;} }
-  __pyx_t_1 = PyFloat_FromDouble(__pyx_f_9tribeflow_13_eval_outlier_calculateSequenceProb(__pyx_v_theSequence, __pyx_v_theSequenceLen, __pyx_v_true_mem_size, __pyx_v_userId, __pyx_v_Theta_zh, __pyx_v_Psi_sz, 0)); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 16; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (unlikely(!__pyx_v_theSequence.memview)) { __Pyx_RaiseUnboundLocalError("theSequence"); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 30; __pyx_clineno = __LINE__; goto __pyx_L1_error;} }
+  if (unlikely(!__pyx_v_logSeqProbZ.memview)) { __Pyx_RaiseUnboundLocalError("logSeqProbZ"); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 30; __pyx_clineno = __LINE__; goto __pyx_L1_error;} }
+  if (unlikely(!__pyx_v_Theta_zh.memview)) { __Pyx_RaiseUnboundLocalError("Theta_zh"); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 30; __pyx_clineno = __LINE__; goto __pyx_L1_error;} }
+  if (unlikely(!__pyx_v_Psi_sz.memview)) { __Pyx_RaiseUnboundLocalError("Psi_sz"); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 30; __pyx_clineno = __LINE__; goto __pyx_L1_error;} }
+  __pyx_t_1 = PyFloat_FromDouble(__pyx_f_16outlierDetection_13_eval_outlier_calculateSequenceProb(__pyx_v_theSequence, __pyx_v_theSequenceLen, __pyx_v_logSeqProbZ, __pyx_v_true_mem_size, __pyx_v_userId, __pyx_v_Theta_zh, __pyx_v_Psi_sz, 0)); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 30; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -2026,10 +2264,11 @@ static PyObject *__pyx_pf_9tribeflow_13_eval_outlier_2calculateSequenceProb(CYTH
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("tribeflow._eval_outlier.calculateSequenceProb", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("outlierDetection._eval_outlier.calculateSequenceProb", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __PYX_XDEC_MEMVIEW(&__pyx_v_theSequence, 1);
+  __PYX_XDEC_MEMVIEW(&__pyx_v_logSeqProbZ, 1);
   __PYX_XDEC_MEMVIEW(&__pyx_v_Theta_zh, 1);
   __PYX_XDEC_MEMVIEW(&__pyx_v_Psi_sz, 1);
   __Pyx_XGIVEREF(__pyx_r);
@@ -13675,7 +13914,7 @@ static PyBufferProcs __pyx_tp_as_buffer_array = {
 
 static PyTypeObject __pyx_type___pyx_array = {
   PyVarObject_HEAD_INIT(0, 0)
-  "tribeflow._eval_outlier.array", /*tp_name*/
+  "outlierDetection._eval_outlier.array", /*tp_name*/
   sizeof(struct __pyx_array_obj), /*tp_basicsize*/
   0, /*tp_itemsize*/
   __pyx_tp_dealloc_array, /*tp_dealloc*/
@@ -13781,7 +14020,7 @@ static PyMethodDef __pyx_methods_Enum[] = {
 
 static PyTypeObject __pyx_type___pyx_MemviewEnum = {
   PyVarObject_HEAD_INIT(0, 0)
-  "tribeflow._eval_outlier.Enum", /*tp_name*/
+  "outlierDetection._eval_outlier.Enum", /*tp_name*/
   sizeof(struct __pyx_MemviewEnum_obj), /*tp_basicsize*/
   0, /*tp_itemsize*/
   __pyx_tp_dealloc_Enum, /*tp_dealloc*/
@@ -14028,7 +14267,7 @@ static PyBufferProcs __pyx_tp_as_buffer_memoryview = {
 
 static PyTypeObject __pyx_type___pyx_memoryview = {
   PyVarObject_HEAD_INIT(0, 0)
-  "tribeflow._eval_outlier.memoryview", /*tp_name*/
+  "outlierDetection._eval_outlier.memoryview", /*tp_name*/
   sizeof(struct __pyx_memoryview_obj), /*tp_basicsize*/
   0, /*tp_itemsize*/
   __pyx_tp_dealloc_memoryview, /*tp_dealloc*/
@@ -14153,7 +14392,7 @@ static struct PyGetSetDef __pyx_getsets__memoryviewslice[] = {
 
 static PyTypeObject __pyx_type___pyx_memoryviewslice = {
   PyVarObject_HEAD_INIT(0, 0)
-  "tribeflow._eval_outlier._memoryviewslice", /*tp_name*/
+  "outlierDetection._eval_outlier._memoryviewslice", /*tp_name*/
   sizeof(struct __pyx_memoryviewslice_obj), /*tp_basicsize*/
   0, /*tp_itemsize*/
   __pyx_tp_dealloc__memoryviewslice, /*tp_dealloc*/
@@ -14218,8 +14457,9 @@ static PyTypeObject __pyx_type___pyx_memoryviewslice = {
 };
 
 static PyMethodDef __pyx_methods[] = {
-  {"evaluate", (PyCFunction)__pyx_pw_9tribeflow_13_eval_outlier_1evaluate, METH_VARARGS|METH_KEYWORDS, 0},
-  {"calculateSequenceProb", (PyCFunction)__pyx_pw_9tribeflow_13_eval_outlier_3calculateSequenceProb, METH_VARARGS|METH_KEYWORDS, 0},
+  {"getLogProb", (PyCFunction)__pyx_pw_16outlierDetection_13_eval_outlier_1getLogProb, METH_VARARGS|METH_KEYWORDS, 0},
+  {"evaluate", (PyCFunction)__pyx_pw_16outlierDetection_13_eval_outlier_3evaluate, METH_VARARGS|METH_KEYWORDS, 0},
+  {"calculateSequenceProb", (PyCFunction)__pyx_pw_16outlierDetection_13_eval_outlier_5calculateSequenceProb, METH_VARARGS|METH_KEYWORDS, 0},
   {0, 0, 0, 0}
 };
 
@@ -14285,6 +14525,9 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_import, __pyx_k_import, sizeof(__pyx_k_import), 0, 0, 1, 1},
   {&__pyx_n_s_itemsize, __pyx_k_itemsize, sizeof(__pyx_k_itemsize), 0, 0, 1, 1},
   {&__pyx_kp_s_itemsize_0_for_cython_array, __pyx_k_itemsize_0_for_cython_array, sizeof(__pyx_k_itemsize_0_for_cython_array), 0, 0, 1, 0},
+  {&__pyx_n_s_listLen, __pyx_k_listLen, sizeof(__pyx_k_listLen), 0, 0, 1, 1},
+  {&__pyx_n_s_logProbs, __pyx_k_logProbs, sizeof(__pyx_k_logProbs), 0, 0, 1, 1},
+  {&__pyx_n_s_logSeqProbZ, __pyx_k_logSeqProbZ, sizeof(__pyx_k_logSeqProbZ), 0, 0, 1, 1},
   {&__pyx_n_s_main, __pyx_k_main, sizeof(__pyx_k_main), 0, 0, 1, 1},
   {&__pyx_n_s_memview, __pyx_k_memview, sizeof(__pyx_k_memview), 0, 0, 1, 1},
   {&__pyx_n_s_mode, __pyx_k_mode, sizeof(__pyx_k_mode), 0, 0, 1, 1},
@@ -14319,11 +14562,11 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
 };
 static int __Pyx_InitCachedBuiltins(void) {
   #if PY_MAJOR_VERSION >= 3
-  __pyx_builtin_xrange = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_xrange) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 8; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_builtin_xrange = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_xrange) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 22; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   #else
-  __pyx_builtin_xrange = __Pyx_GetBuiltinName(__pyx_n_s_xrange); if (!__pyx_builtin_xrange) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 8; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_builtin_xrange = __Pyx_GetBuiltinName(__pyx_n_s_xrange); if (!__pyx_builtin_xrange) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 22; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   #endif
-  __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_range) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 32; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_range) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 46; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_builtin_ValueError = __Pyx_GetBuiltinName(__pyx_n_s_ValueError); if (!__pyx_builtin_ValueError) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 129; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_builtin_MemoryError = __Pyx_GetBuiltinName(__pyx_n_s_MemoryError); if (!__pyx_builtin_MemoryError) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 144; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_builtin_enumerate = __Pyx_GetBuiltinName(__pyx_n_s_enumerate); if (!__pyx_builtin_enumerate) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 147; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
@@ -14624,14 +14867,14 @@ PyMODINIT_FUNC PyInit__eval_outlier(void)
   #if PY_MAJOR_VERSION < 3 && (__PYX_DEFAULT_STRING_ENCODING_IS_ASCII || __PYX_DEFAULT_STRING_ENCODING_IS_DEFAULT)
   if (__Pyx_init_sys_getdefaultencoding_params() < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   #endif
-  if (__pyx_module_is_main_tribeflow___eval_outlier) {
+  if (__pyx_module_is_main_outlierDetection___eval_outlier) {
     if (PyObject_SetAttrString(__pyx_m, "__name__", __pyx_n_s_main) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
   #if PY_MAJOR_VERSION >= 3
   {
     PyObject *modules = PyImport_GetModuleDict(); if (unlikely(!modules)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    if (!PyDict_GetItemString(modules, "tribeflow._eval_outlier")) {
-      if (unlikely(PyDict_SetItemString(modules, "tribeflow._eval_outlier", __pyx_m) < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    if (!PyDict_GetItemString(modules, "outlierDetection._eval_outlier")) {
+      if (unlikely(PyDict_SetItemString(modules, "outlierDetection._eval_outlier", __pyx_m) < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
   }
   #endif
@@ -14683,10 +14926,10 @@ PyMODINIT_FUNC PyInit__eval_outlier(void)
   if (__Pyx_patch_abc() < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   #endif
 
-  /* "tribeflow/_eval_outlier.pyx":1
+  /* "outlierDetection/_eval_outlier.pyx":1
  * from cython import boundscheck, wraparound             # <<<<<<<<<<<<<<
- * 
- * @boundscheck(False)
+ * cdef extern from "<math.h>" nogil:
+ *     double log10(double x)
  */
   __pyx_t_1 = PyDict_New(); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
@@ -14817,11 +15060,11 @@ PyMODINIT_FUNC PyInit__eval_outlier(void)
   __Pyx_XDECREF(__pyx_t_1);
   if (__pyx_m) {
     if (__pyx_d) {
-      __Pyx_AddTraceback("init tribeflow._eval_outlier", __pyx_clineno, __pyx_lineno, __pyx_filename);
+      __Pyx_AddTraceback("init outlierDetection._eval_outlier", __pyx_clineno, __pyx_lineno, __pyx_filename);
     }
     Py_DECREF(__pyx_m); __pyx_m = 0;
   } else if (!PyErr_Occurred()) {
-    PyErr_SetString(PyExc_ImportError, "init tribeflow._eval_outlier");
+    PyErr_SetString(PyExc_ImportError, "init outlierDetection._eval_outlier");
   }
   __pyx_L0:;
   __Pyx_RefNannyFinishContext();
@@ -14860,149 +15103,6 @@ static PyObject *__Pyx_GetBuiltinName(PyObject *name) {
 #endif
     }
     return result;
-}
-
-static void __Pyx_RaiseArgtupleInvalid(
-    const char* func_name,
-    int exact,
-    Py_ssize_t num_min,
-    Py_ssize_t num_max,
-    Py_ssize_t num_found)
-{
-    Py_ssize_t num_expected;
-    const char *more_or_less;
-    if (num_found < num_min) {
-        num_expected = num_min;
-        more_or_less = "at least";
-    } else {
-        num_expected = num_max;
-        more_or_less = "at most";
-    }
-    if (exact) {
-        more_or_less = "exactly";
-    }
-    PyErr_Format(PyExc_TypeError,
-                 "%.200s() takes %.8s %" CYTHON_FORMAT_SSIZE_T "d positional argument%.1s (%" CYTHON_FORMAT_SSIZE_T "d given)",
-                 func_name, more_or_less, num_expected,
-                 (num_expected == 1) ? "" : "s", num_found);
-}
-
-static void __Pyx_RaiseDoubleKeywordsError(
-    const char* func_name,
-    PyObject* kw_name)
-{
-    PyErr_Format(PyExc_TypeError,
-        #if PY_MAJOR_VERSION >= 3
-        "%s() got multiple values for keyword argument '%U'", func_name, kw_name);
-        #else
-        "%s() got multiple values for keyword argument '%s'", func_name,
-        PyString_AsString(kw_name));
-        #endif
-}
-
-static int __Pyx_ParseOptionalKeywords(
-    PyObject *kwds,
-    PyObject **argnames[],
-    PyObject *kwds2,
-    PyObject *values[],
-    Py_ssize_t num_pos_args,
-    const char* function_name)
-{
-    PyObject *key = 0, *value = 0;
-    Py_ssize_t pos = 0;
-    PyObject*** name;
-    PyObject*** first_kw_arg = argnames + num_pos_args;
-    while (PyDict_Next(kwds, &pos, &key, &value)) {
-        name = first_kw_arg;
-        while (*name && (**name != key)) name++;
-        if (*name) {
-            values[name-argnames] = value;
-            continue;
-        }
-        name = first_kw_arg;
-        #if PY_MAJOR_VERSION < 3
-        if (likely(PyString_CheckExact(key)) || likely(PyString_Check(key))) {
-            while (*name) {
-                if ((CYTHON_COMPILING_IN_PYPY || PyString_GET_SIZE(**name) == PyString_GET_SIZE(key))
-                        && _PyString_Eq(**name, key)) {
-                    values[name-argnames] = value;
-                    break;
-                }
-                name++;
-            }
-            if (*name) continue;
-            else {
-                PyObject*** argname = argnames;
-                while (argname != first_kw_arg) {
-                    if ((**argname == key) || (
-                            (CYTHON_COMPILING_IN_PYPY || PyString_GET_SIZE(**argname) == PyString_GET_SIZE(key))
-                             && _PyString_Eq(**argname, key))) {
-                        goto arg_passed_twice;
-                    }
-                    argname++;
-                }
-            }
-        } else
-        #endif
-        if (likely(PyUnicode_Check(key))) {
-            while (*name) {
-                int cmp = (**name == key) ? 0 :
-                #if !CYTHON_COMPILING_IN_PYPY && PY_MAJOR_VERSION >= 3
-                    (PyUnicode_GET_SIZE(**name) != PyUnicode_GET_SIZE(key)) ? 1 :
-                #endif
-                    PyUnicode_Compare(**name, key);
-                if (cmp < 0 && unlikely(PyErr_Occurred())) goto bad;
-                if (cmp == 0) {
-                    values[name-argnames] = value;
-                    break;
-                }
-                name++;
-            }
-            if (*name) continue;
-            else {
-                PyObject*** argname = argnames;
-                while (argname != first_kw_arg) {
-                    int cmp = (**argname == key) ? 0 :
-                    #if !CYTHON_COMPILING_IN_PYPY && PY_MAJOR_VERSION >= 3
-                        (PyUnicode_GET_SIZE(**argname) != PyUnicode_GET_SIZE(key)) ? 1 :
-                    #endif
-                        PyUnicode_Compare(**argname, key);
-                    if (cmp < 0 && unlikely(PyErr_Occurred())) goto bad;
-                    if (cmp == 0) goto arg_passed_twice;
-                    argname++;
-                }
-            }
-        } else
-            goto invalid_keyword_type;
-        if (kwds2) {
-            if (unlikely(PyDict_SetItem(kwds2, key, value))) goto bad;
-        } else {
-            goto invalid_keyword;
-        }
-    }
-    return 0;
-arg_passed_twice:
-    __Pyx_RaiseDoubleKeywordsError(function_name, key);
-    goto bad;
-invalid_keyword_type:
-    PyErr_Format(PyExc_TypeError,
-        "%.200s() keywords must be strings", function_name);
-    goto bad;
-invalid_keyword:
-    PyErr_Format(PyExc_TypeError,
-    #if PY_MAJOR_VERSION < 3
-        "%.200s() got an unexpected keyword argument '%.200s'",
-        function_name, PyString_AsString(key));
-    #else
-        "%s() got an unexpected keyword argument '%U'",
-        function_name, key);
-    #endif
-bad:
-    return -1;
-}
-
-static CYTHON_INLINE void __Pyx_RaiseUnboundLocalError(const char *varname) {
-    PyErr_Format(PyExc_UnboundLocalError, "local variable '%s' referenced before assignment", varname);
 }
 
 static CYTHON_INLINE int __Pyx_IsLittleEndian(void) {
@@ -15753,6 +15853,149 @@ static void __Pyx_WriteUnraisable(const char *name, CYTHON_UNUSED int clineno,
     if (nogil)
         PyGILState_Release(state);
 #endif
+}
+
+static void __Pyx_RaiseArgtupleInvalid(
+    const char* func_name,
+    int exact,
+    Py_ssize_t num_min,
+    Py_ssize_t num_max,
+    Py_ssize_t num_found)
+{
+    Py_ssize_t num_expected;
+    const char *more_or_less;
+    if (num_found < num_min) {
+        num_expected = num_min;
+        more_or_less = "at least";
+    } else {
+        num_expected = num_max;
+        more_or_less = "at most";
+    }
+    if (exact) {
+        more_or_less = "exactly";
+    }
+    PyErr_Format(PyExc_TypeError,
+                 "%.200s() takes %.8s %" CYTHON_FORMAT_SSIZE_T "d positional argument%.1s (%" CYTHON_FORMAT_SSIZE_T "d given)",
+                 func_name, more_or_less, num_expected,
+                 (num_expected == 1) ? "" : "s", num_found);
+}
+
+static void __Pyx_RaiseDoubleKeywordsError(
+    const char* func_name,
+    PyObject* kw_name)
+{
+    PyErr_Format(PyExc_TypeError,
+        #if PY_MAJOR_VERSION >= 3
+        "%s() got multiple values for keyword argument '%U'", func_name, kw_name);
+        #else
+        "%s() got multiple values for keyword argument '%s'", func_name,
+        PyString_AsString(kw_name));
+        #endif
+}
+
+static int __Pyx_ParseOptionalKeywords(
+    PyObject *kwds,
+    PyObject **argnames[],
+    PyObject *kwds2,
+    PyObject *values[],
+    Py_ssize_t num_pos_args,
+    const char* function_name)
+{
+    PyObject *key = 0, *value = 0;
+    Py_ssize_t pos = 0;
+    PyObject*** name;
+    PyObject*** first_kw_arg = argnames + num_pos_args;
+    while (PyDict_Next(kwds, &pos, &key, &value)) {
+        name = first_kw_arg;
+        while (*name && (**name != key)) name++;
+        if (*name) {
+            values[name-argnames] = value;
+            continue;
+        }
+        name = first_kw_arg;
+        #if PY_MAJOR_VERSION < 3
+        if (likely(PyString_CheckExact(key)) || likely(PyString_Check(key))) {
+            while (*name) {
+                if ((CYTHON_COMPILING_IN_PYPY || PyString_GET_SIZE(**name) == PyString_GET_SIZE(key))
+                        && _PyString_Eq(**name, key)) {
+                    values[name-argnames] = value;
+                    break;
+                }
+                name++;
+            }
+            if (*name) continue;
+            else {
+                PyObject*** argname = argnames;
+                while (argname != first_kw_arg) {
+                    if ((**argname == key) || (
+                            (CYTHON_COMPILING_IN_PYPY || PyString_GET_SIZE(**argname) == PyString_GET_SIZE(key))
+                             && _PyString_Eq(**argname, key))) {
+                        goto arg_passed_twice;
+                    }
+                    argname++;
+                }
+            }
+        } else
+        #endif
+        if (likely(PyUnicode_Check(key))) {
+            while (*name) {
+                int cmp = (**name == key) ? 0 :
+                #if !CYTHON_COMPILING_IN_PYPY && PY_MAJOR_VERSION >= 3
+                    (PyUnicode_GET_SIZE(**name) != PyUnicode_GET_SIZE(key)) ? 1 :
+                #endif
+                    PyUnicode_Compare(**name, key);
+                if (cmp < 0 && unlikely(PyErr_Occurred())) goto bad;
+                if (cmp == 0) {
+                    values[name-argnames] = value;
+                    break;
+                }
+                name++;
+            }
+            if (*name) continue;
+            else {
+                PyObject*** argname = argnames;
+                while (argname != first_kw_arg) {
+                    int cmp = (**argname == key) ? 0 :
+                    #if !CYTHON_COMPILING_IN_PYPY && PY_MAJOR_VERSION >= 3
+                        (PyUnicode_GET_SIZE(**argname) != PyUnicode_GET_SIZE(key)) ? 1 :
+                    #endif
+                        PyUnicode_Compare(**argname, key);
+                    if (cmp < 0 && unlikely(PyErr_Occurred())) goto bad;
+                    if (cmp == 0) goto arg_passed_twice;
+                    argname++;
+                }
+            }
+        } else
+            goto invalid_keyword_type;
+        if (kwds2) {
+            if (unlikely(PyDict_SetItem(kwds2, key, value))) goto bad;
+        } else {
+            goto invalid_keyword;
+        }
+    }
+    return 0;
+arg_passed_twice:
+    __Pyx_RaiseDoubleKeywordsError(function_name, key);
+    goto bad;
+invalid_keyword_type:
+    PyErr_Format(PyExc_TypeError,
+        "%.200s() keywords must be strings", function_name);
+    goto bad;
+invalid_keyword:
+    PyErr_Format(PyExc_TypeError,
+    #if PY_MAJOR_VERSION < 3
+        "%.200s() got an unexpected keyword argument '%.200s'",
+        function_name, PyString_AsString(key));
+    #else
+        "%s() got an unexpected keyword argument '%U'",
+        function_name, key);
+    #endif
+bad:
+    return -1;
+}
+
+static CYTHON_INLINE void __Pyx_RaiseUnboundLocalError(const char *varname) {
+    PyErr_Format(PyExc_UnboundLocalError, "local variable '%s' referenced before assignment", varname);
 }
 
 static void __Pyx_RaiseArgumentTypeInvalid(const char* name, PyObject *obj, PyTypeObject *type) {
@@ -16767,212 +17010,7 @@ static void __Pyx_ReleaseBuffer(Py_buffer *view) {
 #endif
 
 
-      #define __PYX_VERIFY_RETURN_INT(target_type, func_type, func_value)\
-    __PYX__VERIFY_RETURN_INT(target_type, func_type, func_value, 0)
-#define __PYX_VERIFY_RETURN_INT_EXC(target_type, func_type, func_value)\
-    __PYX__VERIFY_RETURN_INT(target_type, func_type, func_value, 1)
-#define __PYX__VERIFY_RETURN_INT(target_type, func_type, func_value, exc)\
-    {\
-        func_type value = func_value;\
-        if (sizeof(target_type) < sizeof(func_type)) {\
-            if (unlikely(value != (func_type) (target_type) value)) {\
-                func_type zero = 0;\
-                if (exc && unlikely(value == (func_type)-1 && PyErr_Occurred()))\
-                    return (target_type) -1;\
-                if (is_unsigned && unlikely(value < zero))\
-                    goto raise_neg_overflow;\
-                else\
-                    goto raise_overflow;\
-            }\
-        }\
-        return (target_type) value;\
-    }
-
-static CYTHON_INLINE int __Pyx_PyInt_As_int(PyObject *x) {
-    const int neg_one = (int) -1, const_zero = (int) 0;
-    const int is_unsigned = neg_one > const_zero;
-#if PY_MAJOR_VERSION < 3
-    if (likely(PyInt_Check(x))) {
-        if (sizeof(int) < sizeof(long)) {
-            __PYX_VERIFY_RETURN_INT(int, long, PyInt_AS_LONG(x))
-        } else {
-            long val = PyInt_AS_LONG(x);
-            if (is_unsigned && unlikely(val < 0)) {
-                goto raise_neg_overflow;
-            }
-            return (int) val;
-        }
-    } else
-#endif
-    if (likely(PyLong_Check(x))) {
-        if (is_unsigned) {
-#if CYTHON_USE_PYLONG_INTERNALS
-            const digit* digits = ((PyLongObject*)x)->ob_digit;
-            switch (Py_SIZE(x)) {
-                case  0: return (int) 0;
-                case  1: __PYX_VERIFY_RETURN_INT(int, digit, digits[0])
-                case 2:
-                    if (8 * sizeof(int) > 1 * PyLong_SHIFT) {
-                        if (8 * sizeof(unsigned long) > 2 * PyLong_SHIFT) {
-                            __PYX_VERIFY_RETURN_INT(int, unsigned long, (((((unsigned long)digits[1]) << PyLong_SHIFT) | digits[0])))
-                        } else if (8 * sizeof(int) >= 2 * PyLong_SHIFT) {
-                            return (int) (((((int)digits[1]) << PyLong_SHIFT) | digits[0]));
-                        }
-                    }
-                    break;
-                case 3:
-                    if (8 * sizeof(int) > 2 * PyLong_SHIFT) {
-                        if (8 * sizeof(unsigned long) > 3 * PyLong_SHIFT) {
-                            __PYX_VERIFY_RETURN_INT(int, unsigned long, (((((((unsigned long)digits[2]) << PyLong_SHIFT) | digits[1]) << PyLong_SHIFT) | digits[0])))
-                        } else if (8 * sizeof(int) >= 3 * PyLong_SHIFT) {
-                            return (int) (((((((int)digits[2]) << PyLong_SHIFT) | digits[1]) << PyLong_SHIFT) | digits[0]));
-                        }
-                    }
-                    break;
-                case 4:
-                    if (8 * sizeof(int) > 3 * PyLong_SHIFT) {
-                        if (8 * sizeof(unsigned long) > 4 * PyLong_SHIFT) {
-                            __PYX_VERIFY_RETURN_INT(int, unsigned long, (((((((((unsigned long)digits[3]) << PyLong_SHIFT) | digits[2]) << PyLong_SHIFT) | digits[1]) << PyLong_SHIFT) | digits[0])))
-                        } else if (8 * sizeof(int) >= 4 * PyLong_SHIFT) {
-                            return (int) (((((((((int)digits[3]) << PyLong_SHIFT) | digits[2]) << PyLong_SHIFT) | digits[1]) << PyLong_SHIFT) | digits[0]));
-                        }
-                    }
-                    break;
-            }
-#endif
-#if CYTHON_COMPILING_IN_CPYTHON
-            if (unlikely(Py_SIZE(x) < 0)) {
-                goto raise_neg_overflow;
-            }
-#else
-            {
-                int result = PyObject_RichCompareBool(x, Py_False, Py_LT);
-                if (unlikely(result < 0))
-                    return (int) -1;
-                if (unlikely(result == 1))
-                    goto raise_neg_overflow;
-            }
-#endif
-            if (sizeof(int) <= sizeof(unsigned long)) {
-                __PYX_VERIFY_RETURN_INT_EXC(int, unsigned long, PyLong_AsUnsignedLong(x))
-            } else if (sizeof(int) <= sizeof(unsigned PY_LONG_LONG)) {
-                __PYX_VERIFY_RETURN_INT_EXC(int, unsigned PY_LONG_LONG, PyLong_AsUnsignedLongLong(x))
-            }
-        } else {
-#if CYTHON_USE_PYLONG_INTERNALS
-            const digit* digits = ((PyLongObject*)x)->ob_digit;
-            switch (Py_SIZE(x)) {
-                case  0: return (int) 0;
-                case -1: __PYX_VERIFY_RETURN_INT(int, sdigit, -(sdigit) digits[0])
-                case  1: __PYX_VERIFY_RETURN_INT(int,  digit, +digits[0])
-                case -2:
-                    if (8 * sizeof(int) - 1 > 1 * PyLong_SHIFT) {
-                        if (8 * sizeof(unsigned long) > 2 * PyLong_SHIFT) {
-                            __PYX_VERIFY_RETURN_INT(int, long, -(long) (((((unsigned long)digits[1]) << PyLong_SHIFT) | digits[0])))
-                        } else if (8 * sizeof(int) - 1 > 2 * PyLong_SHIFT) {
-                            return (int) -(((((int)digits[1]) << PyLong_SHIFT) | digits[0]));
-                        }
-                    }
-                    break;
-                case 2:
-                    if (8 * sizeof(int) > 1 * PyLong_SHIFT) {
-                        if (8 * sizeof(unsigned long) > 2 * PyLong_SHIFT) {
-                            __PYX_VERIFY_RETURN_INT(int, unsigned long, (((((unsigned long)digits[1]) << PyLong_SHIFT) | digits[0])))
-                        } else if (8 * sizeof(int) - 1 > 2 * PyLong_SHIFT) {
-                            return (int) (((((int)digits[1]) << PyLong_SHIFT) | digits[0]));
-                        }
-                    }
-                    break;
-                case -3:
-                    if (8 * sizeof(int) - 1 > 2 * PyLong_SHIFT) {
-                        if (8 * sizeof(unsigned long) > 3 * PyLong_SHIFT) {
-                            __PYX_VERIFY_RETURN_INT(int, long, -(long) (((((((unsigned long)digits[2]) << PyLong_SHIFT) | digits[1]) << PyLong_SHIFT) | digits[0])))
-                        } else if (8 * sizeof(int) - 1 > 3 * PyLong_SHIFT) {
-                            return (int) -(((((((int)digits[2]) << PyLong_SHIFT) | digits[1]) << PyLong_SHIFT) | digits[0]));
-                        }
-                    }
-                    break;
-                case 3:
-                    if (8 * sizeof(int) > 2 * PyLong_SHIFT) {
-                        if (8 * sizeof(unsigned long) > 3 * PyLong_SHIFT) {
-                            __PYX_VERIFY_RETURN_INT(int, unsigned long, (((((((unsigned long)digits[2]) << PyLong_SHIFT) | digits[1]) << PyLong_SHIFT) | digits[0])))
-                        } else if (8 * sizeof(int) - 1 > 3 * PyLong_SHIFT) {
-                            return (int) (((((((int)digits[2]) << PyLong_SHIFT) | digits[1]) << PyLong_SHIFT) | digits[0]));
-                        }
-                    }
-                    break;
-                case -4:
-                    if (8 * sizeof(int) - 1 > 3 * PyLong_SHIFT) {
-                        if (8 * sizeof(unsigned long) > 4 * PyLong_SHIFT) {
-                            __PYX_VERIFY_RETURN_INT(int, long, -(long) (((((((((unsigned long)digits[3]) << PyLong_SHIFT) | digits[2]) << PyLong_SHIFT) | digits[1]) << PyLong_SHIFT) | digits[0])))
-                        } else if (8 * sizeof(int) - 1 > 4 * PyLong_SHIFT) {
-                            return (int) -(((((((((int)digits[3]) << PyLong_SHIFT) | digits[2]) << PyLong_SHIFT) | digits[1]) << PyLong_SHIFT) | digits[0]));
-                        }
-                    }
-                    break;
-                case 4:
-                    if (8 * sizeof(int) > 3 * PyLong_SHIFT) {
-                        if (8 * sizeof(unsigned long) > 4 * PyLong_SHIFT) {
-                            __PYX_VERIFY_RETURN_INT(int, unsigned long, (((((((((unsigned long)digits[3]) << PyLong_SHIFT) | digits[2]) << PyLong_SHIFT) | digits[1]) << PyLong_SHIFT) | digits[0])))
-                        } else if (8 * sizeof(int) - 1 > 4 * PyLong_SHIFT) {
-                            return (int) (((((((((int)digits[3]) << PyLong_SHIFT) | digits[2]) << PyLong_SHIFT) | digits[1]) << PyLong_SHIFT) | digits[0]));
-                        }
-                    }
-                    break;
-            }
-#endif
-            if (sizeof(int) <= sizeof(long)) {
-                __PYX_VERIFY_RETURN_INT_EXC(int, long, PyLong_AsLong(x))
-            } else if (sizeof(int) <= sizeof(PY_LONG_LONG)) {
-                __PYX_VERIFY_RETURN_INT_EXC(int, PY_LONG_LONG, PyLong_AsLongLong(x))
-            }
-        }
-        {
-#if CYTHON_COMPILING_IN_PYPY && !defined(_PyLong_AsByteArray)
-            PyErr_SetString(PyExc_RuntimeError,
-                            "_PyLong_AsByteArray() not available in PyPy, cannot convert large numbers");
-#else
-            int val;
-            PyObject *v = __Pyx_PyNumber_Int(x);
- #if PY_MAJOR_VERSION < 3
-            if (likely(v) && !PyLong_Check(v)) {
-                PyObject *tmp = v;
-                v = PyNumber_Long(tmp);
-                Py_DECREF(tmp);
-            }
- #endif
-            if (likely(v)) {
-                int one = 1; int is_little = (int)*(unsigned char *)&one;
-                unsigned char *bytes = (unsigned char *)&val;
-                int ret = _PyLong_AsByteArray((PyLongObject *)v,
-                                              bytes, sizeof(val),
-                                              is_little, !is_unsigned);
-                Py_DECREF(v);
-                if (likely(!ret))
-                    return val;
-            }
-#endif
-            return (int) -1;
-        }
-    } else {
-        int val;
-        PyObject *tmp = __Pyx_PyNumber_Int(x);
-        if (!tmp) return (int) -1;
-        val = __Pyx_PyInt_As_int(tmp);
-        Py_DECREF(tmp);
-        return val;
-    }
-raise_overflow:
-    PyErr_SetString(PyExc_OverflowError,
-        "value too large to convert to int");
-    return (int) -1;
-raise_neg_overflow:
-    PyErr_SetString(PyExc_OverflowError,
-        "can't convert negative value to int");
-    return (int) -1;
-}
-
-static int
+      static int
 __pyx_typeinfo_cmp(__Pyx_TypeInfo *a, __Pyx_TypeInfo *b)
 {
     int i;
@@ -17191,6 +17229,233 @@ fail:
 no_fail:
     __Pyx_RefNannyFinishContext();
     return retval;
+}
+
+static CYTHON_INLINE __Pyx_memviewslice __Pyx_PyObject_to_MemoryviewSlice_ds_double(PyObject *obj) {
+    __Pyx_memviewslice result = { 0, 0, { 0 }, { 0 }, { 0 } };
+    __Pyx_BufFmt_StackElem stack[1];
+    int axes_specs[] = { (__Pyx_MEMVIEW_DIRECT | __Pyx_MEMVIEW_STRIDED) };
+    int retcode;
+    if (obj == Py_None) {
+        result.memview = (struct __pyx_memoryview_obj *) Py_None;
+        return result;
+    }
+    retcode = __Pyx_ValidateAndInit_memviewslice(axes_specs, 0,
+                                                 PyBUF_RECORDS, 1,
+                                                 &__Pyx_TypeInfo_double, stack,
+                                                 &result, obj);
+    if (unlikely(retcode == -1))
+        goto __pyx_fail;
+    return result;
+__pyx_fail:
+    result.memview = NULL;
+    result.data = NULL;
+    return result;
+}
+
+#define __PYX_VERIFY_RETURN_INT(target_type, func_type, func_value)\
+    __PYX__VERIFY_RETURN_INT(target_type, func_type, func_value, 0)
+#define __PYX_VERIFY_RETURN_INT_EXC(target_type, func_type, func_value)\
+    __PYX__VERIFY_RETURN_INT(target_type, func_type, func_value, 1)
+#define __PYX__VERIFY_RETURN_INT(target_type, func_type, func_value, exc)\
+    {\
+        func_type value = func_value;\
+        if (sizeof(target_type) < sizeof(func_type)) {\
+            if (unlikely(value != (func_type) (target_type) value)) {\
+                func_type zero = 0;\
+                if (exc && unlikely(value == (func_type)-1 && PyErr_Occurred()))\
+                    return (target_type) -1;\
+                if (is_unsigned && unlikely(value < zero))\
+                    goto raise_neg_overflow;\
+                else\
+                    goto raise_overflow;\
+            }\
+        }\
+        return (target_type) value;\
+    }
+
+static CYTHON_INLINE int __Pyx_PyInt_As_int(PyObject *x) {
+    const int neg_one = (int) -1, const_zero = (int) 0;
+    const int is_unsigned = neg_one > const_zero;
+#if PY_MAJOR_VERSION < 3
+    if (likely(PyInt_Check(x))) {
+        if (sizeof(int) < sizeof(long)) {
+            __PYX_VERIFY_RETURN_INT(int, long, PyInt_AS_LONG(x))
+        } else {
+            long val = PyInt_AS_LONG(x);
+            if (is_unsigned && unlikely(val < 0)) {
+                goto raise_neg_overflow;
+            }
+            return (int) val;
+        }
+    } else
+#endif
+    if (likely(PyLong_Check(x))) {
+        if (is_unsigned) {
+#if CYTHON_USE_PYLONG_INTERNALS
+            const digit* digits = ((PyLongObject*)x)->ob_digit;
+            switch (Py_SIZE(x)) {
+                case  0: return (int) 0;
+                case  1: __PYX_VERIFY_RETURN_INT(int, digit, digits[0])
+                case 2:
+                    if (8 * sizeof(int) > 1 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 2 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(int, unsigned long, (((((unsigned long)digits[1]) << PyLong_SHIFT) | digits[0])))
+                        } else if (8 * sizeof(int) >= 2 * PyLong_SHIFT) {
+                            return (int) (((((int)digits[1]) << PyLong_SHIFT) | digits[0]));
+                        }
+                    }
+                    break;
+                case 3:
+                    if (8 * sizeof(int) > 2 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 3 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(int, unsigned long, (((((((unsigned long)digits[2]) << PyLong_SHIFT) | digits[1]) << PyLong_SHIFT) | digits[0])))
+                        } else if (8 * sizeof(int) >= 3 * PyLong_SHIFT) {
+                            return (int) (((((((int)digits[2]) << PyLong_SHIFT) | digits[1]) << PyLong_SHIFT) | digits[0]));
+                        }
+                    }
+                    break;
+                case 4:
+                    if (8 * sizeof(int) > 3 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 4 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(int, unsigned long, (((((((((unsigned long)digits[3]) << PyLong_SHIFT) | digits[2]) << PyLong_SHIFT) | digits[1]) << PyLong_SHIFT) | digits[0])))
+                        } else if (8 * sizeof(int) >= 4 * PyLong_SHIFT) {
+                            return (int) (((((((((int)digits[3]) << PyLong_SHIFT) | digits[2]) << PyLong_SHIFT) | digits[1]) << PyLong_SHIFT) | digits[0]));
+                        }
+                    }
+                    break;
+            }
+#endif
+#if CYTHON_COMPILING_IN_CPYTHON
+            if (unlikely(Py_SIZE(x) < 0)) {
+                goto raise_neg_overflow;
+            }
+#else
+            {
+                int result = PyObject_RichCompareBool(x, Py_False, Py_LT);
+                if (unlikely(result < 0))
+                    return (int) -1;
+                if (unlikely(result == 1))
+                    goto raise_neg_overflow;
+            }
+#endif
+            if (sizeof(int) <= sizeof(unsigned long)) {
+                __PYX_VERIFY_RETURN_INT_EXC(int, unsigned long, PyLong_AsUnsignedLong(x))
+            } else if (sizeof(int) <= sizeof(unsigned PY_LONG_LONG)) {
+                __PYX_VERIFY_RETURN_INT_EXC(int, unsigned PY_LONG_LONG, PyLong_AsUnsignedLongLong(x))
+            }
+        } else {
+#if CYTHON_USE_PYLONG_INTERNALS
+            const digit* digits = ((PyLongObject*)x)->ob_digit;
+            switch (Py_SIZE(x)) {
+                case  0: return (int) 0;
+                case -1: __PYX_VERIFY_RETURN_INT(int, sdigit, -(sdigit) digits[0])
+                case  1: __PYX_VERIFY_RETURN_INT(int,  digit, +digits[0])
+                case -2:
+                    if (8 * sizeof(int) - 1 > 1 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 2 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(int, long, -(long) (((((unsigned long)digits[1]) << PyLong_SHIFT) | digits[0])))
+                        } else if (8 * sizeof(int) - 1 > 2 * PyLong_SHIFT) {
+                            return (int) -(((((int)digits[1]) << PyLong_SHIFT) | digits[0]));
+                        }
+                    }
+                    break;
+                case 2:
+                    if (8 * sizeof(int) > 1 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 2 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(int, unsigned long, (((((unsigned long)digits[1]) << PyLong_SHIFT) | digits[0])))
+                        } else if (8 * sizeof(int) - 1 > 2 * PyLong_SHIFT) {
+                            return (int) (((((int)digits[1]) << PyLong_SHIFT) | digits[0]));
+                        }
+                    }
+                    break;
+                case -3:
+                    if (8 * sizeof(int) - 1 > 2 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 3 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(int, long, -(long) (((((((unsigned long)digits[2]) << PyLong_SHIFT) | digits[1]) << PyLong_SHIFT) | digits[0])))
+                        } else if (8 * sizeof(int) - 1 > 3 * PyLong_SHIFT) {
+                            return (int) -(((((((int)digits[2]) << PyLong_SHIFT) | digits[1]) << PyLong_SHIFT) | digits[0]));
+                        }
+                    }
+                    break;
+                case 3:
+                    if (8 * sizeof(int) > 2 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 3 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(int, unsigned long, (((((((unsigned long)digits[2]) << PyLong_SHIFT) | digits[1]) << PyLong_SHIFT) | digits[0])))
+                        } else if (8 * sizeof(int) - 1 > 3 * PyLong_SHIFT) {
+                            return (int) (((((((int)digits[2]) << PyLong_SHIFT) | digits[1]) << PyLong_SHIFT) | digits[0]));
+                        }
+                    }
+                    break;
+                case -4:
+                    if (8 * sizeof(int) - 1 > 3 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 4 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(int, long, -(long) (((((((((unsigned long)digits[3]) << PyLong_SHIFT) | digits[2]) << PyLong_SHIFT) | digits[1]) << PyLong_SHIFT) | digits[0])))
+                        } else if (8 * sizeof(int) - 1 > 4 * PyLong_SHIFT) {
+                            return (int) -(((((((((int)digits[3]) << PyLong_SHIFT) | digits[2]) << PyLong_SHIFT) | digits[1]) << PyLong_SHIFT) | digits[0]));
+                        }
+                    }
+                    break;
+                case 4:
+                    if (8 * sizeof(int) > 3 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 4 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(int, unsigned long, (((((((((unsigned long)digits[3]) << PyLong_SHIFT) | digits[2]) << PyLong_SHIFT) | digits[1]) << PyLong_SHIFT) | digits[0])))
+                        } else if (8 * sizeof(int) - 1 > 4 * PyLong_SHIFT) {
+                            return (int) (((((((((int)digits[3]) << PyLong_SHIFT) | digits[2]) << PyLong_SHIFT) | digits[1]) << PyLong_SHIFT) | digits[0]));
+                        }
+                    }
+                    break;
+            }
+#endif
+            if (sizeof(int) <= sizeof(long)) {
+                __PYX_VERIFY_RETURN_INT_EXC(int, long, PyLong_AsLong(x))
+            } else if (sizeof(int) <= sizeof(PY_LONG_LONG)) {
+                __PYX_VERIFY_RETURN_INT_EXC(int, PY_LONG_LONG, PyLong_AsLongLong(x))
+            }
+        }
+        {
+#if CYTHON_COMPILING_IN_PYPY && !defined(_PyLong_AsByteArray)
+            PyErr_SetString(PyExc_RuntimeError,
+                            "_PyLong_AsByteArray() not available in PyPy, cannot convert large numbers");
+#else
+            int val;
+            PyObject *v = __Pyx_PyNumber_Int(x);
+ #if PY_MAJOR_VERSION < 3
+            if (likely(v) && !PyLong_Check(v)) {
+                PyObject *tmp = v;
+                v = PyNumber_Long(tmp);
+                Py_DECREF(tmp);
+            }
+ #endif
+            if (likely(v)) {
+                int one = 1; int is_little = (int)*(unsigned char *)&one;
+                unsigned char *bytes = (unsigned char *)&val;
+                int ret = _PyLong_AsByteArray((PyLongObject *)v,
+                                              bytes, sizeof(val),
+                                              is_little, !is_unsigned);
+                Py_DECREF(v);
+                if (likely(!ret))
+                    return val;
+            }
+#endif
+            return (int) -1;
+        }
+    } else {
+        int val;
+        PyObject *tmp = __Pyx_PyNumber_Int(x);
+        if (!tmp) return (int) -1;
+        val = __Pyx_PyInt_As_int(tmp);
+        Py_DECREF(tmp);
+        return val;
+    }
+raise_overflow:
+    PyErr_SetString(PyExc_OverflowError,
+        "value too large to convert to int");
+    return (int) -1;
+raise_neg_overflow:
+    PyErr_SetString(PyExc_OverflowError,
+        "can't convert negative value to int");
+    return (int) -1;
 }
 
 static CYTHON_INLINE __Pyx_memviewslice __Pyx_PyObject_to_MemoryviewSlice_ds_int(PyObject *obj) {
